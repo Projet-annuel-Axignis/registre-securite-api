@@ -1,0 +1,21 @@
+meta {
+  name: update user
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/users/{{id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Jane Doe"
+  }
+}
+
+vars:pre-request {
+  id: 5
+}

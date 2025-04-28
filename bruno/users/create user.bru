@@ -1,0 +1,23 @@
+meta {
+  name: create user
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "John Doe",
+    "role": "READ_ONLY"
+  }
+}
+
+body:multipart-form {
+  name: John Doe
+  role: READ_ONLY
+}

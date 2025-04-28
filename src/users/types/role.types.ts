@@ -1,0 +1,4 @@
+export enum Role {
+  ADMINISTRATOR = 'ADMINISTRATOR',
+  READ_ONLY = 'READ_ONLY',
+}
