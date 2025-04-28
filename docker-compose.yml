@@ -3,10 +3,10 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    container_name: bet_api
+    container_name: registre_securite_api
     command: npm run start:dev
     ports:
-      - '${PORT:-3005}:${PORT:-3005}'
+      - '${PORT:-3004}:${PORT:-3004}'
     volumes:
       - .:/app
       - /app/node_modules
@@ -19,11 +19,11 @@ services:
 
   db:
     image: postgres:16
-    container_name: bet_postgres
+    container_name: registre_securite_postgres
     ports:
       - '${POSTGRES_PORT:-5433}:5432'
     volumes:
-      - bet_pg_data:/var/lib/postgresql/data
+      - registre_securite_pg_data:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -32,4 +32,4 @@ services:
       POSTGRES_DB: ${POSTGRES_NAME}
 
 volumes:
-  bet_pg_data:
+  registre_securite_pg_data:
