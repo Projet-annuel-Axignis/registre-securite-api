@@ -1,14 +1,41 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { Role } from '../types/role.types';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { Match } from '@src/common/decorators/match-fields.decorator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+import { Role } from '../entities/role.entity';
+import { RoleType } from '../types/role.types';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'Registre de sécurité' })
+  @ApiProperty({ example: 'John' })
+  @IsString()
   @IsNotEmpty()
-  name: string;
+  firstName: string;
 
-  @ApiProperty({ description: 'Role of the user', enum: Role, example: Role.ADMINISTRATOR })
+  @ApiProperty({ example: 'Doe' })
+  @IsString()
   @IsNotEmpty()
-  @IsEnum(Role)
-  role: Role;
+  lastName: string;
+
+  @ApiProperty({ example: 'john-doe@example.com' })
+  @IsEmail({}, { message: 'Invalid email' })
+  @IsNotEmpty({ message: 'Email is required' })
+  email: string;
+
+  @ApiProperty({ example: 'azerty123' })
+  @IsStrongPassword()
+  @IsNotEmpty({ message: 'password is required' })
+  password: string;
+
+  @ApiProperty({ example: 'azerty123' })
+  @IsNotEmpty({ message: 'confirmPassword is required' })
+  @Match('password')
+  confirmPassword: string;
+
+  @ApiProperty({ description: 'Role of the user', enum: RoleType, example: RoleType.ADMINISTRATOR })
+  @IsEnum(RoleType)
+  @IsNotEmpty()
+  role: RoleType;
+}
+
+export class FormattedCreatedUserDto extends OmitType(CreateUserDto, ['role', 'password', 'confirmPassword']) {
+  role: Role | null;
 }
