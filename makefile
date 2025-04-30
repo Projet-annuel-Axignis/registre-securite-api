@@ -5,6 +5,7 @@ init: ## First-time project setup
 	@make env
 	@make start
 	@make migrate
+	@make create-user
 
 ascii:
 	@echo " _____                                                  _____ "
@@ -43,6 +44,10 @@ start:
 migrate:
 	@echo "Running database migrations..."
 	@docker-compose exec app npm run migration:run
+
+create-user:
+	@echo "Creating initial user (via CLI script)..."
+	@docker-compose exec app npm run create-user
 
 stop:
 	@echo "Stop Docker containers..."
