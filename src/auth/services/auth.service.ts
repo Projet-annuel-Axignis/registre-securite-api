@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { UserDeactivateException } from '@src/users/helpers/user.exception';
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@src/users/services/user.service';
-import { ApiKey } from '../helpers/api-key.utils';
-import { InvalidApiKeyException } from '../helpers/auth.exception';
-import { LoggedUser } from '../types/logged-user.type';
+import { InvalidCredentialsException } from '../helpers/auth.exception';
+import { Password } from '../helpers/password.utils';
+import { LoggedUserWithToken } from '../types/logged-user.type';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  async singIn(apiKey: string): Promise<LoggedUser> {
-    const users = await this.userService.findAllWithDeleted();
-
-    for (const user of users) {
-      if (ApiKey.compare(apiKey, user.apiKey)) {
-        if (user.deletedAt) {
-          throw new UserDeactivateException({ apiKey });
-        }
-
-        const { apiKey: _, ...partialUser } = user;
-        return partialUser;
-      }
+  async singIn(email: string, password: string): Promise<LoggedUserWithToken> {
+    const user = await this.userService.findOneByEmailWithPassword(email);
+    if (user && Password.compare(password, user.password)) {
+      const payload = { userId: user.id, username: user.email };
+      const { password: _, ...returnUser } = user;
+      return {
+        accessToken: this.jwtService.sign(payload),
+        user: returnUser,
+      };
     }
 
-    throw new InvalidApiKeyException({ apiKey });
+    throw new InvalidCredentialsException();
   }
 }

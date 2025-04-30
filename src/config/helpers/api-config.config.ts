@@ -27,10 +27,10 @@ const configuration = () => ({
     },
   },
 
-  // auth: {
-  //   caching_duration: parseInt(process.env.ACCESS_TOKEN_CACHING_DURATION ?? (1000 * 3600).toString()),
-  //   encrypt_password: process.env.ENCRYPT_PASSWORD,
-  // },
+  jwt: {
+    duration: parseInt(process.env.JWT_DURATION ?? '3600'),
+    secret: process.env.JWT_SECRET ?? '',
+  },
 });
 
 export default configuration;

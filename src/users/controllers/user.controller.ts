@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
+import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
@@ -21,6 +22,8 @@ import { UserService } from '../services/user.service';
 @ApiTags(Resources.USER)
 @SwaggerFailureResponse()
 // @UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller({ path: 'users', version: ['1'] })
 export class UserController {
   constructor(private readonly userService: UserService) {}
