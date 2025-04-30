@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { DisableActivityLogger } from '@src/activity-logger/helpers/disable-logger.decorator';
 import { Request as ExpressRequest } from 'express';
 import { LoginDto } from '../dtos/login.dto';
 import { JwtAuthGuard } from '../guards/jwt.guard';
@@ -12,6 +13,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
+  @DisableActivityLogger()
   signIn(@Body() signInDto: LoginDto): Promise<LoggedUserWithToken> {
     return this.authService.singIn(signInDto.email, signInDto.password);
   }

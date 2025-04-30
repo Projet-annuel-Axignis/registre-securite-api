@@ -22,6 +22,9 @@ export class LoggingInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const disableActivityLogger = this.reflector.get<boolean>('disableActivityLogger', context.getHandler());
+    if (disableActivityLogger) return next.handle();
+
     const decorator = this.reflector.get<ActivityLoggerDecorator | undefined>('activityLogger', context.getHandler());
     const { method, url, headers, body, ip, user, params, query } = context.switchToHttp().getRequest<TypedRequest>();
 
