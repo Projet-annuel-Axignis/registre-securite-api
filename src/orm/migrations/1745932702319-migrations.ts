@@ -54,6 +54,7 @@ export class Migrations1745932702319 implements MigrationInterface {
         CREATE TYPE "public"."role_type_enum" AS ENUM(
             'ADMINISTRATOR',
             'CUSTOMER_ADMINISTRATOR',
+            'CUSTOMER_MANAGER',
             'CUSTOMER',
             'VISITOR'
         )
@@ -101,6 +102,16 @@ export class Migrations1745932702319 implements MigrationInterface {
         ALTER TABLE "user"
         ADD CONSTRAINT "FK_d72eb2a5bbff4f2533a5d4caff9" FOREIGN KEY ("customer_id") REFERENCES "customer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
+
+    // Add roles in DB
+    await queryRunner.query(`
+        INSERT INTO "role" ("name", "type", "description") VALUES
+          ('Administrateur', 'ADMINISTRATOR', 'Administrateur possédant un accès total à l''application'),
+          ('Client administrateur', 'CUSTOMER_ADMINISTRATOR', 'Gestionnaire d''un compte Client'),
+          ('Client manager', 'CUSTOMER_MANAGER', 'Compte client possédant plus de privilèges qu''un simple client'),
+          ('Client', 'CUSTOMER', 'Compte client standard'),
+          ('Visiteur', 'VISITOR', 'Compte en lecture seule');
+      `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
