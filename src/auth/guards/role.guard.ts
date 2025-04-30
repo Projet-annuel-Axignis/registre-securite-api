@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '@src/users/types/role.types';
+import { RoleType } from '@src/users/types/role.types';
 import { Request } from 'express';
 import { AuthForbiddenException } from '../helpers/auth.exception';
 
@@ -9,15 +9,35 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [context.getHandler(), context.getClass()]);
-    if (!requiredRoles) return true;
+    const allowedRoles = this.reflector.getAllAndOverride<RoleType[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!allowedRoles) return true;
 
     const { user } = context.switchToHttp().getRequest<Request>();
 
-    if (user?.role === Role.ADMINISTRATOR) return true;
+    if (this.matchRoles(allowedRoles, user!.role.type)) return true;
 
-    if (requiredRoles.some((role) => user?.role?.includes(role))) return true;
+    throw new AuthForbiddenException({ role: user!.role.type, requiredRoles: allowedRoles.join(', ') });
+  }
 
-    throw new AuthForbiddenException({ role: user?.role ?? '' });
+  private matchRoles(allowedRoles: RoleType[], userRole: RoleType): boolean {
+    console.log(userRole);
+    if (userRole === RoleType.ADMINISTRATOR) return true;
+
+    const rolesHierarchy = {
+      [RoleType.VISITOR]: [RoleType.VISITOR],
+      [RoleType.CUSTOMER]: [RoleType.CUSTOMER, RoleType.VISITOR],
+      [RoleType.CUSTOMER_MANAGER]: [RoleType.CUSTOMER_MANAGER, RoleType.CUSTOMER, RoleType.VISITOR],
+      [RoleType.CUSTOMER_ADMINISTRATOR]: [
+        RoleType.CUSTOMER_ADMINISTRATOR,
+        RoleType.CUSTOMER_MANAGER,
+        RoleType.CUSTOMER,
+        RoleType.VISITOR,
+      ],
+    };
+
+    return allowedRoles.some((allowedRole) => Object.values(rolesHierarchy[userRole]).includes(allowedRole));
   }
 }

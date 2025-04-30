@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuar
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
+import { Roles } from '@src/auth/decorators/role.decorator';
 import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
+import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
@@ -18,10 +20,11 @@ import {
 } from '../helpers/user-set-decorators.helper';
 import { UserNotFoundException } from '../helpers/user.exception';
 import { UserService } from '../services/user.service';
+import { RoleType } from '../types/role.types';
 
 @ApiTags(Resources.USER)
 @SwaggerFailureResponse()
-// @UseGuards(RolesGuard)
+@UseGuards(RolesGuard)
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @Controller({ path: 'users', version: ['1'] })
@@ -29,7 +32,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  // @Roles(RoleType.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserCreate()
   @ActivityLogger({ description: 'Créer un nouvel utilisateur' })
   async create(@Body() createUserDto: CreateUserDto): Promise<FormattedCreatedUserDto> {
@@ -37,7 +40,7 @@ export class UserController {
   }
 
   @Get()
-  // @Roles(RoleType.CUSTOMER)
+  @Roles(RoleType.CUSTOMER)
   @SwaggerUserFindAll()
   async findAll(@Query() query: UserQueryFilterDto): Promise<PaginatedList<User>> {
     const [users, currentResults, totalResults] = await this.userService.findAll(query);
@@ -45,7 +48,7 @@ export class UserController {
   }
 
   @Get(':id')
-  // @Roles(RoleType.CUSTOMER)
+  @Roles(RoleType.CUSTOMER)
   @SwaggerUserFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     const user = await this.userService.findOneById(id);
@@ -57,7 +60,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  // @Roles(RoleType.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserPatch()
   @ActivityLogger({ description: "Mettre à jour les informations d'un utilisateur" })
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
@@ -70,7 +73,7 @@ export class UserController {
   }
 
   @Patch(':id/update-state')
-  // @Roles(RoleType.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserUpdateState()
   @ActivityLogger({ description: "Modifier l'état actif d'un utilisateur" })
   async updateState(@Param('id', ParseIntPipe) id: number) {

@@ -62,7 +62,7 @@ export class UserService {
   }
 
   async findOneById(id: number): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { id }, withDeleted: true });
+    return await this.userRepository.findOne({ where: { id }, relations: ['role'], withDeleted: true });
   }
 
   async findOneByEmailWithPassword(email: string): Promise<User | null> {
