@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityFilteredListResults, getEntityFilteredList } from '@paginator/paginator.service';
-import { ApiKey } from '@src/auth/helpers/api-key.utils';
+import { Password } from '@src/auth/helpers/password.utils';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user-query-filter.dto';
+import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
-import { UserNameAlreadyExistsException, UserNotFoundException } from '../helpers/user.exception';
-import { UpdateUserDto } from './../dto/update-user.dto';
+import { UserEmailAlreadyExistsException } from '../helpers/user.exception';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
   ) {}
 
   /**
@@ -21,19 +24,32 @@ export class UserService {
    * @param createUserDto - CreateUserDto
    * @returns Promise<User>
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name } = createUserDto;
-    const existingUser = await this.userRepository.findOneBy({ name });
-    if (existingUser) {
-      throw new UserNameAlreadyExistsException({ name });
-    }
+  async create(createUserDto: CreateUserDto): Promise<FormattedCreatedUserDto> {
+    const isUserExists = await this.emailAlreadyExists(createUserDto.email);
+    if (isUserExists) throw new UserEmailAlreadyExistsException({ email: createUserDto.email });
 
-    const apiKeyClear = ApiKey.generate();
-    const apiKey = ApiKey.hash(apiKeyClear);
+    // Get role
+    const role = await this.roleRepository.findOneBy({ type: createUserDto.role });
 
-    const newUser = await this.userRepository.save({ ...createUserDto, apiKey });
-    newUser.apiKey = apiKeyClear;
-    return newUser;
+    // Hash password
+    const hashedPassword = Password.hash(createUserDto.password);
+
+    const createdUser = await this.userRepository.save({
+      firstName: createUserDto.firstName,
+      lastName: createUserDto.lastName,
+      email: createUserDto.email,
+      password: hashedPassword,
+      role: role!,
+    });
+
+    const { password: _, ...user } = createdUser;
+
+    return user;
+  }
+
+  async emailAlreadyExists(email: string): Promise<boolean> {
+    const count = await this.userRepository.count({ where: { email }, withDeleted: true });
+    return count > 0;
   }
 
   async findAll(query: UserQueryFilterDto): EntityFilteredListResults<User> {
@@ -46,10 +62,10 @@ export class UserService {
   }
 
   async findOneById(id: number): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { id }, withDeleted: true });
+    return await this.userRepository.findOne({ where: { id }, relations: ['role'], withDeleted: true });
   }
 
-  async findAllWithDeleted(): Promise<User[]> {
+  async findOneByEmailWithPassword(email: string): Promise<User | null> {
     return await this.userRepository
       .createQueryBuilder('user')
       .addSelect([
@@ -57,39 +73,31 @@ export class UserService {
         'user.createdAt',
         'user.updatedAt',
         'user.deletedAt',
-        'user.name',
-        'user.apiKey',
-        'user.role',
+        'user.firstName',
+        'user.lastName',
+        'user.email',
+        'user.password',
       ])
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.email = :email', { email })
       .withDeleted()
-      .getMany();
+      .getOne();
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { name } = updateUserDto;
-    if (name) {
-      const existingUser = await this.userRepository.findOneBy({ name });
+    const { email, password, role } = updateUserDto;
+    if (email) {
+      const existingUser = await this.userRepository.findOneBy({ email });
       if (existingUser && existingUser.id !== id) {
-        throw new UserNameAlreadyExistsException({ name });
+        throw new UserEmailAlreadyExistsException({ email });
       }
     }
 
-    await this.userRepository.update(id, updateUserDto);
+    const hashedPassword = password ? Password.hash(password) : undefined;
+    const dbRole = role ? ((await this.roleRepository.findOneBy({ type: role })) ?? undefined) : undefined;
+
+    await this.userRepository.update(id, { ...updateUserDto, password: hashedPassword, role: dbRole });
     return this.findOneById(id);
-  }
-
-  async generateNewApiKey(id: number) {
-    const user = await this.findOneById(id);
-    if (!user) {
-      throw new UserNotFoundException({ id });
-    }
-
-    const newApiKeyClear = ApiKey.generate();
-    const newApiKey = ApiKey.hash(newApiKeyClear);
-
-    user.apiKey = newApiKey;
-    await this.userRepository.save(user);
-    return { ...user, apiKey: newApiKeyClear };
   }
 
   async archiveUser(id: number) {

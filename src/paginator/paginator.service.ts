@@ -278,7 +278,7 @@ export const getEntityFilteredList = async <Entity extends ObjectLiteral>(
   const searchFilter = search && options.searchFields ? sqlBuildSearchFilter(search, options.searchFields) : [];
   const multipleFilter = sqlBuildQueryFilter(options.queryFilter, options.isAndCondition ?? true);
 
-  const alias = 'base_entity';
+  const alias = options.repository.metadata.tableName;
 
   // Default primary key name is `id`
   const pk = options.pkName ?? 'id';

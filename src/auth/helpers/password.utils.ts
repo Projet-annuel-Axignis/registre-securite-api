@@ -1,14 +1,10 @@
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
 
-export class ApiKey {
+export class Password {
   private static readonly saltGen = 16;
 
   private static getHash(value: string, salt: string) {
     return pbkdf2Sync(value, salt, 100_000, 64, 'sha512').toString('hex');
-  }
-
-  static generate(size: number = 20): string {
-    return randomBytes(size).toString('hex');
   }
 
   static hash(value: string) {

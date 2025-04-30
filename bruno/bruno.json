@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "BET",
+  "name": "Registre securite",
   "type": "collection",
   "ignore": ["node_modules", ".git"]
 }

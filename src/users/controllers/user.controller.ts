@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
 import { Roles } from '@src/auth/decorators/role.decorator';
-import { ApiKeyGuard } from '@src/auth/guards/api-key.guard';
+import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
 import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user-query-filter.dto';
 import { User } from '../entities/user.entity';
@@ -16,30 +16,31 @@ import {
   SwaggerUserFindAll,
   SwaggerUserFindOne,
   SwaggerUserPatch,
-  SwaggerUserResetApiKey,
   SwaggerUserUpdateState,
 } from '../helpers/user-set-decorators.helper';
 import { UserNotFoundException } from '../helpers/user.exception';
 import { UserService } from '../services/user.service';
-import { Role } from '../types/role.types';
+import { RoleType } from '../types/role.types';
 
 @ApiTags(Resources.USER)
 @SwaggerFailureResponse()
-@UseGuards(ApiKeyGuard, RolesGuard)
+@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller({ path: 'users', version: ['1'] })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserCreate()
   @ActivityLogger({ description: 'Créer un nouvel utilisateur' })
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<FormattedCreatedUserDto> {
     return await this.userService.create(createUserDto);
   }
 
   @Get()
-  @Roles(Role.READ_ONLY)
+  @Roles(RoleType.CUSTOMER)
   @SwaggerUserFindAll()
   async findAll(@Query() query: UserQueryFilterDto): Promise<PaginatedList<User>> {
     const [users, currentResults, totalResults] = await this.userService.findAll(query);
@@ -47,7 +48,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Roles(Role.READ_ONLY)
+  @Roles(RoleType.CUSTOMER)
   @SwaggerUserFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     const user = await this.userService.findOneById(id);
@@ -59,7 +60,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserPatch()
   @ActivityLogger({ description: "Mettre à jour les informations d'un utilisateur" })
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
@@ -71,21 +72,8 @@ export class UserController {
     return await this.userService.update(id, updateUserDto);
   }
 
-  @Patch(':id/reset-api-key')
-  @Roles(Role.ADMINISTRATOR)
-  @SwaggerUserResetApiKey()
-  @ActivityLogger({ description: "Réinitialiser la clé API d'un utilisateur" })
-  async updateApiKey(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    const userExists = await this.userService.findOneById(id);
-    if (!userExists) {
-      throw new UserNotFoundException({ id });
-    }
-
-    return await this.userService.generateNewApiKey(id);
-  }
-
   @Patch(':id/update-state')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(RoleType.ADMINISTRATOR)
   @SwaggerUserUpdateState()
   @ActivityLogger({ description: "Modifier l'état actif d'un utilisateur" })
   async updateState(@Param('id', ParseIntPipe) id: number) {

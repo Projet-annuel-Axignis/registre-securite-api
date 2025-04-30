@@ -5,7 +5,7 @@ export enum UserErrorCode {
   NOT_FOUND = 'NOT_FOUND',
   DEACTIVATED_USER = 'DEACTIVATED_USER',
   CANNOT_UPDATE_OWN_ACCOUNT_STATE = 'CANNOT_UPDATE_OWN_ACCOUNT_STATE',
-  NAME_ALREADY_EXISTS = 'NAME_ALREADY_EXISTS',
+  EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
 }
 
 type ErrorCode = CommonErrorCode | UserErrorCode;
@@ -22,7 +22,7 @@ export class UserHttpException extends CustomHttpException {
       [UserErrorCode.NOT_FOUND]: 'User not found',
       [UserErrorCode.DEACTIVATED_USER]: 'User account has been deactivated',
       [UserErrorCode.CANNOT_UPDATE_OWN_ACCOUNT_STATE]: 'Current user cannot update this own account state',
-      [UserErrorCode.NAME_ALREADY_EXISTS]: 'Name already exists in the database',
+      [UserErrorCode.EMAIL_ALREADY_EXISTS]: 'Email already exists in the database',
     };
 
     return messages[this.code] || null;
@@ -41,8 +41,8 @@ export class UserDeactivateException extends UserHttpException {
   }
 }
 
-export class UserNameAlreadyExistsException extends UserHttpException {
+export class UserEmailAlreadyExistsException extends UserHttpException {
   constructor(details?: Record<string, string | number>) {
-    super(UserErrorCode.NAME_ALREADY_EXISTS, HttpStatus.BAD_REQUEST, details);
+    super(UserErrorCode.EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST, details);
   }
 }

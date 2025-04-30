@@ -1,5 +1,5 @@
 import { ApiResponseOptions } from '@nestjs/swagger';
-import { AuthForbiddenException, InvalidApiKeyException } from 'src/auth/helpers/auth.exception';
+import { AuthForbiddenException, InvalidBearerTokenException } from 'src/auth/helpers/auth.exception';
 import { CustomHttpException } from './error-codes/custom.exception';
 import { genericSwaggerErrorResponse, multipleSwaggerErrorResponse } from './generic-swagger-response.helper';
 
@@ -38,7 +38,7 @@ export const SwaggerGenericMultipleErrorResponse = (
 
 export class CommonConfigSwagger {
   public static readonly RES_UNAUTHORIZE: ApiResponseOptions = SwaggerGenericMultipleErrorResponse(
-    [{ customHttpException: new InvalidApiKeyException() }],
+    [{ customHttpException: new InvalidBearerTokenException() }],
     'Unauthorized',
   );
   public static readonly RES_FORBIDDEN: ApiResponseOptions = genericSwaggerErrorResponse(new AuthForbiddenException());
