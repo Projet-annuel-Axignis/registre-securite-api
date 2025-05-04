@@ -7,7 +7,11 @@ meta {
 patch {
   url: {{base_url}}/users/{{id}}/update-state
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
 }
 
 vars:pre-request {
