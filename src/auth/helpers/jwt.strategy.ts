@@ -6,7 +6,7 @@ import { ApiConfigService } from '@src/config/services/api-config.service';
 import { UserService } from '@src/users/services/user.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../types/payload.types';
-import { DeactivateAccountException, InvalidBearerTokenException } from './auth.exception';
+import { InvalidBearerTokenException } from './auth.exception';
 
 const nestConfigService = new ConfigService(configuration());
 const configService = new ApiConfigService(nestConfigService);
@@ -24,8 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     const user = await this.usersService.findOneById(payload.userId);
     if (!user) throw new InvalidBearerTokenException();
-
-    if (user.deletedAt) throw new DeactivateAccountException();
 
     return user;
   }

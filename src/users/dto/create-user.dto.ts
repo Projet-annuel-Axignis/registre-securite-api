@@ -1,6 +1,6 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { Match } from '@src/common/decorators/match-fields.decorator';
-import { IsEmail, IsEnum, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator';
 import { Role } from '../entities/role.entity';
 import { RoleType } from '../types/role.types';
 
@@ -34,6 +34,11 @@ export class CreateUserDto {
   @IsEnum(RoleType)
   @IsNotEmpty()
   role: RoleType;
+
+  @ApiPropertyOptional({ description: 'Id of the customer. Need for creation by administrator only' })
+  @IsInt()
+  @IsOptional()
+  customerId?: number;
 }
 
 export class FormattedCreatedUserDto extends OmitType(CreateUserDto, ['role', 'password', 'confirmPassword']) {
