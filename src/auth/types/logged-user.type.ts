@@ -1,3 +1,4 @@
+import { Customer } from '@src/users/entities/customer.entity';
 import { Role } from '@src/users/entities/role.entity';
 import { User } from '@src/users/entities/user.entity';
 import { RoleType } from '@src/users/types/role.types';
@@ -12,6 +13,7 @@ export interface UserWithRole extends Pick<User, 'id' | 'firstName' | 'lastName'
 
 export interface LoggedUser extends Omit<User, 'password'> {
   role: Role;
+  customer: Customer;
 }
 
 export interface LoggedUserWithToken {

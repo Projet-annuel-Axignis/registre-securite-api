@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityFilteredListResults, getEntityFilteredList } from '@paginator/paginator.service';
 import { Password } from '@src/auth/helpers/password.utils';
@@ -6,9 +6,10 @@ import { Repository } from 'typeorm';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user-query-filter.dto';
+import { Customer } from '../entities/customer.entity';
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
-import { UserEmailAlreadyExistsException } from '../helpers/user.exception';
+import { UserEmailAlreadyExistsException, UserErrorCode, UserHttpException } from '../helpers/user.exception';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,8 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
   ) {}
 
   /**
@@ -31,6 +34,10 @@ export class UserService {
     // Get role
     const role = await this.roleRepository.findOneBy({ type: createUserDto.role });
 
+    // Get customer
+    const customer = await this.customerRepository.findOneBy({ id: createUserDto.customerId });
+    if (!customer) throw new UserHttpException(UserErrorCode.CUSTOMER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+
     // Hash password
     const hashedPassword = Password.hash(createUserDto.password);
 
@@ -40,6 +47,7 @@ export class UserService {
       email: createUserDto.email,
       password: hashedPassword,
       role: role!,
+      customer,
     });
 
     const { password: _, ...user } = createdUser;
@@ -62,7 +70,7 @@ export class UserService {
   }
 
   async findOneById(id: number): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { id }, relations: ['role'], withDeleted: true });
+    return await this.userRepository.findOne({ where: { id }, relations: ['role', 'customer'], withDeleted: true });
   }
 
   async findOneByEmailWithPassword(email: string): Promise<User | null> {
@@ -79,13 +87,14 @@ export class UserService {
         'user.password',
       ])
       .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.customer', 'customer')
       .where('user.email = :email', { email })
       .withDeleted()
       .getOne();
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { email, password, role } = updateUserDto;
+    const { email, password, role, customerId } = updateUserDto;
     if (email) {
       const existingUser = await this.userRepository.findOneBy({ email });
       if (existingUser && existingUser.id !== id) {
@@ -96,7 +105,12 @@ export class UserService {
     const hashedPassword = password ? Password.hash(password) : undefined;
     const dbRole = role ? ((await this.roleRepository.findOneBy({ type: role })) ?? undefined) : undefined;
 
-    await this.userRepository.update(id, { ...updateUserDto, password: hashedPassword, role: dbRole });
+    // Get customer
+    const customer = customerId
+      ? ((await this.customerRepository.findOneBy({ id: updateUserDto.customerId })) ?? undefined)
+      : undefined;
+
+    await this.userRepository.update(id, { ...updateUserDto, password: hashedPassword, role: dbRole, customer });
     return this.findOneById(id);
   }
 

@@ -23,7 +23,6 @@ export class RolesGuard implements CanActivate {
   }
 
   private matchRoles(allowedRoles: RoleType[], userRole: RoleType): boolean {
-    console.log(userRole);
     if (userRole === RoleType.ADMINISTRATOR) return true;
 
     const rolesHierarchy = {
