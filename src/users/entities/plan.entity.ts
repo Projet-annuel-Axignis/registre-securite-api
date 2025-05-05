@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { Column, Entity, OneToOne, Relation } from 'typeorm';
 import { PlanType } from '../types/plan.type';
-import { Customer } from './customer.entity';
+import { Company } from './company.entity';
 
 @Entity()
 export class Plan extends SoftDeleteEntity {
@@ -19,6 +19,6 @@ export class Plan extends SoftDeleteEntity {
   @Column({ type: 'timestamptz' })
   expiredAt: Date;
 
-  @OneToOne(() => Customer, (customer) => customer.plan)
-  customer: Relation<Customer>;
+  @OneToOne(() => Company, (company) => company.plan)
+  company: Relation<Company>;
 }

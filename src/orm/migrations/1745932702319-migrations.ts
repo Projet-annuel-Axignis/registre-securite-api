@@ -39,7 +39,7 @@ export class Migrations1745932702319 implements MigrationInterface {
         )
     `);
     await queryRunner.query(`
-        CREATE TABLE "customer" (
+        CREATE TABLE "company" (
             "id" SERIAL NOT NULL,
             "created_at" TIMESTAMP NOT NULL DEFAULT now(),
             "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
@@ -53,9 +53,9 @@ export class Migrations1745932702319 implements MigrationInterface {
     await queryRunner.query(`
         CREATE TYPE "public"."role_type_enum" AS ENUM(
             'ADMINISTRATOR',
-            'CUSTOMER_ADMINISTRATOR',
-            'CUSTOMER_MANAGER',
-            'CUSTOMER',
+            'COMPANY_ADMINISTRATOR',
+            'COMPANY_MANAGER',
+            'COMPANY_MEMBER',
             'VISITOR'
         )
     `);
@@ -91,7 +91,7 @@ export class Migrations1745932702319 implements MigrationInterface {
         ADD CONSTRAINT "FK_81615294532ca4b6c70abd1b2e6" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
     await queryRunner.query(`
-        ALTER TABLE "customer"
+        ALTER TABLE "company"
         ADD CONSTRAINT "FK_8f8e7240de887aae547688903ae" FOREIGN KEY ("plan_id") REFERENCES "plan"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
     await queryRunner.query(`
@@ -100,16 +100,16 @@ export class Migrations1745932702319 implements MigrationInterface {
     `);
     await queryRunner.query(`
         ALTER TABLE "user"
-        ADD CONSTRAINT "FK_d72eb2a5bbff4f2533a5d4caff9" FOREIGN KEY ("customer_id") REFERENCES "customer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        ADD CONSTRAINT "FK_d72eb2a5bbff4f2533a5d4caff9" FOREIGN KEY ("customer_id") REFERENCES "company"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
 
     // Add roles in DB
     await queryRunner.query(`
         INSERT INTO "role" ("name", "type", "description") VALUES
           ('Administrateur', 'ADMINISTRATOR', 'Administrateur possédant un accès total à l''application'),
-          ('Client administrateur', 'CUSTOMER_ADMINISTRATOR', 'Gestionnaire d''un compte Client'),
-          ('Client manager', 'CUSTOMER_MANAGER', 'Compte client possédant plus de privilèges qu''un simple client'),
-          ('Client', 'CUSTOMER', 'Compte client standard'),
+          ('Administrateur de société', 'COMPANY_ADMINISTRATOR', 'Gestionnaire d''un compte Client'),
+          ('Manager de société', 'COMPANY_MANAGER', 'Compte client possédant plus de privilèges qu''un simple client'),
+          ('Simple membre', 'COMPANY_MEMBER', 'Compte client standard'),
           ('Visiteur', 'VISITOR', 'Compte en lecture seule');
       `);
   }
@@ -122,7 +122,7 @@ export class Migrations1745932702319 implements MigrationInterface {
         ALTER TABLE "user" DROP CONSTRAINT "FK_fb2e442d14add3cefbdf33c4561"
     `);
     await queryRunner.query(`
-        ALTER TABLE "customer" DROP CONSTRAINT "FK_8f8e7240de887aae547688903ae"
+        ALTER TABLE "company" DROP CONSTRAINT "FK_8f8e7240de887aae547688903ae"
     `);
     await queryRunner.query(`
         ALTER TABLE "activity_log" DROP CONSTRAINT "FK_81615294532ca4b6c70abd1b2e6"
@@ -137,7 +137,7 @@ export class Migrations1745932702319 implements MigrationInterface {
         DROP TYPE "public"."role_type_enum"
     `);
     await queryRunner.query(`
-        DROP TABLE "customer"
+        DROP TABLE "company"
     `);
     await queryRunner.query(`
         DROP TABLE "plan"

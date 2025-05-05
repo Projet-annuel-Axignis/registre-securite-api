@@ -34,19 +34,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @Roles(RoleType.CUSTOMER_ADMINISTRATOR)
+  @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserCreate()
   @ActivityLogger({ description: 'Créer un nouvel utilisateur' })
   async create(@Body() createUserDto: CreateUserDto, @GetUser() user: LoggedUser): Promise<FormattedCreatedUserDto> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
-      createUserDto.customerId = user.customer.id;
+      createUserDto.customerId = user.company.id;
     }
 
     return await this.userService.create(createUserDto);
   }
 
   @Get()
-  @Roles(RoleType.CUSTOMER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindAll()
   async findAll(@Query() query: UserQueryFilterDto): Promise<PaginatedList<User>> {
     const [users, currentResults, totalResults] = await this.userService.findAll(query);
@@ -54,7 +54,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Roles(RoleType.CUSTOMER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     const user = await this.userService.findOneById(id);
@@ -66,7 +66,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  @Roles(RoleType.CUSTOMER_ADMINISTRATOR)
+  @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserPatch()
   @ActivityLogger({ description: "Mettre à jour les informations d'un utilisateur" })
   async update(
@@ -80,14 +80,14 @@ export class UserController {
     }
 
     if (user.role.type !== RoleType.ADMINISTRATOR) {
-      updateUserDto.customerId = user.customer.id;
+      updateUserDto.customerId = user.company.id;
     }
 
     return await this.userService.update(id, updateUserDto);
   }
 
   @Patch(':id/update-state')
-  @Roles(RoleType.CUSTOMER_ADMINISTRATOR)
+  @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserUpdateState()
   @ActivityLogger({ description: "Modifier l'état actif d'un utilisateur" })
   async updateState(@Param('id', ParseIntPipe) id: number, @GetUser() loggedUser: LoggedUser) {

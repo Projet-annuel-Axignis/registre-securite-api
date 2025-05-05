@@ -5,15 +5,15 @@ import { Plan } from './plan.entity';
 import { User } from './user.entity';
 
 @Entity()
-export class Customer extends SoftDeleteEntity {
-  @ApiProperty({ description: 'Name of the customer', example: 'Société Axignis' })
+export class Company extends SoftDeleteEntity {
+  @ApiProperty({ description: 'Name of the company', example: 'Société Axignis' })
   @Column()
   name: string;
 
-  @OneToMany(() => User, (user) => user.customer)
+  @OneToMany(() => User, (user) => user.company)
   users: Relation<User>[];
 
-  @OneToOne(() => Plan, (plan) => plan.customer)
+  @OneToOne(() => Plan, (plan) => plan.company)
   @JoinColumn()
   plan: Relation<Plan>;
 }

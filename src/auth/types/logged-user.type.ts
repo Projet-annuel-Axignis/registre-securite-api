@@ -1,9 +1,9 @@
-import { Customer } from '@src/users/entities/customer.entity';
+import { Company } from '@src/users/entities/company.entity';
 import { Role } from '@src/users/entities/role.entity';
 import { User } from '@src/users/entities/user.entity';
 import { RoleType } from '@src/users/types/role.types';
 
-export interface UserWithRole extends Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'customer'> {
+export interface UserWithRole extends Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'company'> {
   role: {
     id: number;
     name: string;
@@ -13,7 +13,7 @@ export interface UserWithRole extends Pick<User, 'id' | 'firstName' | 'lastName'
 
 export interface LoggedUser extends Omit<User, 'password'> {
   role: Role;
-  customer: Customer;
+  company: Company;
 }
 
 export interface LoggedUserWithToken {

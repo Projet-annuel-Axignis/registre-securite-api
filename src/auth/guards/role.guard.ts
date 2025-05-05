@@ -27,12 +27,12 @@ export class RolesGuard implements CanActivate {
 
     const rolesHierarchy = {
       [RoleType.VISITOR]: [RoleType.VISITOR],
-      [RoleType.CUSTOMER]: [RoleType.CUSTOMER, RoleType.VISITOR],
-      [RoleType.CUSTOMER_MANAGER]: [RoleType.CUSTOMER_MANAGER, RoleType.CUSTOMER, RoleType.VISITOR],
-      [RoleType.CUSTOMER_ADMINISTRATOR]: [
-        RoleType.CUSTOMER_ADMINISTRATOR,
-        RoleType.CUSTOMER_MANAGER,
-        RoleType.CUSTOMER,
+      [RoleType.COMPANY_MEMBER]: [RoleType.COMPANY_MEMBER, RoleType.VISITOR],
+      [RoleType.COMPANY_MANAGER]: [RoleType.COMPANY_MANAGER, RoleType.COMPANY_MEMBER, RoleType.VISITOR],
+      [RoleType.COMPANY_ADMINISTRATOR]: [
+        RoleType.COMPANY_ADMINISTRATOR,
+        RoleType.COMPANY_MANAGER,
+        RoleType.COMPANY_MEMBER,
         RoleType.VISITOR,
       ],
     };

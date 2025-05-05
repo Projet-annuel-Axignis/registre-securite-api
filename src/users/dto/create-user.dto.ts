@@ -35,7 +35,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   role: RoleType;
 
-  @ApiPropertyOptional({ description: 'Id of the customer. Need for creation by administrator only' })
+  @ApiPropertyOptional({ description: 'Id of the company. Need for creation by administrator only' })
   @IsInt()
   @IsOptional()
   customerId?: number;
