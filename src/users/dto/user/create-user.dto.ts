@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { Match } from '@src/common/decorators/match-fields.decorator';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator';
-import { Role } from '../entities/role.entity';
-import { RoleType } from '../types/role.types';
+import { Role } from '../../entities/role.entity';
+import { RoleType } from '../../types/role.types';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'John' })

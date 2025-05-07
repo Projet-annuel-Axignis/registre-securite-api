@@ -9,9 +9,9 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { CreateUserDto, FormattedCreatedUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { UserQueryFilterDto } from '../dto/user-query-filter.dto';
+import { CreateUserDto, FormattedCreatedUserDto } from '../dto/user/create-user.dto';
+import { UpdateUserDto } from '../dto/user/update-user.dto';
+import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
 import { User } from '../entities/user.entity';
 import {
   SwaggerUserCreate,
