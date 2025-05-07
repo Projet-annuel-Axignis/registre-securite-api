@@ -13,6 +13,7 @@ import { CreateUserDto, FormattedCreatedUserDto } from '../dto/user/create-user.
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
 import { User } from '../entities/user.entity';
+import { UserErrorCode, UserHttpException, UserNotFoundException } from '../helpers/exceptions/user.exception';
 import {
   SwaggerUserCreate,
   SwaggerUserFindAll,
@@ -20,7 +21,6 @@ import {
   SwaggerUserPatch,
   SwaggerUserUpdateState,
 } from '../helpers/user-set-decorators.helper';
-import { UserErrorCode, UserHttpException, UserNotFoundException } from '../helpers/user.exception';
 import { UserService } from '../services/user.service';
 import { RoleType } from '../types/role.types';
 
