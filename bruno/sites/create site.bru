@@ -1,0 +1,26 @@
+meta {
+  name: create site
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/sites
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Test",
+    "streetNumber": "1bis",
+    "street": "Allée du parisien",
+    "postalCode": 73544,
+    "city": "Moncuq",
+    "companyId": 2
+  }
+}

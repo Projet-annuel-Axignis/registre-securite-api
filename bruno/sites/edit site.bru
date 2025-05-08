@@ -1,0 +1,25 @@
+meta {
+  name: edit site
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/sites/{{id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "city": "Lyon"
+  }
+}
+
+vars:pre-request {
+  id: 2
+}
