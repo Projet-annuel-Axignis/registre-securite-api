@@ -7,6 +7,7 @@ import { LoggingInterceptor } from './activity-logger/helpers/activity-logger.in
 import { AuthModule } from './auth/auth.module';
 import { ApiConfigModule } from './config/api-config.module';
 import configuration from './config/helpers/api-config.config';
+import { LocationModule } from './location/location.module';
 import { dataSourceOptions } from './orm/data-source';
 import { UserModule } from './users/user.module';
 
@@ -21,6 +22,7 @@ import { UserModule } from './users/user.module';
     UserModule,
     ActivityLoggerModule,
     AuthModule,
+    LocationModule,
   ],
   providers: [
     {
