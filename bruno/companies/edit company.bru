@@ -1,0 +1,25 @@
+meta {
+  name: edit company
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/companies/{{id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Test edited"
+  }
+}
+
+vars:pre-request {
+  id: 2
+}
