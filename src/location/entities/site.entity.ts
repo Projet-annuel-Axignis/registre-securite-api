@@ -31,4 +31,7 @@ export class Site extends SoftDeleteEntity {
 
   @ManyToOne(() => Company, (company) => company.sites)
   company: Relation<Company>;
+
+  @Column()
+  companyId: number;
 }

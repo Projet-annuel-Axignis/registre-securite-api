@@ -6,6 +6,7 @@ import { Roles } from '@src/auth/decorators/role.decorator';
 import { GetUser } from '@src/auth/decorators/user.decorator';
 import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
 import { RolesGuard } from '@src/auth/guards/role.guard';
+import { AuthForbiddenException } from '@src/auth/helpers/auth.exception';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { FilterOp, PaginatedList } from '@src/paginator/paginator.type';
@@ -41,14 +42,14 @@ export class SiteController {
   @Roles(RoleType.COMPANY_MEMBER)
   async findAll(@Query() query: SiteQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Site>> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
-      if (query.filter === '') {
-        query.filterField = 'companyId';
-        query.filterOp = FilterOp.EQUALS;
-        query.filter = user.company.id.toString();
-      } else {
+      if (query.filterField) {
         query.filterField += ',companyId';
         query.filterOp += `,${FilterOp.EQUALS}`;
         query.filter += `,${user.company.id}`;
+      } else {
+        query.filterField = 'companyId';
+        query.filterOp = FilterOp.EQUALS;
+        query.filter = user.company.id.toString();
       }
     }
 
@@ -58,22 +59,42 @@ export class SiteController {
 
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Site> {
-    return await this.siteService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<Site> {
+    const site = await this.siteService.findOne(id);
+
+    if (user.role.type !== RoleType.ADMINISTRATOR && site.companyId !== user.company.id) {
+      throw new AuthForbiddenException({ resourceName: Resources.SITE, id });
+    }
+
+    return site;
   }
 
   @Patch(':id')
   @Roles(RoleType.COMPANY_MANAGER)
   @ActivityLogger({ description: "Mettre à jour les informations d'un site" })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSiteDto: UpdateSiteDto): Promise<Site> {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSiteDto: UpdateSiteDto,
+    @GetUser() user: LoggedUser,
+  ): Promise<Site> {
+    const site = await this.siteService.findOne(id);
+
+    if (user.role.type !== RoleType.ADMINISTRATOR && site.companyId !== user.company.id) {
+      throw new AuthForbiddenException({ resourceName: Resources.SITE, id });
+    }
+
     return await this.siteService.update(id, updateSiteDto);
   }
 
   @Patch(':id/update-state')
   @Roles(RoleType.COMPANY_MANAGER)
   @ActivityLogger({ description: "Modifier l'état d'un site" })
-  async updateState(@Param('id', ParseIntPipe) id: number): Promise<SiteUpdatedResponse> {
+  async updateState(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<SiteUpdatedResponse> {
     const site = await this.siteService.findOne(id);
+
+    if (user.role.type !== RoleType.ADMINISTRATOR && site.companyId !== user.company.id) {
+      throw new AuthForbiddenException({ resourceName: Resources.SITE, id });
+    }
 
     if (site.deletedAt) {
       return await this.siteService.restore(site);
