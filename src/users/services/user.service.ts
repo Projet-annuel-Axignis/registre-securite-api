@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityFilteredListResults, getEntityFilteredList } from '@paginator/paginator.service';
 import { Password } from '@src/auth/helpers/password.utils';
@@ -9,7 +9,8 @@ import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
 import { Company } from '../entities/company.entity';
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
-import { UserEmailAlreadyExistsException, UserErrorCode, UserHttpException } from '../helpers/user.exception';
+import { CompanyNotFoundException } from '../helpers/exceptions/company.exception';
+import { RoleNotFoundException, UserEmailAlreadyExistsException } from '../helpers/exceptions/user.exception';
 
 @Injectable()
 export class UserService {
@@ -33,22 +34,28 @@ export class UserService {
 
     // Get role
     const role = await this.roleRepository.findOneBy({ type: createUserDto.role });
-
-    // Get company
-    const company = await this.customerRepository.findOneBy({ id: createUserDto.customerId });
-    if (!company) throw new UserHttpException(UserErrorCode.CUSTOMER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+    if (!role) throw new RoleNotFoundException({ type: createUserDto.role });
 
     // Hash password
     const hashedPassword = Password.hash(createUserDto.password);
 
-    const createdUser = await this.userRepository.save({
+    // construct object
+    const creatingUser = this.userRepository.create({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       email: createUserDto.email,
       password: hashedPassword,
-      role: role!,
-      company,
+      role: role,
     });
+
+    // Get company
+    if (createUserDto.customerId) {
+      const company = await this.customerRepository.findOneBy({ id: createUserDto.customerId });
+      if (!company) throw new CompanyNotFoundException({ id: createUserDto.customerId });
+      creatingUser.company = company;
+    }
+
+    const createdUser = await this.userRepository.save(creatingUser);
 
     const { password: _, ...user } = createdUser;
 
