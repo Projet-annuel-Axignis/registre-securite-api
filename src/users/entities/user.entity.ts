@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ActivityLog } from '@src/activity-logger/entities/activity-logger.entity';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
-import { Column, Entity, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Building } from '@src/location/entities/building.entity';
+import { Part } from '@src/location/entities/part.entity';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { Company } from './company.entity';
 import { Role } from './role.entity';
 
@@ -34,4 +36,12 @@ export class User extends SoftDeleteEntity {
   @ApiProperty({ nullable: true, type: () => ActivityLog })
   @OneToMany(() => ActivityLog, (log) => log.user)
   logs: Relation<ActivityLog[]>;
+
+  @ManyToMany(() => Part, (part) => part.users)
+  @JoinColumn()
+  parts: Relation<Part>[];
+
+  @ManyToMany(() => Building, (building) => building.users)
+  @JoinColumn()
+  buildings: Relation<Building>[];
 }

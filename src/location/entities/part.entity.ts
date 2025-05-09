@@ -1,0 +1,40 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
+import { User } from '@src/users/entities/user.entity';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, Relation } from 'typeorm';
+import { PartType } from '../types/part-type.types';
+import { Building } from './building.entity';
+import { ErpType } from './erp-type.entity';
+import { HabFamily } from './hab-family.entity';
+import { PartFloor } from './part-floor.entity';
+
+@Entity()
+export class Part extends SoftDeleteEntity {
+  @ApiProperty({ description: 'Name of the part', example: 'Apple Store' })
+  @Column()
+  name: string;
+
+  @ApiProperty({ description: 'Defined if building part is ICPE' })
+  @Column({ default: false })
+  isIcpe: boolean;
+
+  @ApiProperty({ enum: PartType, example: PartType.PRIVATE })
+  @Column({ type: 'enum', enum: PartType })
+  type: PartType;
+
+  @ManyToOne(() => Building, (building) => building.parts)
+  building: Relation<Building>;
+
+  @ManyToMany(() => ErpType, (erpType) => erpType.parts)
+  @JoinColumn()
+  erpTypes: Relation<ErpType>[];
+
+  @ManyToOne(() => HabFamily, (habFamily) => habFamily.parts)
+  habFamily: Relation<HabFamily>;
+
+  @ManyToOne(() => PartFloor, (partFloor) => partFloor.parts)
+  partFloor: Relation<PartFloor>;
+
+  @ManyToMany(() => User, (user) => user.parts)
+  users: Relation<User>[];
+}
