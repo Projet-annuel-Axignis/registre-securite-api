@@ -17,7 +17,7 @@ export class CreateSiteDto {
   @IsNotEmpty()
   street: string;
 
-  @ApiProperty({ description: 'Postal code in address', example: '69003' })
+  @ApiProperty({ description: 'Postal code in address', example: 69003 })
   @IsInt()
   postalCode: number;
 
