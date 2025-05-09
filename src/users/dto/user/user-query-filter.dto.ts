@@ -3,6 +3,7 @@ import { PaginationParamsDto } from '@paginator/paginator.dto';
 import { IsEnum, IsOptional } from 'class-validator';
 
 enum UserEntityFields {
+  ID = 'id',
   NAME = 'name',
   ROLE = 'role',
   CREATED_AT = 'createdAt',

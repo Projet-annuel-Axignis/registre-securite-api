@@ -3,6 +3,7 @@ import { PaginationParamsDto } from '@paginator/paginator.dto';
 import { IsEnum, IsOptional } from 'class-validator';
 
 enum CompanyEntityFields {
+  ID = 'id',
   NAME = 'name',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
