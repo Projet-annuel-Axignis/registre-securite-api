@@ -24,6 +24,16 @@ import { CompanyService } from './../services/company.service';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
+  /**
+   * Crée une nouvelle société.
+   *
+   * @param {CreateCompanyDto} createCompanyDto - Les données nécessaires pour créer une société.
+   * @returns {Promise<Company>} La société nouvellement créée.
+   *
+   * @example
+   * POST /companies
+   * Body: { name: "Nouvelle Société", address: "123 Rue Exemple" }
+   */
   @Post()
   @Roles(RoleType.ADMINISTRATOR)
   @ActivityLogger({ description: 'Créer une nouvelle société' })
@@ -31,6 +41,15 @@ export class CompanyController {
     return await this.companyService.create(createCompanyDto);
   }
 
+  /**
+   * Récupère une liste paginée de sociétés.
+   *
+   * @param {CompanyQueryFilterDto} query - Les filtres et paramètres de pagination.
+   * @returns {Promise<PaginatedList<Company>>} Une liste paginée des sociétés.
+   *
+   * @example
+   * GET /companies?page=1&limit=10
+   */
   @Get()
   @Roles(RoleType.ADMINISTRATOR)
   async findAll(@Query() query: CompanyQueryFilterDto): Promise<PaginatedList<Company>> {
@@ -38,12 +57,34 @@ export class CompanyController {
     return { ...query, totalResults, currentResults, results: companies };
   }
 
+  /**
+   * Récupère les détails d'une société spécifique.
+   *
+   * @param {number} id - L'identifiant unique de la société.
+   * @returns {Promise<Company>} Les détails de la société.
+   *
+   * @throws {CompanyNotFoundException} - Si la société est introuvable.
+   *
+   * @example
+   * GET /companies/1
+   */
   @Get(':id')
   @Roles(RoleType.ADMINISTRATOR)
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Company> {
     return await this.companyService.findOne(id);
   }
 
+  /**
+   * Met à jour les informations d'une société.
+   *
+   * @param {number} id - L'identifiant unique de la société.
+   * @param {UpdateCompanyDto} updateCompanyDto - Les nouvelles données de la société.
+   * @returns {Promise<Company>} La société mise à jour.
+   *
+   * @example
+   * PATCH /companies/1
+   * Body: { name: "Société Mise à Jour" }
+   */
   @Patch(':id')
   @Roles(RoleType.ADMINISTRATOR)
   @ActivityLogger({ description: "Mettre à jour les informations d'une société" })
@@ -51,6 +92,17 @@ export class CompanyController {
     return await this.companyService.update(id, updateCompanyDto);
   }
 
+  /**
+   * Modifie l'état d'une société (par exemple, active/inactive).
+   *
+   * @param {number} id - L'identifiant unique de la société.
+   * @returns {Promise<CompanyUpdatedResponse>} La réponse après mise à jour de l'état.
+   *
+   * @throws {CompanyNotFoundException} - Si la société est introuvable.
+   *
+   * @example
+   * PATCH /companies/1/update-state
+   */
   @Patch(':id/update-state')
   @Roles(RoleType.ADMINISTRATOR)
   @ActivityLogger({ description: "Modifier l'état d'une société" })

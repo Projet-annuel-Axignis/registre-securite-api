@@ -33,6 +33,15 @@ import { RoleType } from '../types/role.types';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Crée un nouvel utilisateur.
+   *
+   * @param {CreateUserDto} createUserDto - Les données nécessaires pour créer un utilisateur.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<FormattedCreatedUserDto>} Les informations de l'utilisateur créé.
+   *
+   * @throws {UnauthorizedException} Si l'utilisateur connecté n'a pas les droits nécessaires.
+   */
   @Post()
   @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserCreate()
@@ -45,6 +54,12 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
+  /**
+   * Récupère une liste paginée d'utilisateurs.
+   *
+   * @param {UserQueryFilterDto} query - Les filtres et paramètres de pagination pour la recherche.
+   * @returns {Promise<PaginatedList<User>>} Une liste paginée des utilisateurs correspondant aux critères.
+   */
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindAll()
@@ -53,6 +68,14 @@ export class UserController {
     return { ...query, totalResults, currentResults, results: users };
   }
 
+  /**
+   * Récupère les détails d'un utilisateur spécifique par son ID.
+   *
+   * @param {number} id - L'identifiant unique de l'utilisateur.
+   * @returns {Promise<User>} Les informations de l'utilisateur.
+   *
+   * @throws {UserNotFoundException} Si aucun utilisateur n'est trouvé avec l'ID fourni.
+   */
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindOne()
@@ -65,6 +88,17 @@ export class UserController {
     return user;
   }
 
+  /**
+   * Met à jour les informations d'un utilisateur spécifique.
+   *
+   * @param {number} id - L'identifiant unique de l'utilisateur à mettre à jour.
+   * @param {UpdateUserDto} updateUserDto - Les nouvelles données pour l'utilisateur.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<User>} Les informations mises à jour de l'utilisateur.
+   *
+   * @throws {UserNotFoundException} Si aucun utilisateur n'est trouvé avec l'ID fourni.
+   * @throws {UnauthorizedException} Si l'utilisateur connecté n'a pas les droits nécessaires.
+   */
   @Patch(':id')
   @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserPatch()
@@ -86,6 +120,16 @@ export class UserController {
     return await this.userService.update(id, updateUserDto);
   }
 
+  /**
+   * Modifie l'état actif d'un utilisateur (activer ou désactiver).
+   *
+   * @param {number} id - L'identifiant unique de l'utilisateur dont l'état doit être modifié.
+   * @param {LoggedUser} loggedUser - L'utilisateur actuellement connecté.
+   * @returns {Promise<User>} Les informations de l'utilisateur avec l'état mis à jour.
+   *
+   * @throws {UserNotFoundException} Si aucun utilisateur n'est trouvé avec l'ID fourni.
+   * @throws {UnauthorizedException} Si l'utilisateur connecté n'a pas les droits nécessaires.
+   */
   @Patch(':id/update-state')
   @Roles(RoleType.COMPANY_ADMINISTRATOR)
   @SwaggerUserUpdateState()

@@ -27,6 +27,18 @@ import { SiteUpdatedResponse } from '../types/site.types';
 export class SiteController {
   constructor(private readonly siteService: SiteService) {}
 
+  /**
+   * Crée un nouveau site.
+   *
+   * @param {CreateSiteDto} createSiteDto - Les données nécessaires pour créer un site.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<Site>} - Le site nouvellement créé.
+   *
+   * @description
+   * Cette méthode permet de créer un nouveau site. Si l'utilisateur connecté
+   * n'est pas un administrateur, le `companyId` est automatiquement défini
+   * sur celui de l'utilisateur.
+   */
   @Post()
   @Roles(RoleType.COMPANY_MANAGER)
   @ActivityLogger({ description: 'Créer un nouveau site' })
@@ -38,6 +50,19 @@ export class SiteController {
     return await this.siteService.create(createSiteDto);
   }
 
+  /**
+   * Récupère une liste paginée de sites en fonction des filtres fournis.
+   *
+   * @param {SiteQueryFilterDto} query - Les paramètres de filtrage et de pagination.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<PaginatedList<Site>>} - Une liste paginée de sites.
+   *
+   * @description
+   * Cette méthode permet de récupérer une liste de sites. Si l'utilisateur
+   * connecté n'est pas un administrateur, les résultats sont automatiquement
+   * filtrés pour inclure uniquement les sites appartenant à la même entreprise
+   * que l'utilisateur.
+   */
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   async findAll(@Query() query: SiteQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Site>> {
@@ -57,6 +82,21 @@ export class SiteController {
     return { ...query, totalResults, currentResults, results: sites };
   }
 
+  /**
+   * Récupère un site spécifique par son ID.
+   *
+   * @param {number} id - L'ID du site à récupérer.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<Site>} - Le site correspondant à l'ID fourni.
+   *
+   * @throws {AuthForbiddenException} - Si l'utilisateur n'a pas les droits pour accéder au site.
+   * @throws {SiteNotFoundException} - Si le site n'existe pas.
+   *
+   * @description
+   * Cette méthode permet de récupérer un site spécifique. Si l'utilisateur
+   * n'est pas administrateur, il ne peut accéder qu'aux sites appartenant
+   * à son entreprise.
+   */
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
   async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<Site> {
@@ -69,6 +109,22 @@ export class SiteController {
     return site;
   }
 
+  /**
+   * Met à jour les informations d'un site.
+   *
+   * @param {number} id - L'ID du site à mettre à jour.
+   * @param {UpdateSiteDto} updateSiteDto - Les nouvelles données pour le site.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<Site>} - Le site mis à jour.
+   *
+   * @throws {AuthForbiddenException} - Si l'utilisateur n'a pas les droits pour modifier le site.
+   * @throws {SiteNotFoundException} - Si le site n'existe pas.
+   *
+   * @description
+   * Cette méthode permet de mettre à jour les informations d'un site. Si
+   * l'utilisateur n'est pas administrateur, il ne peut modifier que les
+   * sites appartenant à son entreprise.
+   */
   @Patch(':id')
   @Roles(RoleType.COMPANY_MANAGER)
   @ActivityLogger({ description: "Mettre à jour les informations d'un site" })
@@ -86,6 +142,21 @@ export class SiteController {
     return await this.siteService.update(id, updateSiteDto);
   }
 
+  /**
+   * Modifie l'état d'un site.
+   *
+   * @param {number} id - L'ID du site dont l'état doit être modifié.
+   * @param {LoggedUser} user - L'utilisateur actuellement connecté.
+   * @returns {Promise<SiteUpdatedResponse>} - La réponse contenant l'état mis à jour du site.
+   *
+   * @throws {AuthForbiddenException} - Si l'utilisateur n'a pas les droits pour modifier l'état du site.
+   * @throws {SiteNotFoundException} - Si le site n'existe pas.
+   *
+   * @description
+   * Cette méthode permet de modifier l'état d'un site. Si l'utilisateur
+   * n'est pas administrateur, il ne peut modifier que les sites appartenant
+   * à son entreprise.
+   */
   @Patch(':id/update-state')
   @Roles(RoleType.COMPANY_MANAGER)
   @ActivityLogger({ description: "Modifier l'état d'un site" })

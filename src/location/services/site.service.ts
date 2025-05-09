@@ -19,6 +19,13 @@ export class SiteService {
     private readonly companyService: CompanyService,
   ) {}
 
+  /**
+   * Crée un nouveau site.
+   *
+   * @param {CreateSiteDto} dto - Les données nécessaires pour créer un site.
+   * @returns {Promise<Site>} Le site créé.
+   * @throws {Error} Si la création échoue.
+   */
   async create(dto: CreateSiteDto): Promise<Site> {
     const creatingSite = this.siteRepository.create(dto);
 
@@ -30,6 +37,13 @@ export class SiteService {
     return await this.siteRepository.save(creatingSite);
   }
 
+  /**
+   * Récupère une liste filtrée de sites.
+   *
+   * @param {SiteQueryFilterDto} queryFilter - Les filtres pour la requête.
+   * @returns {Promise<EntityFilteredListResults<Site>>} Une liste des sites filtrés avec le nombre total de résultats.
+   * @throws {Error} Si la récupération échoue.
+   */
   async findAll(queryFilter: SiteQueryFilterDto): EntityFilteredListResults<Site> {
     const [sites, totalResults] = await getEntityFilteredList({
       repository: this.siteRepository,
@@ -39,6 +53,13 @@ export class SiteService {
     return [sites, sites.length, totalResults];
   }
 
+  /**
+   * Récupère un site par son identifiant.
+   *
+   * @param {number} id - L'identifiant du site à récupérer.
+   * @returns {Promise<Site>} Le site correspondant à l'identifiant.
+   * @throws {SiteNotFoundException} Si aucun site n'est trouvé avec cet identifiant.
+   */
   async findOne(id: number): Promise<Site> {
     const site = await this.siteRepository.findOne({ where: { id }, withDeleted: true });
 
@@ -47,16 +68,37 @@ export class SiteService {
     return site;
   }
 
+  /**
+   * Récupère un site par son identifiant.
+   *
+   * @param {number} id - L'identifiant du site à récupérer.
+   * @returns {Promise<Site>} Le site correspondant à l'identifiant.
+   * @throws {SiteNotFoundException} Si aucun site n'est trouvé avec cet identifiant.
+   */
   async update(id: number, dto: UpdateSiteDto): Promise<Site> {
     const site = await this.findOne(id);
     return await this.siteRepository.save({ ...site, ...dto });
   }
 
+  /**
+   * Archive un site par son identifiant.
+   *
+   * @param {number} id - L'identifiant du site à supprimer.
+   * @returns {Promise<void>} Aucune valeur de retour.
+   * @throws {SiteNotFoundException} Si aucun site n'est trouvé avec cet identifiant.
+   */
   async archive(site: Site): Promise<SiteUpdatedResponse> {
     await this.siteRepository.softDelete(site.id);
     return { message: 'Site archived', id: site.id, name: site.name };
   }
 
+  /**
+   * Restaure un site supprimé par son identifiant.
+   *
+   * @param {number} id - L'identifiant du site à restaurer.
+   * @returns {Promise<Site>} Le site restauré.
+   * @throws {SiteNotFoundException} Si aucun site n'est trouvé avec cet identifiant.
+   */
   async restore(site: Site): Promise<SiteUpdatedResponse> {
     await this.siteRepository.restore(site.id);
     return { message: 'Site restored', id: site.id, name: site.name };
