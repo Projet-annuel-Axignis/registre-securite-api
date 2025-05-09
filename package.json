@@ -14,7 +14,7 @@
     "start:prod": "node dist/main",
     "typeorm": "npm run build && npx typeorm -d dist/orm/data-source.js",
     "migration:create": "npx typeorm migration:create ./src/orm/migrations/$npm_config_name",
-    "migration:generate": "npm run typeorm -- migration:generate ./src/orm/migrations/$npm_config_name --pretty",
+    "migration:generate": "npm run typeorm -- migration:generate ./src/orm/migrations/$npm_config_migrname --pretty",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:run:test": "npm run build && NODE_ENV=test NODE_PATH=./src ts-node ./node_modules/typeorm/cli.js migration:run -d dist/src/orm/data-source.js",
     "migration:revert": "npm run typeorm -- migration:revert",

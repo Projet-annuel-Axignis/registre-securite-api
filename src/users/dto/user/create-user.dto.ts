@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { Match } from '@src/common/decorators/match-fields.decorator';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator';
-import { Role } from '../entities/role.entity';
-import { RoleType } from '../types/role.types';
+import { Role } from '../../entities/role.entity';
+import { RoleType } from '../../types/role.types';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'John' })
@@ -35,7 +35,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   role: RoleType;
 
-  @ApiPropertyOptional({ description: 'Id of the customer. Need for creation by administrator only' })
+  @ApiPropertyOptional({ description: 'Id of the company. Need for creation by administrator only' })
   @IsInt()
   @IsOptional()
   customerId?: number;

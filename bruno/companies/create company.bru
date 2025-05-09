@@ -1,0 +1,21 @@
+meta {
+  name: create company
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/companies
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Test"
+  }
+}

@@ -48,16 +48,16 @@ const createUser = async () => {
           value: RoleType.ADMINISTRATOR,
         },
         {
-          name: 'Customer Administrator',
-          value: RoleType.CUSTOMER_ADMINISTRATOR,
+          name: 'Company Administrator',
+          value: RoleType.COMPANY_ADMINISTRATOR,
         },
         {
-          name: 'Customer manager',
-          value: RoleType.CUSTOMER_MANAGER,
+          name: 'Company manager',
+          value: RoleType.COMPANY_MANAGER,
         },
         {
-          name: 'Customer',
-          value: RoleType.CUSTOMER,
+          name: 'Company member',
+          value: RoleType.COMPANY_MEMBER,
         },
         {
           name: 'Visitor',

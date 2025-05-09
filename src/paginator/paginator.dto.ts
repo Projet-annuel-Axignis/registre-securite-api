@@ -88,7 +88,7 @@ export class PaginationParamsDto {
   @Validate(IsValidFilterOpArray, ['FilterOp'])
   @IsOptional()
   @ValidateIf((obj: PaginationParamsDto) => obj.filterOp !== undefined || obj.filterField !== '' || obj.filter !== '')
-  filterOp?: FilterOp;
+  filterOp?: string;
 
   @ApiPropertyOptional({ description: 'Filter value.<br>Example : active' })
   @IsOptional()

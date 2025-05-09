@@ -6,7 +6,7 @@ export enum UserErrorCode {
   DEACTIVATED_USER = 'DEACTIVATED_USER',
   CANNOT_UPDATE_OWN_ACCOUNT_STATE = 'CANNOT_UPDATE_OWN_ACCOUNT_STATE',
   EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
-  CUSTOMER_NOT_FOUND = 'CUSTOMER_NOT_FOUND',
+  ROLE_NOT_FOUND = 'ROLE_NOT_FOUND',
 }
 
 type ErrorCode = CommonErrorCode | UserErrorCode;
@@ -24,7 +24,7 @@ export class UserHttpException extends CustomHttpException {
       [UserErrorCode.DEACTIVATED_USER]: 'User account has been deactivated',
       [UserErrorCode.CANNOT_UPDATE_OWN_ACCOUNT_STATE]: 'Current user cannot update this own account state',
       [UserErrorCode.EMAIL_ALREADY_EXISTS]: 'Email already exists in the database',
-      [UserErrorCode.CUSTOMER_NOT_FOUND]: 'Customer not found in database',
+      [UserErrorCode.ROLE_NOT_FOUND]: 'Role not found in the database',
     };
 
     return messages[this.code] || null;
@@ -46,5 +46,11 @@ export class UserDeactivateException extends UserHttpException {
 export class UserEmailAlreadyExistsException extends UserHttpException {
   constructor(details?: Record<string, string | number>) {
     super(UserErrorCode.EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST, details);
+  }
+}
+
+export class RoleNotFoundException extends UserHttpException {
+  constructor(details?: Record<string, string | number>) {
+    super(UserErrorCode.ROLE_NOT_FOUND, HttpStatus.BAD_REQUEST, details);
   }
 }

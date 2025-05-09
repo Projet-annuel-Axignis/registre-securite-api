@@ -99,7 +99,7 @@ export const sqlBuildQueryFilter = (
   const valueSeparator = filterSeparator === ',' ? ';' : ',';
 
   // Early return if one parameter is missing
-  if (!filterField || !filterOp || (filterOp !== FilterOp.IS_EMPTY && filterOp !== FilterOp.IS_NOT_EMPTY && !filter)) {
+  if (!filterField || !filterOp || !filter) {
     return [];
   }
 

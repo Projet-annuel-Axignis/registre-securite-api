@@ -3,7 +3,7 @@
   "editor.rulers": [120],
   "editor.formatOnSave": true,
   "mochaExplorer.autoload": false,
-  "conventionalCommits.scopes": ["user"],
+  "conventionalCommits.scopes": ["user", "company", "location module"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"
   },

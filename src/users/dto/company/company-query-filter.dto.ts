@@ -2,22 +2,22 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
 import { IsEnum, IsOptional } from 'class-validator';
 
-enum UserEntityFields {
+enum CompanyEntityFields {
+  ID = 'id',
   NAME = 'name',
-  ROLE = 'role',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   DELETED_AT = 'deletedAt',
 }
 
-export class UserQueryFilterDto extends PaginationParamsDto {
+export class CompanyQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
-    example: UserEntityFields.NAME,
+    example: CompanyEntityFields.NAME,
     description: 'Name of the column to sort',
-    default: UserEntityFields.CREATED_AT,
-    enum: UserEntityFields,
+    default: CompanyEntityFields.CREATED_AT,
+    enum: CompanyEntityFields,
   })
-  @IsEnum(UserEntityFields)
+  @IsEnum(CompanyEntityFields)
   @IsOptional()
-  sortField: string = UserEntityFields.CREATED_AT;
+  sortField: string = CompanyEntityFields.CREATED_AT;
 }
