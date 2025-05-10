@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@src/users/user.module';
+import { BuildingController } from './controllers/building.controller';
 import { SiteController } from './controllers/site.controller';
 import { BuildingFloor } from './entities/building-floor.entity';
 import { Building } from './entities/building.entity';
@@ -13,6 +14,8 @@ import { PartFloor } from './entities/part-floor.entity';
 import { Part } from './entities/part.entity';
 import { Site } from './entities/site.entity';
 import { Typology } from './entities/typology.entity';
+import { BuildingEnumService } from './services/building-enum.service';
+import { BuildingService } from './services/building.service';
 import { SiteService } from './services/site.service';
 
 @Module({
@@ -32,7 +35,7 @@ import { SiteService } from './services/site.service';
     ]),
     UserModule,
   ],
-  controllers: [SiteController],
-  providers: [SiteService],
+  controllers: [SiteController, BuildingController],
+  providers: [SiteService, BuildingService, BuildingEnumService],
 })
 export class LocationModule {}

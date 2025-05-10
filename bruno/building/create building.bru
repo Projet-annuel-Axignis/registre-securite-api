@@ -1,0 +1,25 @@
+meta {
+  name: create building
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/buildings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Bâtiment A",
+    "siteId": 3,
+    "typologyCodes": ["ERP"],
+    "ighClassCodes": ["GHA"],
+    "erpCategory": 1
+  }
+}

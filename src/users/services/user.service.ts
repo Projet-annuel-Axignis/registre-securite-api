@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityFilteredListResults, getEntityFilteredList } from '@paginator/paginator.service';
 import { Password } from '@src/auth/helpers/password.utils';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
@@ -87,6 +87,7 @@ export class UserService {
       repository: this.userRepository,
       queryFilter: query,
       withDeleted: true,
+      relations: [{ relation: 'role', alias: 'r' }],
     });
     return [users, users.length, totalResults];
   }
@@ -126,6 +127,10 @@ export class UserService {
       .where('user.email = :email', { email })
       .withDeleted()
       .getOne();
+  }
+
+  async findManyById(ids: number[]): Promise<User[]> {
+    return await this.userRepository.find({ where: { id: In(ids) } });
   }
 
   /**
