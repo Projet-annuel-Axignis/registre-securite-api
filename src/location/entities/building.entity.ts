@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { User } from '@src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { BuildingFloor } from './building-floor.entity';
 import { ErpCategory } from './erp-category.entity';
 import { IghClass } from './igh-class.entity';
@@ -19,11 +19,31 @@ export class Building extends SoftDeleteEntity {
   site: Relation<Site>;
 
   @ManyToMany(() => Typology, (typology) => typology.buildings)
-  @JoinColumn()
+  @JoinTable({
+    name: 'building_typology',
+    joinColumn: {
+      name: 'building_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'typology_code',
+      referencedColumnName: 'code',
+    },
+  })
   typologies: Relation<Typology>[];
 
   @ManyToMany(() => IghClass, (ighClass) => ighClass.buildings)
-  @JoinColumn()
+  @JoinTable({
+    name: 'building_igh_class',
+    joinColumn: {
+      name: 'building_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'igh_class_code',
+      referencedColumnName: 'code',
+    },
+  })
   ighClasses: Relation<IghClass>[];
 
   @ManyToOne(() => ErpCategory, (erpCategory) => erpCategory.buildings)

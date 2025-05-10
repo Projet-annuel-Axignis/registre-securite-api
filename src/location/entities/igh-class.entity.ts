@@ -11,7 +11,7 @@ export class IghClass {
     default: IghClassCode.GHA,
     description: 'Code of the IGH class',
   })
-  @PrimaryColumn({ type: 'enum', enum: IghClassCode, unique: true })
+  @PrimaryColumn({ type: 'enum', enum: IghClassCode, enumName: 'igh_class_code_enum', unique: true })
   code: IghClassCode;
 
   @ApiProperty({ description: 'Description of the IGH class' })

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { User } from '@src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, Relation } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, Relation } from 'typeorm';
+import { HabFamilyName } from '../types/hab-family-name.types';
 import { PartType } from '../types/part-type.types';
 import { Building } from './building.entity';
 import { ErpType } from './erp-type.entity';
@@ -26,10 +27,26 @@ export class Part extends SoftDeleteEntity {
   building: Relation<Building>;
 
   @ManyToMany(() => ErpType, (erpType) => erpType.parts)
-  @JoinColumn()
+  @JoinTable({
+    name: 'part_erp_type',
+    joinColumn: {
+      name: 'part_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'erp_type_code',
+      referencedColumnName: 'code',
+    },
+  })
   erpTypes: Relation<ErpType>[];
 
   @ManyToOne(() => HabFamily, (habFamily) => habFamily.parts)
+  @JoinColumn({ name: 'hab_family_name' })
+  @Column({
+    type: 'enum',
+    enum: HabFamilyName,
+    enumName: 'hab_family_name_enum',
+  })
   habFamily: Relation<HabFamily>;
 
   @ManyToOne(() => PartFloor, (partFloor) => partFloor.parts)

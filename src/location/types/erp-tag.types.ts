@@ -1,4 +1,4 @@
-export enum ErpTag {
+export enum ErpTypeTag {
   PARTICULAR = 'PARTICULAR',
   SPECIAL = 'SPECIAL',
 }

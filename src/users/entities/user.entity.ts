@@ -3,7 +3,7 @@ import { ActivityLog } from '@src/activity-logger/entities/activity-logger.entit
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { Building } from '@src/location/entities/building.entity';
 import { Part } from '@src/location/entities/part.entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { Company } from './company.entity';
 import { Role } from './role.entity';
 
@@ -38,10 +38,10 @@ export class User extends SoftDeleteEntity {
   logs: Relation<ActivityLog[]>;
 
   @ManyToMany(() => Part, (part) => part.users)
-  @JoinColumn()
+  @JoinTable()
   parts: Relation<Part>[];
 
   @ManyToMany(() => Building, (building) => building.users)
-  @JoinColumn()
+  @JoinTable()
   buildings: Relation<Building>[];
 }

@@ -11,7 +11,7 @@ export class Typology {
     default: TypologyCode.ERP,
     description: 'Code of the typology',
   })
-  @PrimaryColumn({ type: 'enum', enum: TypologyCode, unique: true })
+  @PrimaryColumn({ type: 'enum', enum: TypologyCode, enumName: 'typology_code_enum', unique: true })
   code: TypologyCode;
 
   @ApiProperty({ description: 'Description of the enum in french' })
