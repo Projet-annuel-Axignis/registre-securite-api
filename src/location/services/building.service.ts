@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { Building } from '@src/location/entities/building.entity';
+import { UserNotOwnedCompanyException } from '@src/users/helpers/exceptions/user.exception';
 import { UserService } from '@src/users/services/user.service';
 import { RoleType } from '@src/users/types/role.types';
 import { Repository } from 'typeorm';
@@ -42,6 +43,8 @@ export class BuildingService {
 
     if (authorizedUserIds) {
       const users = await this.userService.findManyById(authorizedUserIds);
+      const wrongUser = users.find((user) => user.company.id !== site.companyId);
+      if (wrongUser) throw new UserNotOwnedCompanyException({ userId: wrongUser.id });
       creatingBuilding.users = users;
     }
 
