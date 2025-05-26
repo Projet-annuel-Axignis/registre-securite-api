@@ -92,10 +92,10 @@ const generateRandomSuffix = (): number => {
 export const sqlBuildQueryFilter = (
   paginationParams: PaginationParamsDto,
   isAndCondition = false,
-  options: SqlMultiFilterOptions = { filterSeparator: ',' },
+  options?: SqlMultiFilterOptions,
 ) => {
   const { filterField, filterOp, filter } = paginationParams;
-  const { filterSeparator } = options;
+  const filterSeparator = options?.filterSeparator ?? ',';
   const valueSeparator = filterSeparator === ',' ? ';' : ',';
 
   // Early return if one parameter is missing
@@ -126,7 +126,11 @@ export const sqlBuildQueryFilter = (
     };
 
     for (let i = 0; i < processedParams.filterField.length; i++) {
-      const field = processedParams.filterField[i];
+      const rawField = processedParams.filterField[i];
+      const filterOnJoinTable = options?.filterOnJoinTable?.find((f) => f.field === rawField);
+      const field = options?.filterOnJoinTable
+        ? `${filterOnJoinTable?.tableAlias ?? options.mainTableAlias}.${filterOnJoinTable?.fieldAlias ?? rawField}`
+        : rawField;
       const operator = processedParams.filterOp[i];
       const value = processedParams.filter[i];
 
@@ -274,56 +278,42 @@ const loadLeftJoinAndSelect = <Entity extends ObjectLiteral>(
 export const getEntityFilteredList = async <Entity extends ObjectLiteral>(
   options: EntityFilteredListOptions<Entity>,
 ): Promise<[Entity[], number]> => {
+  const alias = options.repository.metadata.tableName;
+
   const { search } = options.queryFilter;
   const searchFilter = search && options.searchFields ? sqlBuildSearchFilter(search, options.searchFields) : [];
-  const multipleFilter = sqlBuildQueryFilter(options.queryFilter, options.isAndCondition ?? true);
-
-  const alias = options.repository.metadata.tableName;
 
   // Default primary key name is `id`
   const pk = options.pkName ?? 'id';
   const orderField = `${alias}.${options.queryFilter.sortField ?? pk}`;
   const orderDirection = options.queryFilter.sortOrder === SortOrder.DESC ? 'DESC' : 'ASC';
 
-  const rootQuery = options.repository
-    .createQueryBuilder(alias)
-    .where(searchFilter)
-    .andWhere(multipleFilter)
-    .orderBy(orderField, orderDirection)
-    .limit(options.queryFilter.limit)
-    .offset(options.queryFilter.offset);
+  const rootQuery = options.repository.createQueryBuilder(alias).where(searchFilter);
 
   if (options.withDeleted) {
     rootQuery.withDeleted();
   }
 
   if (options.relations?.length) {
-    rootQuery.select(`${alias}.${pk}`);
-    const [resultsIds, totalResults] = await rootQuery.getManyAndCount();
-
-    // If no results, early return an empty array
-    if (!resultsIds.length) {
-      return [[], totalResults];
-    }
-
-    const finalQuery = options.repository
-      .createQueryBuilder(alias)
-      .where(`${alias}.${pk} in (:...ids)`, {
-        ids: resultsIds.map((obj) => obj[pk] as string | number),
-      })
-      .orderBy(orderField, orderDirection);
-
-    if (options.withDeleted) {
-      finalQuery.withDeleted();
-    }
-
     for (const relationParam of options.relations) {
-      loadLeftJoinAndSelect(finalQuery, alias, relationParam);
+      loadLeftJoinAndSelect(rootQuery, alias, relationParam);
     }
-    const results = await finalQuery.getMany();
-
-    return [results, totalResults];
-  } else {
-    return await rootQuery.getManyAndCount();
   }
+
+  const multipleFilter = sqlBuildQueryFilter(
+    options.queryFilter,
+    options.isAndCondition ?? true,
+    options.filterOptions ? { filterOnJoinTable: options.filterOptions, mainTableAlias: alias } : undefined,
+  );
+
+  console.log(rootQuery.getSql());
+  console.log(multipleFilter);
+
+  rootQuery
+    .andWhere(multipleFilter)
+    .orderBy(orderField, orderDirection)
+    .limit(options.queryFilter.limit)
+    .offset(options.queryFilter.offset);
+
+  return await rootQuery.getManyAndCount();
 };

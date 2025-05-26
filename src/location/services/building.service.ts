@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { Building } from '@src/location/entities/building.entity';
+import { getEntityFilteredList } from '@src/paginator/paginator.service';
+import { EntityFilteredListResults } from '@src/paginator/paginator.type';
 import { UserNotOwnedCompanyException } from '@src/users/helpers/exceptions/user.exception';
 import { UserService } from '@src/users/services/user.service';
 import { RoleType } from '@src/users/types/role.types';
 import { Repository } from 'typeorm';
+import { BuildingQueryFilterDto } from '../dto/building/building-query-filter.dto';
 import { CreateBuildingDto } from '../dto/building/create-building.dto';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { TypologyCode } from '../types/typology-code.types';
@@ -49,5 +52,16 @@ export class BuildingService {
     }
 
     return await this.buildingRepository.save(creatingBuilding);
+  }
+
+  async findAll(queryFilter: BuildingQueryFilterDto): EntityFilteredListResults<Building> {
+    const [buildings, totalResults] = await getEntityFilteredList({
+      repository: this.buildingRepository,
+      queryFilter,
+      withDeleted: true,
+      relations: [{ relation: 'site', alias: 's', joins: [{ relation: 'company', alias: 'c' }] }],
+      filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
+    });
+    return [buildings, buildings.length, totalResults];
   }
 }
