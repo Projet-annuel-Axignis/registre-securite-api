@@ -38,7 +38,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({ description: 'Id of the company. Need for creation by administrator only' })
   @IsInt()
   @IsOptional()
-  customerId?: number;
+  companyId?: number;
 }
 
 export class FormattedCreatedUserDto extends OmitType(CreateUserDto, ['role', 'password', 'confirmPassword']) {

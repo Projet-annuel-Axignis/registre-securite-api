@@ -53,9 +53,9 @@ export class UserService {
     });
 
     // Get company
-    if (createUserDto.customerId) {
-      const company = await this.customerRepository.findOneBy({ id: createUserDto.customerId });
-      if (!company) throw new CompanyNotFoundException({ id: createUserDto.customerId });
+    if (createUserDto.companyId) {
+      const company = await this.customerRepository.findOneBy({ id: createUserDto.companyId });
+      if (!company) throw new CompanyNotFoundException({ id: createUserDto.companyId });
       creatingUser.company = company;
     }
 
@@ -143,7 +143,7 @@ export class UserService {
    * @throws {Error} If the user does not exist.
    */
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    const { email, password, role, customerId } = updateUserDto;
+    const { email, password, role, companyId } = updateUserDto;
     if (email) {
       const existingUser = await this.userRepository.findOneBy({ email });
       if (existingUser && existingUser.id !== id) {
@@ -155,8 +155,8 @@ export class UserService {
     const dbRole = role ? ((await this.roleRepository.findOneBy({ type: role })) ?? undefined) : undefined;
 
     // Get company
-    const company = customerId
-      ? ((await this.customerRepository.findOneBy({ id: updateUserDto.customerId })) ?? undefined)
+    const company = companyId
+      ? ((await this.customerRepository.findOneBy({ id: updateUserDto.companyId })) ?? undefined)
       : undefined;
 
     await this.userRepository.update(id, { ...updateUserDto, password: hashedPassword, role: dbRole, company });

@@ -31,6 +31,7 @@ export class BuildingController {
     return await this.buildingService.create(createBuildingDto, user);
   }
 
+  // TODO : check user permissions
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   async findAll(@Query() query: BuildingQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Building>> {

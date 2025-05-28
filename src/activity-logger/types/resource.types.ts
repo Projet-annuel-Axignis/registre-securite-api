@@ -3,4 +3,5 @@ export enum Resources {
   COMPANY = 'company',
   SITE = 'site',
   BUILDING = 'building',
+  AUTH = 'auth',
 }

@@ -19,6 +19,10 @@ export class Plan extends SoftDeleteEntity {
   @Column({ type: 'timestamptz' })
   expiredAt: Date;
 
+  @ApiProperty({ nullable: true, example: 'Foo' })
+  @Column({ type: 'text', nullable: true })
+  comment?: string | null;
+
   @OneToOne(() => Company, (company) => company.plan)
   company: Relation<Company>;
 }

@@ -49,7 +49,7 @@ export class UserController {
   @ActivityLogger({ description: 'Créer un nouvel utilisateur' })
   async create(@Body() createUserDto: CreateUserDto, @GetUser() user: LoggedUser): Promise<FormattedCreatedUserDto> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
-      createUserDto.customerId = user.company.id;
+      createUserDto.companyId = user.company.id;
     }
 
     return await this.userService.create(createUserDto);
@@ -122,7 +122,7 @@ export class UserController {
     }
 
     if (user.role.type !== RoleType.ADMINISTRATOR) {
-      updateUserDto.customerId = user.company.id;
+      updateUserDto.companyId = user.company.id;
     }
 
     return await this.userService.update(id, updateUserDto);
