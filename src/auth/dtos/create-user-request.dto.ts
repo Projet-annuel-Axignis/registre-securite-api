@@ -6,12 +6,11 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
+  Length,
   Matches,
-  Max,
-  Min,
   MinLength,
 } from 'class-validator';
 
@@ -57,10 +56,9 @@ export class CreateUserRequestDto {
   companyName: string;
 
   @ApiProperty({ description: 'SIRET number of the company', example: 12345678901234 })
-  @IsNumber()
-  @Min(14)
-  @Max(14)
-  siretNumber: number;
+  @IsNumberString()
+  @Length(14, 14)
+  siretNumber: string;
 
   @ApiProperty({ description: 'Type of plan selected', enum: PlanType, example: PlanType.SELF_MANAGE })
   @IsEnum(PlanType)
