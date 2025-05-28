@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards, Version } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DisableActivityLogger } from '@src/activity-logger/helpers/disable-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
@@ -6,6 +6,7 @@ import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorator
 import { FormattedCreatedUserDto } from '@src/users/dto/user/create-user.dto';
 import { Request as ExpressRequest } from 'express';
 import { CreateUserRequestDto } from '../dtos/create-user-request.dto';
+import { LoginDto } from '../dtos/login.dto';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { SwaggerAuthCreateUserRequest, SwaggerAuthSignIn } from '../helpers/auth-set-decorators.helper';
 import { UserRequestNotFoundException } from '../helpers/auth.exception';
@@ -24,12 +25,12 @@ export class AuthController {
    * @param password User's password
    * @returns User information with access token
    */
-  @Post('sign-in')
-  @Version('1')
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
   @SwaggerAuthSignIn()
   @DisableActivityLogger()
-  async signIn(@Body('email') email: string, @Body('password') password: string): Promise<LoggedUserWithToken> {
-    return await this.authService.singIn(email, password);
+  async signIn(@Body() singInDto: LoginDto): Promise<LoggedUserWithToken> {
+    return await this.authService.singIn(singInDto.email, singInDto.password);
   }
 
   @Get('profile')
@@ -46,7 +47,6 @@ export class AuthController {
    * @returns The created user without sensitive information
    */
   @Post('register')
-  @Version('1')
   @SwaggerAuthCreateUserRequest()
   async createUserRequest(@Body() createUserRequestDto: CreateUserRequestDto): Promise<FormattedCreatedUserDto> {
     return await this.authService.createUserRequest(createUserRequestDto);
