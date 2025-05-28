@@ -1,7 +1,44 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Match } from '@src/common/decorators/match-fields.decorator';
 import { PlanType } from '@src/users/types/plan.type';
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+  Max,
+  Min,
+  MinLength,
+} from 'class-validator';
+
+const transformPhoneNumber = ({ value }: { value: string }) => {
+  if (!value) return value;
+
+  // Remove all non-digit characters
+  const digits = value.replace(/\D/g, '');
+
+  // If it's a French number starting with 0
+  if (digits.startsWith('0')) {
+    return `+33${digits.slice(1)}`;
+  }
+
+  // If it's already in international format
+  if (digits.startsWith('33')) {
+    return `+${digits}`;
+  }
+
+  // If it's an international number
+  if (value.startsWith('+')) {
+    return value;
+  }
+
+  // Default case: assume it's a French number
+  return `+33${digits}`;
+};
 
 export class CreateUserRequestDto {
   @ApiProperty({ description: 'First name of the user', example: 'John' })
@@ -21,7 +58,8 @@ export class CreateUserRequestDto {
 
   @ApiProperty({ description: 'SIRET number of the company', example: 12345678901234 })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(14)
+  @Max(14)
   siretNumber: number;
 
   @ApiProperty({ description: 'Type of plan selected', enum: PlanType, example: PlanType.SELF_MANAGE })
@@ -41,8 +79,9 @@ export class CreateUserRequestDto {
 
   @ApiProperty({ description: 'Phone number of the user', example: '+33123456789' })
   @IsString()
-  @Matches(/^(\+33|0)[1-9](\d{2}){4}$/, {
-    message: 'Phone number must be a valid French phone number',
+  @Transform(transformPhoneNumber)
+  @Matches(/^\+[1-9]\d{1,14}$/, {
+    message: 'Phone number must be in international format (e.g., +33123456789)',
   })
   @IsNotEmpty()
   phoneNumber: string;
