@@ -11,6 +11,7 @@ import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
 import { CompanyNotFoundException } from '../helpers/exceptions/company.exception';
 import { RoleNotFoundException, UserEmailAlreadyExistsException } from '../helpers/exceptions/user.exception';
+import { RoleType } from '../types/role.types';
 
 @Injectable()
 export class UserService {
@@ -182,5 +183,9 @@ export class UserService {
    */
   async restoreUser(id: number): Promise<void> {
     await this.userRepository.restore(id);
+  }
+
+  async getVisitors(): Promise<User[]> {
+    return await this.userRepository.find({ relations: { role: true }, where: { role: { type: RoleType.VISITOR } } });
   }
 }

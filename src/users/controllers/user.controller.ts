@@ -17,6 +17,7 @@ import { UserErrorCode, UserHttpException, UserNotFoundException } from '../help
 import {
   SwaggerUserCreate,
   SwaggerUserFindAll,
+  SwaggerUserFindAllVisitors,
   SwaggerUserFindOne,
   SwaggerUserPatch,
   SwaggerUserUpdateState,
@@ -66,6 +67,13 @@ export class UserController {
   async findAll(@Query() query: UserQueryFilterDto): Promise<PaginatedList<User>> {
     const [users, currentResults, totalResults] = await this.userService.findAll(query);
     return { ...query, totalResults, currentResults, results: users };
+  }
+
+  @Get('visitors')
+  @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerUserFindAllVisitors()
+  async findAllVisitors(): Promise<User[]> {
+    return await this.userService.getVisitors();
   }
 
   /**
