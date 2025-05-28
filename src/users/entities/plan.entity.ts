@@ -15,6 +15,10 @@ export class Plan extends SoftDeleteEntity {
   @Column({ type: 'enum', enum: PlanType, default: PlanType.SELF_MANAGE })
   type: PlanType;
 
+  @ApiProperty({ description: 'Siret of the company', example: '12345678901234' })
+  @Column()
+  siretNumber: string;
+
   @ApiProperty({ example: '2025-04-17T10:00:00.303Z' })
   @Column({ type: 'timestamptz' })
   expiredAt: Date;
