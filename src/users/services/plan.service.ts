@@ -17,11 +17,10 @@ export class PlanService {
    * @param expiredAt The expiration date of the plan
    * @returns The created plan
    */
-  async create(type: PlanType, siretNumber: string, expiredAt: Date): Promise<Plan> {
+  async create(type: PlanType, expiredAt: Date): Promise<Plan> {
     const plan = this.planRepository.create({
       type,
       expiredAt,
-      siretNumber,
     });
     return await this.planRepository.save(plan);
   }

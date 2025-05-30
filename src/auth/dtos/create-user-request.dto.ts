@@ -14,7 +14,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-const transformPhoneNumber = ({ value }: { value: string }) => {
+export const transformPhoneNumber = ({ value }: { value: string }) => {
   if (!value) return value;
 
   // Remove all non-digit characters

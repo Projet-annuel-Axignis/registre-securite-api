@@ -39,21 +39,18 @@ export class AuthService {
    * @returns The created user without sensitive information
    */
   async createUserRequest(createUserRequestDto: CreateUserRequestDto): Promise<FormattedCreatedUserDto> {
-    // Create company
-    const company = await this.companyService.create({
-      name: createUserRequestDto.companyName,
-    });
-
     // Create plan
     const plan = await this.planService.create(
       createUserRequestDto.planType,
-      createUserRequestDto.siretNumber,
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     );
 
-    // Associate plan with company
-    company.plan = plan;
-    await this.companyService.update(company.id, { name: company.name });
+    // Create company
+    const company = await this.companyService.create({
+      name: createUserRequestDto.companyName,
+      siretNumber: createUserRequestDto.siretNumber,
+      planId: plan.id,
+    });
 
     // Create user
     const createUserDto: CreateUserDto = {
@@ -61,6 +58,7 @@ export class AuthService {
       lastName: createUserRequestDto.lastName,
       email: createUserRequestDto.email,
       password: createUserRequestDto.password,
+      phoneNumber: createUserRequestDto.phoneNumber,
       confirmPassword: createUserRequestDto.confirmPassword,
       role: RoleType.VISITOR,
       companyId: company.id,

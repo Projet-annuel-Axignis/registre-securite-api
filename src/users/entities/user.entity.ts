@@ -25,6 +25,10 @@ export class User extends SoftDeleteEntity {
   @Column({ select: false })
   password: string;
 
+  @ApiProperty({ description: 'Phone number of the user' })
+  @Column({ type: 'character varying', nullable: true })
+  phoneNumber?: string | null;
+
   @ApiProperty({ type: () => Role })
   @ManyToOne(() => Role, (role) => role.users)
   role: Relation<Role>;

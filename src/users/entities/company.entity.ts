@@ -11,12 +11,19 @@ export class Company extends SoftDeleteEntity {
   @Column()
   name: string;
 
+  @ApiProperty({ description: 'Siret of the company', example: '12345678901234' })
+  @Column({ unique: true })
+  siretNumber: string;
+
   @OneToMany(() => User, (user) => user.company)
   users: Relation<User>[];
 
   @OneToOne(() => Plan, (plan) => plan.company)
   @JoinColumn()
   plan: Relation<Plan>;
+
+  @Column()
+  planId: number;
 
   @OneToMany(() => Site, (site) => site.company)
   sites: Relation<Site>[];

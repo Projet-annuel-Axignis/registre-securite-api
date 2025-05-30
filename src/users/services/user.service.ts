@@ -48,6 +48,7 @@ export class UserService {
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       email: createUserDto.email,
+      phoneNumber: createUserDto.phoneNumber,
       password: hashedPassword,
       role: role,
     });
