@@ -53,7 +53,7 @@ export class BuildingController {
         query.filter = user.company.id.toString();
       }
     }
-    const [buildingFloors, currentResults, totalResults] = await this.buildingService.findAll(query);
+    const [buildingFloors, currentResults, totalResults] = await this.buildingService.findAllFloor(query);
     return { ...query, totalResults, currentResults, results: buildingFloors };
   }
 
