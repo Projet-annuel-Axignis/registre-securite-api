@@ -46,8 +46,8 @@ export class Building extends SoftDeleteEntity {
   })
   ighClasses: Relation<IghClass>[];
 
-  @ManyToOne(() => ErpCategory, (erpCategory) => erpCategory.buildings)
-  erpCategory: Relation<ErpCategory>;
+  @ManyToOne(() => ErpCategory, (erpCategory) => erpCategory.buildings, { nullable: true })
+  erpCategory?: Relation<ErpCategory> | null;
 
   @OneToMany(() => Part, (part) => part.building)
   parts: Relation<Part>[];

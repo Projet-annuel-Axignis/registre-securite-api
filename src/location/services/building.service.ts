@@ -10,6 +10,8 @@ import { RoleType } from '@src/users/types/role.types';
 import { Repository } from 'typeorm';
 import { BuildingQueryFilterDto } from '../dto/building/building-query-filter.dto';
 import { CreateBuildingDto } from '../dto/building/create-building.dto';
+import { UpdateBuildingDto } from '../dto/building/update-building.dto';
+import { BuildingNotFoundException } from '../helpers/exceptions/building.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { TypologyCode } from '../types/typology-code.types';
 import { BuildingEnumService } from './building-enum.service';
@@ -63,5 +65,80 @@ export class BuildingService {
       filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
     });
     return [buildings, buildings.length, totalResults];
+  }
+
+  async update(id: number, dto: UpdateBuildingDto, user: LoggedUser): Promise<Building> {
+    const building = await this.buildingRepository.findOne({
+      where: { id },
+      relations: { site: { company: true } },
+    });
+
+    if (!building) {
+      throw new BuildingNotFoundException({ id });
+    }
+
+    if (user.role.type !== RoleType.ADMINISTRATOR && building.site.company.id !== user.company.id) {
+      throw new SiteNotOwnedException({ id: building.site.id });
+    }
+
+    const { name, typologyCodes, ighClassCodes, erpCategory: erpCategoryCategory, authorizedUserIds } = dto;
+
+    if (name) {
+      building.name = name;
+    }
+
+    if (typologyCodes) {
+      const typologies = await this.buildingEnumService.findManyTypologies(typologyCodes);
+      building.typologies = typologies;
+
+      if (typologyCodes.includes(TypologyCode.IGH)) {
+        if (ighClassCodes) {
+          const ighClasses = await this.buildingEnumService.findManyIghClasses(ighClassCodes);
+          building.ighClasses = ighClasses;
+        }
+      } else {
+        building.ighClasses = [];
+      }
+
+      if (typologyCodes.includes(TypologyCode.ERP)) {
+        if (erpCategoryCategory) {
+          const erpCategory = await this.buildingEnumService.findErpCategory(erpCategoryCategory);
+          building.erpCategory = erpCategory;
+        }
+      } else {
+        building.erpCategory = null;
+      }
+    }
+
+    if (authorizedUserIds) {
+      const users = await this.userService.findManyById(authorizedUserIds);
+      const wrongUser = users.find((user) => user.company.id !== building.site.company.id);
+      if (wrongUser) throw new UserNotOwnedCompanyException({ userId: wrongUser.id });
+      building.users = users;
+    }
+
+    return await this.buildingRepository.save(building);
+  }
+
+  async softDelete(id: number, user: LoggedUser): Promise<void> {
+    const building = await this.buildingRepository.findOne({
+      where: { id },
+      relations: { site: { company: true }, users: true },
+    });
+
+    if (!building) {
+      throw new BuildingNotFoundException({ id });
+    }
+
+    if (user.role.type !== RoleType.ADMINISTRATOR && building.site.company.id !== user.company.id) {
+      throw new SiteNotOwnedException({ id: building.site.id });
+    }
+
+    // Check if user is authorized to delete the building
+    if (building.users.length > 0 && !building.users.some((authorizedUser) => authorizedUser.id === user.id)) {
+      throw new UserNotOwnedCompanyException({ userId: user.id });
+    }
+
+    await this.buildingRepository.softDelete(id);
   }
 }

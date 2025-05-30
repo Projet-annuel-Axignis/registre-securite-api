@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
@@ -12,6 +12,7 @@ import { FilterOp, PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
 import { BuildingQueryFilterDto } from '../dto/building/building-query-filter.dto';
 import { CreateBuildingDto } from '../dto/building/create-building.dto';
+import { UpdateBuildingDto } from '../dto/building/update-building.dto';
 import { Building } from '../entities/building.entity';
 import { BuildingService } from '../services/building.service';
 
@@ -31,7 +32,7 @@ export class BuildingController {
     return await this.buildingService.create(createBuildingDto, user);
   }
 
-  // TODO : check user permissions
+  // TODO : check user permissions (user location-building many to many)
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   async findAll(@Query() query: BuildingQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Building>> {
@@ -48,5 +49,23 @@ export class BuildingController {
     }
     const [buildings, currentResults, totalResults] = await this.buildingService.findAll(query);
     return { ...query, totalResults, currentResults, results: buildings };
+  }
+
+  @Patch(':id')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @ActivityLogger({ description: 'Modifier un bâtiment' })
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBuildingDto: UpdateBuildingDto,
+    @GetUser() user: LoggedUser,
+  ): Promise<Building> {
+    return await this.buildingService.update(id, updateBuildingDto, user);
+  }
+
+  @Delete(':id')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @ActivityLogger({ description: 'Supprimer un bâtiment' })
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
+    await this.buildingService.softDelete(id, user);
   }
 }
