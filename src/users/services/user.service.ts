@@ -187,6 +187,9 @@ export class UserService {
   }
 
   async getVisitors(): Promise<User[]> {
-    return await this.userRepository.find({ relations: { role: true }, where: { role: { type: RoleType.VISITOR } } });
+    return await this.userRepository.find({
+      relations: { role: true, company: { plan: true } },
+      where: { role: { type: RoleType.VISITOR } },
+    });
   }
 }
