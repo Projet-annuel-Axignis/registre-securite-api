@@ -1,27 +1,23 @@
-import { HttpExceptionOptions, HttpStatus } from '@nestjs/common';
-import { CommonErrorCode, CustomHttpException, ErrorDetails } from '@src/common/helpers/error-codes/custom.exception';
+import { HttpStatus } from '@nestjs/common';
+import { CustomHttpException } from '@src/common/helpers/error-codes/custom.exception';
 
 export enum BuildingFloorErrorCode {
   BUILDING_FLOOR_NOT_FOUND = 'BUILDING_FLOOR_NOT_FOUND',
   BUILDING_FLOOR_NOT_OWNED = 'BUILDING_FLOOR_NOT_OWNED',
 }
 
-type ErrorCode = CommonErrorCode | BuildingFloorErrorCode;
-
 export class BuildingFloorHttpException extends CustomHttpException {
-  declare readonly code: BuildingFloorErrorCode;
-
-  constructor(code: ErrorCode, status: HttpStatus, details?: ErrorDetails, options?: HttpExceptionOptions) {
-    super(code, status, details, options);
+  constructor(errorCode: BuildingFloorErrorCode, status: HttpStatus, details?: Record<string, string | number>) {
+    super(errorCode, status, details);
   }
 
-  getMessage() {
+  getMessage(): string | null {
     const messages: Record<BuildingFloorErrorCode, string> = {
-      [BuildingFloorErrorCode.BUILDING_FLOOR_NOT_FOUND]: 'Building Floor not found in database',
-      [BuildingFloorErrorCode.BUILDING_FLOOR_NOT_OWNED]: "You don't have rights to access on this building floor",
+      [BuildingFloorErrorCode.BUILDING_FLOOR_NOT_FOUND]: 'Building floor not found',
+      [BuildingFloorErrorCode.BUILDING_FLOOR_NOT_OWNED]: "Building floor is not owned by the user's company",
     };
 
-    return messages[this.code] || null;
+    return messages[this.code as BuildingFloorErrorCode] || null;
   }
 }
 

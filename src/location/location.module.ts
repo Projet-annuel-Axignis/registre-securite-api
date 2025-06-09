@@ -21,6 +21,7 @@ import { BuildingService } from './services/building.service';
 import { ErpTypeService } from './services/erp-type.service';
 import { HabFamilyService } from './services/hab-family.service';
 import { LotService } from './services/lot.service';
+import { PartFloorService } from './services/part-floor.service';
 import { PartService } from './services/part.service';
 import { SiteService } from './services/site.service';
 
@@ -48,6 +49,7 @@ import { SiteService } from './services/site.service';
     BuildingEnumService,
     LotService,
     PartService,
+    PartFloorService,
     HabFamilyService,
     ErpTypeService,
   ],

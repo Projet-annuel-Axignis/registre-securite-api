@@ -1,41 +1,41 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ErpTypeCode } from '@src/location/types/erp-type.types';
-import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
-import { HabFamilyName } from '../../types/hab-family-name.types';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString } from 'class-validator';
 import { PartType } from '../../types/part-type.types';
 
 export class CreatePartDto {
-  @ApiProperty({ description: 'Name of the part', example: 'Apple Store' })
+  @ApiProperty({ description: 'Name of the part' })
+  @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional({ description: 'Defined if building part is ICPE', default: false })
+  @ApiProperty({ description: 'Building ID' })
+  @IsInt()
+  @IsPositive()
+  buildingId: number;
+
+  @ApiProperty({ description: 'Type of the part', enum: PartType })
+  @IsString()
+  @IsNotEmpty()
+  type: PartType;
+
+  @ApiProperty({ description: 'Whether the part is ICPE' })
   @IsBoolean()
   @IsOptional()
   isIcpe?: boolean;
 
-  @ApiProperty({ enum: PartType, example: PartType.PRIVATE })
-  @IsEnum(PartType)
-  @IsNotEmpty()
-  type: PartType;
-
-  @ApiProperty({ description: 'Building ID', example: 1 })
-  @IsNumber()
-  @IsNotEmpty()
-  buildingId: number;
-
-  @ApiProperty({ description: 'Part Floor ID' })
-  @IsNumber()
-  @IsNotEmpty()
-  partFloorId: number;
-
-  @ApiPropertyOptional({ enum: HabFamilyName })
-  @IsEnum(HabFamilyName)
+  @ApiProperty({ description: 'HAB family name', required: false })
+  @IsString()
   @IsOptional()
-  habFamilyName?: HabFamilyName;
+  habFamilyName?: string;
 
-  @ApiProperty({ description: 'ERP Type codes', enum: ErpTypeCode, example: ErpTypeCode.CTS })
-  @IsEnum(ErpTypeCode, { each: true })
+  @ApiProperty({ description: 'ERP type codes', required: false, type: [String] })
+  @IsString({ each: true })
   @IsOptional()
-  erpTypeCodes?: ErpTypeCode[];
+  erpTypeCodes?: string[];
+
+  @ApiProperty({ description: 'Part floor ID', required: false })
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  partFloorId?: number;
 }

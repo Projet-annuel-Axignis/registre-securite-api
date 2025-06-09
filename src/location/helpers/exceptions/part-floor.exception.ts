@@ -1,27 +1,23 @@
-import { HttpExceptionOptions, HttpStatus } from '@nestjs/common';
-import { CommonErrorCode, CustomHttpException, ErrorDetails } from '@src/common/helpers/error-codes/custom.exception';
+import { HttpStatus } from '@nestjs/common';
+import { CustomHttpException } from '@src/common/helpers/error-codes/custom.exception';
 
 export enum PartFloorErrorCode {
   PART_FLOOR_NOT_FOUND = 'PART_FLOOR_NOT_FOUND',
   PART_FLOOR_NOT_OWNED = 'PART_FLOOR_NOT_OWNED',
 }
 
-type ErrorCode = CommonErrorCode | PartFloorErrorCode;
-
 export class PartFloorHttpException extends CustomHttpException {
-  declare readonly code: PartFloorErrorCode;
-
-  constructor(code: ErrorCode, status: HttpStatus, details?: ErrorDetails, options?: HttpExceptionOptions) {
-    super(code, status, details, options);
+  constructor(errorCode: PartFloorErrorCode, status: HttpStatus, details?: Record<string, string | number>) {
+    super(errorCode, status, details);
   }
 
-  getMessage() {
+  getMessage(): string | null {
     const messages: Record<PartFloorErrorCode, string> = {
-      [PartFloorErrorCode.PART_FLOOR_NOT_FOUND]: 'PartFloor not found in database',
-      [PartFloorErrorCode.PART_FLOOR_NOT_OWNED]: "You don't have rights to access on this part floor",
+      [PartFloorErrorCode.PART_FLOOR_NOT_FOUND]: 'Part floor not found',
+      [PartFloorErrorCode.PART_FLOOR_NOT_OWNED]: "Part floor is not owned by the user's company",
     };
 
-    return messages[this.code] || null;
+    return messages[this.code as PartFloorErrorCode] || null;
   }
 }
 
