@@ -5,6 +5,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation }
 import { BuildingFloor } from './building-floor.entity';
 import { ErpCategory } from './erp-category.entity';
 import { IghClass } from './igh-class.entity';
+import { Lot } from './lot.entity';
 import { Part } from './part.entity';
 import { Site } from './site.entity';
 import { Typology } from './typology.entity';
@@ -57,4 +58,7 @@ export class Building extends SoftDeleteEntity {
 
   @ManyToMany(() => User, (user) => user.buildings)
   users: Relation<User>[];
+
+  @OneToMany(() => Lot, (lot) => lot.building)
+  lots: Relation<Lot>[];
 }
