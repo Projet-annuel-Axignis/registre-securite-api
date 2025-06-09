@@ -12,7 +12,7 @@
     "titleBar.activeBackground": "#054B1F",
     "titleBar.activeForeground": "#F0FEF5"
   },
-  "cSpell.words": ["Axignis"],
+  "cSpell.words": ["Axignis", "Icpe"],
   "cSpell.ignorePaths": [
     "package-lock.json",
     "node_modules",

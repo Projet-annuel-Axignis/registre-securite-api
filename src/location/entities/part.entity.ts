@@ -52,6 +52,9 @@ export class Part extends SoftDeleteEntity {
   @ManyToOne(() => PartFloor, (partFloor) => partFloor.parts)
   partFloor: Relation<PartFloor>;
 
+  @Column()
+  partFloorId: number;
+
   @ManyToMany(() => User, (user) => user.parts)
   users: Relation<User>[];
 }

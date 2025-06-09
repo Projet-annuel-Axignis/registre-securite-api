@@ -4,5 +4,6 @@ export enum Resources {
   SITE = 'site',
   BUILDING = 'building',
   LOT = 'lot',
+  PART = 'part',
   AUTH = 'auth',
 }
