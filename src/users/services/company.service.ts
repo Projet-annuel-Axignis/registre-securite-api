@@ -58,6 +58,10 @@ export class CompanyService {
     return company;
   }
 
+  async findOneBySiret(siretNumber: string): Promise<Company | null> {
+    return await this.companyRepository.findOneBy({ siretNumber });
+  }
+
   /**
    * Updates an existing company with new data.
    *

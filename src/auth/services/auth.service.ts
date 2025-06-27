@@ -6,7 +6,7 @@ import { PlanService } from '@src/users/services/plan.service';
 import { UserService } from '@src/users/services/user.service';
 import { RoleType } from '@src/users/types/role.types';
 import { CreateUserRequestDto } from '../dtos/create-user-request.dto';
-import { InvalidCredentialsException } from '../helpers/auth.exception';
+import { AuthSiretAlreadyExistsException, InvalidCredentialsException } from '../helpers/auth.exception';
 import { Password } from '../helpers/password.utils';
 import { LoggedUserWithToken } from '../types/logged-user.type';
 
@@ -44,6 +44,10 @@ export class AuthService {
       createUserRequestDto.planType,
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     );
+
+    const { siretNumber } = createUserRequestDto;
+    const existingCompany = await this.companyService.findOneBySiret(siretNumber);
+    if (existingCompany) throw new AuthSiretAlreadyExistsException({ siretNumber });
 
     // Create company
     const company = await this.companyService.create({
