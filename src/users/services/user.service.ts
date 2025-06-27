@@ -90,6 +90,7 @@ export class UserService {
       queryFilter: query,
       withDeleted: true,
       relations: [{ relation: 'role', alias: 'r' }],
+      searchFields: ['firstName', 'lastName', 'email'],
     });
     return [users, users.length, totalResults];
   }
