@@ -9,7 +9,12 @@ const description = 'Registre de sécurité API';
  * @param app {INestApplication}
  */
 export const SwaggerConfig = (app: INestApplication, apiVersion: string) => {
-  const options = new DocumentBuilder().setTitle(title).setDescription(description).setVersion(apiVersion).build();
+  const options = new DocumentBuilder()
+    .setTitle(title)
+    .setDescription(description)
+    .setVersion(apiVersion)
+    .addBearerAuth({ type: 'http', name: 'access_token', description: 'Set access token provided auth login route' })
+    .build();
 
   const document = SwaggerModule.createDocument(app, options);
 

@@ -1,0 +1,38 @@
+meta {
+  name: Create Company without Plan
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/companies
+  body: json {
+    {
+      "name": "Test Company without Plan",
+      "siretNumber": "98765432109876"
+    }
+  }
+  auth: {
+    type: bearer
+    token: {{authToken}}
+  }
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  name: Create Company without Plan
+  description: Creates a new company without creating a plan
+  body: {
+    name: Required - The name of the company
+    siretNumber: Required - The SIRET number (14 digits)
+  }
+  auth: {
+    description: Bearer token required. User must be ADMINISTRATOR.
+  }
+  notes: |
+    - No plan will be created when planType and expiredAt are not provided
+    - The company will be created successfully without any associated plans
+} 

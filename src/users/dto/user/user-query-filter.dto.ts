@@ -4,7 +4,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 
 enum UserEntityFields {
   ID = 'id',
-  NAME = 'name',
+  LAST_NAME = 'lastName',
   ROLE = 'role',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
@@ -13,7 +13,7 @@ enum UserEntityFields {
 
 export class UserQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
-    example: UserEntityFields.NAME,
+    example: UserEntityFields.LAST_NAME,
     description: 'Name of the column to sort',
     default: UserEntityFields.CREATED_AT,
     enum: UserEntityFields,

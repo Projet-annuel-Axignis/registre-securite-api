@@ -39,12 +39,6 @@ export class AuthService {
    * @returns The created user without sensitive information
    */
   async createUserRequest(createUserRequestDto: CreateUserRequestDto): Promise<FormattedCreatedUserDto> {
-    // Create plan
-    const plan = await this.planService.create(
-      createUserRequestDto.planType,
-      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    );
-
     const { siretNumber } = createUserRequestDto;
     const existingCompany = await this.companyService.findOneBySiret(siretNumber);
     if (existingCompany) throw new AuthSiretAlreadyExistsException({ siretNumber });
@@ -53,8 +47,14 @@ export class AuthService {
     const company = await this.companyService.create({
       name: createUserRequestDto.companyName,
       siretNumber: createUserRequestDto.siretNumber,
-      planId: plan.id,
     });
+
+    // Create plan
+    await this.planService.create(
+      createUserRequestDto.planType,
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      company,
+    );
 
     // Create user
     const createUserDto: CreateUserDto = {

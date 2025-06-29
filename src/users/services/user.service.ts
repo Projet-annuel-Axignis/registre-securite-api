@@ -89,7 +89,10 @@ export class UserService {
       repository: this.userRepository,
       queryFilter: query,
       withDeleted: true,
-      relations: [{ relation: 'role', alias: 'r' }],
+      relations: [
+        { relation: 'role', alias: 'r' },
+        { relation: 'company', alias: 'c', joins: [{ relation: 'plans', alias: 'p' }] },
+      ],
       searchFields: ['firstName', 'lastName', 'email'],
     });
     return [users, users.length, totalResults];
@@ -189,7 +192,7 @@ export class UserService {
 
   async getVisitors(): Promise<User[]> {
     return await this.userRepository.find({
-      relations: { role: true, company: { plan: true } },
+      relations: { role: true, company: { plans: true } },
       where: { role: { type: RoleType.VISITOR } },
     });
   }

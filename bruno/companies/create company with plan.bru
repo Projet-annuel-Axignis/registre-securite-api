@@ -1,29 +1,33 @@
 meta {
-  name: Create Company
+  name: Create Company with Plan
   type: http
-  seq: 3
+  seq: 1
 }
 
 post {
-  url: {{base_url}}/companies
-  body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{token}}
-}
-
-body:json {
-  {
-    "name": "Test Company",
-    "siretNumber": "12345678901234"
+  url: {{baseUrl}}/companies
+  body: json {
+    {
+      "name": "Test Company with Plan",
+      "siretNumber": "12345678901234",
+      "planType": "SELF_MANAGE",
+      "expiredAt": "2025-12-31T23:59:59.000Z",
+      "planComment": "Initial plan for the new company"
+    }
+  }
+  auth: {
+    type: bearer
+    token: {{authToken}}
   }
 }
 
+headers {
+  Content-Type: application/json
+}
+
 docs {
-  name: Create Company
-  description: Creates a new company with optional plan creation
+  name: Create Company with Plan
+  description: Creates a new company with an optional plan
   body: {
     name: Required - The name of the company
     siretNumber: Required - The SIRET number (14 digits)
@@ -38,4 +42,4 @@ docs {
     - If planType and expiredAt are provided, a plan will be created and associated with the company
     - If planType or expiredAt is missing, no plan will be created
     - planComment is optional even when creating a plan
-}
+} 

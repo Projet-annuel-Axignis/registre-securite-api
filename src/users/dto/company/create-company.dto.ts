@@ -1,5 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsNumberString, IsString, Length } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateIf,
+} from 'class-validator';
+import { PlanType } from '../../types/plan.type';
 
 export class CreateCompanyDto {
   @ApiProperty({ description: 'Name of the company', example: 'Axignis' })
@@ -12,8 +22,30 @@ export class CreateCompanyDto {
   @Length(14, 14)
   siretNumber: string;
 
-  @ApiProperty({ description: 'Id of the plan', example: 1 })
-  @IsInt()
-  @IsNotEmpty()
-  planId: number;
+  @ApiPropertyOptional({
+    enum: PlanType,
+    example: PlanType.SELF_MANAGE,
+    description: 'Type of the plan (required if creating a plan)',
+  })
+  @ValidateIf((o: CreateCompanyDto) => o.expiredAt !== undefined)
+  @IsEnum(PlanType)
+  @IsOptional()
+  planType?: PlanType;
+
+  @ApiPropertyOptional({
+    example: '2025-12-31T23:59:59.000Z',
+    description: 'Expiration date of the plan (required if creating a plan)',
+  })
+  @ValidateIf((o: CreateCompanyDto) => o.planType !== undefined)
+  @IsDateString()
+  @IsOptional()
+  expiredAt?: string;
+
+  @ApiPropertyOptional({
+    example: 'Initial plan for the company',
+    description: 'Comment for the plan (optional)',
+  })
+  @IsString()
+  @IsOptional()
+  planComment?: string;
 }
