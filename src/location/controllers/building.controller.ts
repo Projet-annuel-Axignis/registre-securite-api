@@ -18,6 +18,7 @@ import { CreateBuildingDto } from '../dto/building/create-building.dto';
 import { UpdateBuildingDto } from '../dto/building/update-building.dto';
 import { BuildingFloor } from '../entities/building-floor.entity';
 import { Building } from '../entities/building.entity';
+import { SwaggerBuildingFindAll, SwaggerBuildingFindOne } from '../helpers/building-set-decorators.helper';
 import { BuildingService } from '../services/building.service';
 
 @ApiTags(Resources.BUILDING)
@@ -91,6 +92,7 @@ export class BuildingController {
   // TODO : check user permissions (user location-building many to many)
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerBuildingFindAll()
   async findAll(@Query() query: BuildingQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Building>> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
       if (query.filterField) {
@@ -109,6 +111,7 @@ export class BuildingController {
 
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerBuildingFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser) {
     return await this.buildingService.findOne(id, user);
   }

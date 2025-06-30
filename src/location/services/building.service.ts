@@ -71,7 +71,12 @@ export class BuildingService {
       repository: this.buildingRepository,
       queryFilter,
       withDeleted: true,
-      relations: [{ relation: 'site', alias: 's', joins: [{ relation: 'company', alias: 'c' }] }],
+      relations: [
+        { relation: 'site', alias: 's', joins: [{ relation: 'company', alias: 'c' }] },
+        { relation: 'typologies', alias: 't' },
+        { relation: 'ighClasses', alias: 'i' },
+        { relation: 'erpCategory', alias: 'e' },
+      ],
       filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
     });
     return [buildings, buildings.length, totalResults];
@@ -80,7 +85,7 @@ export class BuildingService {
   async findOne(id: number, user: LoggedUser): Promise<Building> {
     const building = await this.buildingRepository.findOne({
       where: { id },
-      relations: { site: { company: true }, users: true },
+      relations: { site: { company: true }, users: true, typologies: true, ighClasses: true, erpCategory: true },
     });
 
     if (!building) {
