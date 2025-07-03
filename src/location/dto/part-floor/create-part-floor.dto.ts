@@ -36,4 +36,9 @@ export class CreatePartFloorDto {
   @IsInt()
   @IsPositive()
   buildingFloorId: number;
+
+  @ApiProperty({ description: 'Part ID' })
+  @IsInt()
+  @IsPositive()
+  partId: number;
 }

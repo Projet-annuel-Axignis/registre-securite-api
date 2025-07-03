@@ -9,14 +9,12 @@ import { Repository } from 'typeorm';
 import { CreatePartDto } from '../dto/part/create-part.dto';
 import { PartQueryFilterDto } from '../dto/part/part-query-filter.dto';
 import { UpdatePartDto } from '../dto/part/update-part.dto';
-import { PartFloorNotOwnedException } from '../helpers/exceptions/part-floor.exception';
 import { PartNotFoundException, PartNotOwnedException } from '../helpers/exceptions/part.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { TypologyCode } from './../types/typology-code.types';
 import { BuildingService } from './building.service';
 import { ErpTypeService } from './erp-type.service';
 import { HabFamilyService } from './hab-family.service';
-import { PartFloorService } from './part-floor.service';
 
 @Injectable()
 export class PartService {
@@ -26,25 +24,18 @@ export class PartService {
     private readonly buildingService: BuildingService,
     private readonly erpTypeService: ErpTypeService,
     private readonly habFamilyService: HabFamilyService,
-    private readonly partFloorService: PartFloorService,
   ) {}
 
   async create(dto: CreatePartDto, user: LoggedUser): Promise<Part> {
-    const { name, buildingId, type, isIcpe, habFamilyName, erpTypeCodes, partFloorId } = dto;
+    const { name, buildingId, type, isIcpe, habFamilyName, erpTypeCodes } = dto;
 
     const building = await this.buildingService.findOne(buildingId, user);
-
-    const partFloor = await this.partFloorService.findOne(partFloorId, user);
-    if (partFloor && partFloor.buildingFloor.building.id !== buildingId) {
-      throw new PartFloorNotOwnedException({ id: partFloorId });
-    }
 
     const part = this.partRepository.create({
       name,
       type,
       isIcpe,
       building,
-      partFloor,
     });
 
     if (building.typologies.some((t) => t.code === TypologyCode.ERP)) {
@@ -74,7 +65,7 @@ export class PartService {
             { relation: 'users', alias: 'u' },
           ],
         },
-        { relation: 'partFloor', alias: 'pf' },
+        { relation: 'partFloors', alias: 'pf' },
         { relation: 'habFamily', alias: 'hf' },
         { relation: 'erpTypes', alias: 'et' },
       ],
@@ -88,7 +79,7 @@ export class PartService {
       where: { id },
       relations: {
         building: { site: { company: true }, users: true },
-        partFloor: true,
+        partFloors: true,
         habFamily: true,
         erpTypes: true,
       },
@@ -125,12 +116,12 @@ export class PartService {
       part.isIcpe = isIcpe;
     }
 
-    if (part.building.typologies.some((t) => t.code === TypologyCode.HAB) && habFamilyName) {
-      part.habFamily = await this.habFamilyService.findOneByName(habFamilyName);
+    if (part.building.typologies.some((t) => t.code === TypologyCode.ERP)) {
+      part.erpTypes = await this.erpTypeService.findAllByCode(erpTypeCodes ?? []);
     }
 
-    if (erpTypeCodes && part.building.typologies.some((t) => t.code === TypologyCode.ERP)) {
-      part.erpTypes = await this.erpTypeService.findAllByCode(erpTypeCodes);
+    if (part.building.typologies.some((t) => t.code === TypologyCode.HAB) && habFamilyName) {
+      part.habFamily = await this.habFamilyService.findOneByName(habFamilyName);
     }
 
     return await this.partRepository.save(part);

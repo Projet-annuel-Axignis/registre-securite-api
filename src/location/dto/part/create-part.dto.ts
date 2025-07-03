@@ -25,11 +25,6 @@ export class CreatePartDto {
   @IsNotEmpty()
   buildingId: number;
 
-  @ApiProperty({ description: 'Part Floor ID' })
-  @IsNumber()
-  @IsNotEmpty()
-  partFloorId: number;
-
   @ApiPropertyOptional({ enum: HabFamilyName })
   @IsEnum(HabFamilyName)
   @IsOptional()

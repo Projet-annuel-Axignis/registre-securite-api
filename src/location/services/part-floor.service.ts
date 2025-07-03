@@ -12,6 +12,7 @@ import { UpdatePartFloorDto } from '../dto/part-floor/update-part-floor.dto';
 import { PartFloorNotFoundException, PartFloorNotOwnedException } from '../helpers/exceptions/part-floor.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { BuildingService } from './building.service';
+import { PartService } from './part.service';
 
 @Injectable()
 export class PartFloorService {
@@ -19,13 +20,28 @@ export class PartFloorService {
     @InjectRepository(PartFloor)
     private readonly partFloorRepository: Repository<PartFloor>,
     private readonly buildingService: BuildingService,
+    private readonly partService: PartService,
   ) {}
 
   async create(dto: CreatePartFloorDto, user: LoggedUser): Promise<PartFloor> {
-    const { name, publicCount, staffCount, exploitationSurface, glaSurface, publicAccessSurface, buildingFloorId } =
-      dto;
+    const {
+      name,
+      publicCount,
+      staffCount,
+      exploitationSurface,
+      glaSurface,
+      publicAccessSurface,
+      buildingFloorId,
+      partId,
+    } = dto;
 
     const buildingFloor = await this.buildingService.findOneFloor(buildingFloorId, user);
+    const part = await this.partService.findOne(partId, user);
+
+    // Verify that the part belongs to the same building as the building floor
+    if (part.building.id !== buildingFloor.building.id) {
+      throw new PartFloorNotOwnedException({ id: partId });
+    }
 
     const partFloor = this.partFloorRepository.create({
       name,
@@ -35,6 +51,7 @@ export class PartFloorService {
       glaSurface,
       publicAccessSurface,
       buildingFloor,
+      part,
     });
 
     return await this.partFloorRepository.save(partFloor);
@@ -60,7 +77,7 @@ export class PartFloorService {
             },
           ],
         },
-        { relation: 'parts', alias: 'p' },
+        { relation: 'part', alias: 'p' },
         { relation: 'lots', alias: 'l' },
       ],
       filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
@@ -73,7 +90,7 @@ export class PartFloorService {
       where: { id },
       relations: {
         buildingFloor: { building: { site: { company: true }, users: true } },
-        parts: true,
+        part: true,
         lots: true,
       },
     });
@@ -100,8 +117,16 @@ export class PartFloorService {
   async update(id: number, dto: UpdatePartFloorDto, user: LoggedUser): Promise<PartFloor> {
     const partFloor = await this.findOne(id, user);
 
-    const { name, publicCount, staffCount, exploitationSurface, glaSurface, publicAccessSurface, buildingFloorId } =
-      dto;
+    const {
+      name,
+      publicCount,
+      staffCount,
+      exploitationSurface,
+      glaSurface,
+      publicAccessSurface,
+      buildingFloorId,
+      partId,
+    } = dto;
 
     if (name) {
       partFloor.name = name;
@@ -124,6 +149,14 @@ export class PartFloorService {
     if (buildingFloorId) {
       const buildingFloor = await this.buildingService.findOneFloor(buildingFloorId, user);
       partFloor.buildingFloor = buildingFloor;
+    }
+    if (partId) {
+      const part = await this.partService.findOne(partId, user);
+      // Verify that the part belongs to the same building as the building floor
+      if (part.building.id !== partFloor.buildingFloor.building.id) {
+        throw new PartFloorNotOwnedException({ id: partId });
+      }
+      partFloor.part = part;
     }
 
     return await this.partFloorRepository.save(partFloor);

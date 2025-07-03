@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { User } from '@src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, Relation } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { HabFamilyName } from '../types/hab-family-name.types';
 import { PartType } from '../types/part-type.types';
 import { Building } from './building.entity';
@@ -49,11 +49,8 @@ export class Part extends SoftDeleteEntity {
   })
   habFamily: Relation<HabFamily>;
 
-  @ManyToOne(() => PartFloor, (partFloor) => partFloor.parts)
-  partFloor: Relation<PartFloor>;
-
-  @Column()
-  partFloorId: number;
+  @OneToMany(() => PartFloor, (partFloor) => partFloor.part)
+  partFloors: Relation<PartFloor>[];
 
   @ManyToMany(() => User, (user) => user.parts)
   users: Relation<User>[];

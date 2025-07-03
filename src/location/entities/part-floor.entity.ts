@@ -31,8 +31,11 @@ export class PartFloor extends SoftDeleteEntity {
   @Column({ type: 'float' })
   publicAccessSurface: number;
 
-  @OneToMany(() => Part, (part) => part.partFloor)
-  parts: Relation<Part>[];
+  @ManyToOne(() => Part, (part) => part.partFloors)
+  part: Relation<Part>;
+
+  @Column()
+  partId: number;
 
   @OneToMany(() => Lot, (lot) => lot.partFloor)
   lots: Relation<Lot>[];
