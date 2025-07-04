@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { User } from '@src/users/entities/user.entity';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
-import { HabFamilyName } from '../types/hab-family-name.types';
 import { PartType } from '../types/part-type.types';
 import { Building } from './building.entity';
 import { ErpType } from './erp-type.entity';
@@ -42,11 +41,6 @@ export class Part extends SoftDeleteEntity {
 
   @ManyToOne(() => HabFamily, (habFamily) => habFamily.parts)
   @JoinColumn({ name: 'hab_family_name' })
-  @Column({
-    type: 'enum',
-    enum: HabFamilyName,
-    enumName: 'hab_family_name_enum',
-  })
   habFamily: Relation<HabFamily>;
 
   @OneToMany(() => PartFloor, (partFloor) => partFloor.part)

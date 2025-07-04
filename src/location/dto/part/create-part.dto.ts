@@ -30,7 +30,7 @@ export class CreatePartDto {
   @IsOptional()
   habFamilyName?: HabFamilyName;
 
-  @ApiProperty({ description: 'ERP Type codes', enum: ErpTypeCode, example: ErpTypeCode.CTS })
+  @ApiProperty({ description: 'ERP Type codes', enum: ErpTypeCode, example: [ErpTypeCode.CTS] })
   @IsEnum(ErpTypeCode, { each: true })
   @IsOptional()
   erpTypeCodes?: ErpTypeCode[];
