@@ -26,6 +26,7 @@ export class PartFloorService {
   async create(dto: CreatePartFloorDto, user: LoggedUser): Promise<PartFloor> {
     const {
       name,
+      levelNumber,
       publicCount,
       staffCount,
       exploitationSurface,
@@ -45,6 +46,7 @@ export class PartFloorService {
 
     const partFloor = this.partFloorRepository.create({
       name,
+      levelNumber,
       publicCount,
       staffCount,
       exploitationSurface,
@@ -119,6 +121,7 @@ export class PartFloorService {
 
     const {
       name,
+      levelNumber,
       publicCount,
       staffCount,
       exploitationSurface,
@@ -130,6 +133,9 @@ export class PartFloorService {
 
     if (name) {
       partFloor.name = name;
+    }
+    if (typeof levelNumber === 'number') {
+      partFloor.levelNumber = levelNumber;
     }
     if (typeof publicCount === 'number') {
       partFloor.publicCount = publicCount;

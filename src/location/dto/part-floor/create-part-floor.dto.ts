@@ -7,6 +7,11 @@ export class CreatePartFloorDto {
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty({ description: 'Level of the floor based on part', example: 1 })
+  @IsInt()
+  @IsPositive()
+  levelNumber: number;
+
   @ApiProperty({ description: 'Max number of public that can be accommodated' })
   @IsInt()
   @IsPositive()

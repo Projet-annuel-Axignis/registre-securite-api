@@ -8,6 +8,7 @@ enum PartFloorEntityFields {
   UPDATED_AT = 'updatedAt',
   DELETED_AT = 'deletedAt',
   NAME = 'name',
+  LEVEL_NUMBER = 'levelNumber',
 }
 
 export class PartFloorQueryFilterDto extends PaginationParamsDto {

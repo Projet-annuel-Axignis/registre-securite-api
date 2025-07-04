@@ -11,6 +11,10 @@ export class PartFloor extends SoftDeleteEntity {
   @Column()
   name: string;
 
+  @ApiProperty({ description: 'Level of the floor based on part' })
+  @Column({ type: 'smallint', default: 1 })
+  levelNumber: number;
+
   @ApiProperty({ description: 'Max number of public that can be accommodated' })
   @Column({ type: 'integer' })
   publicCount: number;
