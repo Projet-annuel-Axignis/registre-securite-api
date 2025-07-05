@@ -116,11 +116,11 @@ export class PartService {
       part.isIcpe = isIcpe;
     }
 
-    if (part.building.typologies.some((t) => t.code === TypologyCode.ERP)) {
+    if (part.building.typologies?.some((t) => t.code === TypologyCode.ERP)) {
       part.erpTypes = await this.erpTypeService.findAllByCode(erpTypeCodes ?? []);
     }
 
-    if (part.building.typologies.some((t) => t.code === TypologyCode.HAB) && habFamilyName) {
+    if (part.building.typologies?.some((t) => t.code === TypologyCode.HAB) && habFamilyName) {
       part.habFamily = await this.habFamilyService.findOneByName(habFamilyName);
     }
 
