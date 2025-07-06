@@ -78,7 +78,7 @@ export class PartService {
     const part = await this.partRepository.findOne({
       where: { id },
       relations: {
-        building: { site: { company: true }, users: true },
+        building: { site: { company: true }, users: true, typologies: true },
         partFloors: true,
         habFamily: true,
         erpTypes: true,
