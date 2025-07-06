@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ActivityLoggerModule } from './activity-logger/activity-logger.module';
 import { LoggingInterceptor } from './activity-logger/helpers/activity-logger.interceptor';
 import { AuthModule } from './auth/auth.module';
+import { BetModule } from './bet/bet.module';
 import { ApiConfigModule } from './config/api-config.module';
 import configuration from './config/helpers/api-config.config';
 import { LocationModule } from './location/location.module';
@@ -23,6 +24,7 @@ import { UserModule } from './users/user.module';
     ActivityLoggerModule,
     AuthModule,
     LocationModule,
+    BetModule,
   ],
   providers: [
     {
