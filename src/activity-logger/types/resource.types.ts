@@ -7,4 +7,7 @@ export enum Resources {
   LOT = 'lot',
   PART = 'part',
   AUTH = 'auth',
+  EQUIPMENT = 'equipment',
+  INVENTORY = 'inventory',
+  PRODUCT = 'product',
 }
