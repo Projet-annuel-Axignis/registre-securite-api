@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreatePartFloorDto } from '../dto/part-floor/create-part-floor.dto';
 import { PartFloorQueryFilterDto } from '../dto/part-floor/part-floor-query-filter.dto';
 import { UpdatePartFloorDto } from '../dto/part-floor/update-part-floor.dto';
+import { BuildingNotOwnedException } from '../helpers/exceptions/building.exception';
 import { PartFloorNotFoundException, PartFloorNotOwnedException } from '../helpers/exceptions/part-floor.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { BuildingService } from './building.service';
@@ -40,8 +41,8 @@ export class PartFloorService {
     const part = await this.partService.findOne(partId, user);
 
     // Verify that the part belongs to the same building as the building floor
-    if (part.building.id !== buildingFloor.building.id) {
-      throw new PartFloorNotOwnedException({ id: partId });
+    if (user.role.type !== RoleType.ADMINISTRATOR && part.building.id !== buildingFloor.building.id) {
+      throw new BuildingNotOwnedException({ id: partId });
     }
 
     const partFloor = this.partFloorRepository.create({
