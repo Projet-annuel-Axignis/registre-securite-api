@@ -171,6 +171,7 @@ export class BuildingService {
 
     const buildingFloor = this.buildingFloorRepository.create({
       name: dto.name,
+      levelNumber: dto.levelNumber || 1,
       building,
     });
 
@@ -220,6 +221,10 @@ export class BuildingService {
 
     if (dto.name) {
       buildingFloor.name = dto.name;
+    }
+
+    if (dto.levelNumber !== undefined) {
+      buildingFloor.levelNumber = dto.levelNumber;
     }
 
     return await this.buildingFloorRepository.save(buildingFloor);

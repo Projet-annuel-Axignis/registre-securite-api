@@ -11,6 +11,10 @@ export class BuildingFloor extends SoftDeleteEntity {
   @Column()
   name: string;
 
+  @ApiProperty({ description: 'Level of the floor based on building' })
+  @Column({ type: 'smallint', default: 1 })
+  levelNumber: number;
+
   @ManyToOne(() => Building, (building) => building.BuildingFloors)
   building: Relation<Building>;
 
