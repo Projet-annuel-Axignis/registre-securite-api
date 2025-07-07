@@ -27,6 +27,13 @@ const configuration = () => ({
     },
   },
 
+  apis: {
+    bet: {
+      base_url: process.env.BET_BASE_URL ?? 'http://localhost:3005/api/v1',
+      api_key: process.env.BET_API_KEY ?? '',
+    },
+  },
+
   jwt: {
     duration: parseInt(process.env.JWT_DURATION ?? '3600'),
     secret: process.env.JWT_SECRET ?? '',

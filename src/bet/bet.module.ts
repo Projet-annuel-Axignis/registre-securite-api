@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { EquipmentController } from './controllers/equipment.controller';
 import { InventoryController } from './controllers/inventory.controller';
@@ -7,6 +8,7 @@ import { InventoryService } from './services/inventory.service';
 import { ProductService } from './services/product.service';
 
 @Module({
+  imports: [HttpModule],
   controllers: [EquipmentController, InventoryController, ProductController],
   providers: [EquipmentService, InventoryService, ProductService],
 })
