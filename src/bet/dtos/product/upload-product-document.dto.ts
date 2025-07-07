@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DocumentStatus } from '@src/bet/types/document-status.types';
+import { DocumentStatus } from '@src/bet/types/product/document-status.types';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UploadProductDocumentDto {

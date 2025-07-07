@@ -1,15 +1,14 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
-import { ProvidersName } from '../types/base-providers.types';
-import { BaseProviderService } from './base-provider.service';
+import { AbstractBetService } from './abstract-bet.service';
 
 @Injectable()
-export class InventoryService extends BaseProviderService {
+export class InventoryService extends AbstractBetService {
   constructor(
     protected readonly configService: ApiConfigService,
     protected readonly httpService: HttpService,
   ) {
-    super(ProvidersName.BET, configService, httpService);
+    super(configService, httpService);
   }
 }
