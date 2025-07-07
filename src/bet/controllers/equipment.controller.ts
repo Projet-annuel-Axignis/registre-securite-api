@@ -17,7 +17,11 @@ import { EquipmentDomainQueryFilterDto } from '../dtos/equipment/equipment-domai
 import { CreateEquipmentFamilyDto } from '../dtos/equipment/create-equipment-family.dto';
 import { UpdateEquipmentFamilyDto } from '../dtos/equipment/update-equipment-family.dto';
 import { EquipmentFamilyQueryFilterDto } from '../dtos/equipment/equipment-family-query-filter.dto';
-import { CommonGet } from '../types/common-response.types';
+import {
+  EquipmentTypeResponse,
+  EquipmentDomainResponse,
+  EquipmentFamilyResponse,
+} from '../types/equipment-response.types';
 import {
   SwaggerEquipmentTypeCreate,
   SwaggerEquipmentTypeFindAll,
@@ -55,7 +59,9 @@ export class EquipmentController {
   @Post('types')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentTypeCreate()
-  async createEquipmentType(@Body() createDto: CreateEquipmentTypeDto): Promise<CommonGet | BetApiErrorResponse> {
+  async createEquipmentType(
+    @Body() createDto: CreateEquipmentTypeDto,
+  ): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
     return await this.equipmentService.createEquipmentType(createDto);
   }
 
@@ -64,14 +70,16 @@ export class EquipmentController {
   @SwaggerEquipmentTypeFindAll()
   async findAllEquipmentTypes(
     @Query() query: EquipmentTypeQueryFilterDto,
-  ): Promise<PaginatedList<CommonGet> | BetApiErrorResponse> {
+  ): Promise<PaginatedList<EquipmentTypeResponse> | BetApiErrorResponse> {
     return await this.equipmentService.findAllEquipmentTypes(query);
   }
 
   @Get('types/:id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentTypeFindOne()
-  async findOneEquipmentTypeById(@Param('id', ParseIntPipe) id: number): Promise<CommonGet | BetApiErrorResponse> {
+  async findOneEquipmentTypeById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentTypeById(id);
   }
 
@@ -80,7 +88,7 @@ export class EquipmentController {
   @SwaggerEquipmentTypeFindOneBySerialNumber()
   async findOneEquipmentTypeBySerialNumber(
     @Param('serialNumber') serialNumber: string,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentTypeBySerialNumber(serialNumber);
   }
 
@@ -90,7 +98,7 @@ export class EquipmentController {
   async updateEquipmentType(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateEquipmentTypeDto,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
     return await this.equipmentService.updateEquipmentType(id, updateDto);
   }
 
@@ -116,7 +124,9 @@ export class EquipmentController {
   @Post('domains')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentDomainCreate()
-  async createEquipmentDomain(@Body() createDto: CreateEquipmentDomainDto): Promise<CommonGet | BetApiErrorResponse> {
+  async createEquipmentDomain(
+    @Body() createDto: CreateEquipmentDomainDto,
+  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
     return await this.equipmentService.createEquipmentDomain(createDto);
   }
 
@@ -125,14 +135,16 @@ export class EquipmentController {
   @SwaggerEquipmentDomainFindAll()
   async findAllEquipmentDomains(
     @Query() query: EquipmentDomainQueryFilterDto,
-  ): Promise<PaginatedList<CommonGet | BetApiErrorResponse>> {
+  ): Promise<PaginatedList<EquipmentDomainResponse> | BetApiErrorResponse> {
     return await this.equipmentService.findAllEquipmentDomains(query);
   }
 
   @Get('domains/:id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentDomainFindOne()
-  async findOneEquipmentDomainById(@Param('id', ParseIntPipe) id: number): Promise<CommonGet | BetApiErrorResponse> {
+  async findOneEquipmentDomainById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentDomainById(id);
   }
 
@@ -141,7 +153,7 @@ export class EquipmentController {
   @SwaggerEquipmentDomainFindOneBySerialNumber()
   async findOneEquipmentDomainBySerialNumber(
     @Param('serialNumber') serialNumber: string,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentDomainBySerialNumber(serialNumber);
   }
 
@@ -151,21 +163,25 @@ export class EquipmentController {
   async updateEquipmentDomain(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateEquipmentDomainDto,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
     return await this.equipmentService.updateEquipmentDomain(id, updateDto);
   }
 
   @Delete('domains/:id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentDomainSoftDelete()
-  async softDeleteEquipmentDomain(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; id: number }> {
+  async softDeleteEquipmentDomain(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string; id: number } | BetApiErrorResponse> {
     return await this.equipmentService.softDeleteEquipmentDomain(id);
   }
 
   @Patch('domains/:id/restore')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentDomainRestore()
-  async restoreEquipmentDomain(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; id: number }> {
+  async restoreEquipmentDomain(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string; id: number } | BetApiErrorResponse> {
     return await this.equipmentService.restoreEquipmentDomain(id);
   }
 
@@ -173,7 +189,9 @@ export class EquipmentController {
   @Post('families')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentFamilyCreate()
-  async createEquipmentFamily(@Body() createDto: CreateEquipmentFamilyDto): Promise<CommonGet | BetApiErrorResponse> {
+  async createEquipmentFamily(
+    @Body() createDto: CreateEquipmentFamilyDto,
+  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
     return await this.equipmentService.createEquipmentFamily(createDto);
   }
 
@@ -182,14 +200,16 @@ export class EquipmentController {
   @SwaggerEquipmentFamilyFindAll()
   async findAllEquipmentFamilies(
     @Query() query: EquipmentFamilyQueryFilterDto,
-  ): Promise<PaginatedList<CommonGet | BetApiErrorResponse>> {
+  ): Promise<PaginatedList<EquipmentFamilyResponse> | BetApiErrorResponse> {
     return await this.equipmentService.findAllEquipmentFamilies(query);
   }
 
   @Get('families/:id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentFamilyFindOne()
-  async findOneEquipmentFamilyById(@Param('id', ParseIntPipe) id: number): Promise<CommonGet | BetApiErrorResponse> {
+  async findOneEquipmentFamilyById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentFamilyById(id);
   }
 
@@ -198,7 +218,7 @@ export class EquipmentController {
   @SwaggerEquipmentFamilyFindOneBySerialNumber()
   async findOneEquipmentFamilyBySerialNumber(
     @Param('serialNumber') serialNumber: string,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
     return await this.equipmentService.findOneEquipmentFamilyBySerialNumber(serialNumber);
   }
 
@@ -208,21 +228,25 @@ export class EquipmentController {
   async updateEquipmentFamily(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateEquipmentFamilyDto,
-  ): Promise<CommonGet | BetApiErrorResponse> {
+  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
     return await this.equipmentService.updateEquipmentFamily(id, updateDto);
   }
 
   @Delete('families/:id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentFamilySoftDelete()
-  async softDeleteEquipmentFamily(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; id: number }> {
+  async softDeleteEquipmentFamily(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string; id: number } | BetApiErrorResponse> {
     return await this.equipmentService.softDeleteEquipmentFamily(id);
   }
 
   @Patch('families/:id/restore')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerEquipmentFamilyRestore()
-  async restoreEquipmentFamily(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; id: number }> {
+  async restoreEquipmentFamily(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string; id: number } | BetApiErrorResponse> {
     return await this.equipmentService.restoreEquipmentFamily(id);
   }
 }
