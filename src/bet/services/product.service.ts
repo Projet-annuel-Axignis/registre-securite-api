@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { AbstractBetService, BetApiErrorResponse } from './abstract-bet.service';
+import { AbstractBetService } from './abstract-bet.service';
 import { CreateProductDto } from '../dtos/product/create-product.dto';
 import { UpdateProductDto } from '../dtos/product/update-product.dto';
 import { ProductQueryFilterDto } from '../dtos/product/product-query-filter.dto';
@@ -18,7 +18,7 @@ export class ProductService extends AbstractBetService {
   }
 
   // Product Methods
-  async createProduct(createDto: CreateProductDto): Promise<ProductResponse | BetApiErrorResponse> {
+  async createProduct(createDto: CreateProductDto): Promise<ProductResponse> {
     return this.makeBetRequest<ProductResponse>({
       method: 'POST',
       endpoint: 'products',
@@ -26,7 +26,7 @@ export class ProductService extends AbstractBetService {
     });
   }
 
-  async findAllProducts(query: ProductQueryFilterDto): Promise<PaginatedList<ProductResponse> | BetApiErrorResponse> {
+  async findAllProducts(query: ProductQueryFilterDto): Promise<PaginatedList<ProductResponse>> {
     return this.makeBetRequest<PaginatedList<ProductResponse>, ProductQueryFilterDto>({
       method: 'GET',
       endpoint: 'products',
@@ -34,21 +34,21 @@ export class ProductService extends AbstractBetService {
     });
   }
 
-  async findOneProductById(id: number): Promise<ProductResponse | BetApiErrorResponse> {
+  async findOneProductById(id: number): Promise<ProductResponse> {
     return this.makeBetRequest<ProductResponse>({
       method: 'GET',
       endpoint: `products/${id}`,
     });
   }
 
-  async findOneProductBySerialNumber(serialNumber: string): Promise<ProductResponse | BetApiErrorResponse> {
+  async findOneProductBySerialNumber(serialNumber: string): Promise<ProductResponse> {
     return this.makeBetRequest<ProductResponse>({
       method: 'GET',
       endpoint: `products/serial/${serialNumber}`,
     });
   }
 
-  async updateProduct(id: number, updateDto: UpdateProductDto): Promise<ProductResponse | BetApiErrorResponse> {
+  async updateProduct(id: number, updateDto: UpdateProductDto): Promise<ProductResponse> {
     return this.makeBetRequest<ProductResponse>({
       method: 'PATCH',
       endpoint: `products/${id}`,
@@ -56,14 +56,14 @@ export class ProductService extends AbstractBetService {
     });
   }
 
-  async softDeleteProduct(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async softDeleteProduct(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
       endpoint: `products/${id}`,
     });
   }
 
-  async restoreProduct(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async restoreProduct(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'POST',
       endpoint: `products/${id}/restore`,

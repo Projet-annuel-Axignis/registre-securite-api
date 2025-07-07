@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { AbstractBetService, BetApiErrorResponse } from './abstract-bet.service';
+import { AbstractBetService } from './abstract-bet.service';
 import { CreateInventoryItemDto } from '../dtos/inventory/create-inventory-item.dto';
 import { UpdateInventoryItemDto } from '../dtos/inventory/update-inventory-item.dto';
 import { InventoryItemQueryFilterDto } from '../dtos/inventory/inventory-item-query-filter.dto';
@@ -18,7 +18,7 @@ export class InventoryService extends AbstractBetService {
   }
 
   // Inventory Items Methods
-  async createInventoryItem(createDto: CreateInventoryItemDto): Promise<InventoryItemResponse | BetApiErrorResponse> {
+  async createInventoryItem(createDto: CreateInventoryItemDto): Promise<InventoryItemResponse> {
     return this.makeBetRequest<InventoryItemResponse>({
       method: 'POST',
       endpoint: 'inventory',
@@ -26,9 +26,7 @@ export class InventoryService extends AbstractBetService {
     });
   }
 
-  async findAllInventoryItems(
-    query: InventoryItemQueryFilterDto,
-  ): Promise<PaginatedList<InventoryItemResponse> | BetApiErrorResponse> {
+  async findAllInventoryItems(query: InventoryItemQueryFilterDto): Promise<PaginatedList<InventoryItemResponse>> {
     return this.makeBetRequest<PaginatedList<InventoryItemResponse>, InventoryItemQueryFilterDto>({
       method: 'GET',
       endpoint: 'inventory',
@@ -36,17 +34,14 @@ export class InventoryService extends AbstractBetService {
     });
   }
 
-  async findOneInventoryItemById(id: number): Promise<InventoryItemResponse | BetApiErrorResponse> {
+  async findOneInventoryItemById(id: number): Promise<InventoryItemResponse> {
     return this.makeBetRequest<InventoryItemResponse>({
       method: 'GET',
       endpoint: `inventory/${id}`,
     });
   }
 
-  async updateInventoryItem(
-    id: number,
-    updateDto: UpdateInventoryItemDto,
-  ): Promise<InventoryItemResponse | BetApiErrorResponse> {
+  async updateInventoryItem(id: number, updateDto: UpdateInventoryItemDto): Promise<InventoryItemResponse> {
     return this.makeBetRequest<InventoryItemResponse>({
       method: 'PATCH',
       endpoint: `inventory/${id}`,
@@ -54,14 +49,14 @@ export class InventoryService extends AbstractBetService {
     });
   }
 
-  async softDeleteInventoryItem(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async softDeleteInventoryItem(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
       endpoint: `inventory/${id}`,
     });
   }
 
-  async restoreInventoryItem(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async restoreInventoryItem(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
       endpoint: `inventory/${id}/restore`,

@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
-import { AbstractBetService, BetApiErrorResponse } from './abstract-bet.service';
+import { AbstractBetService } from './abstract-bet.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { EquipmentFamilyQueryFilterDto } from '../dtos/equipment/equipment-family-query-filter.dto';
 import { CreateEquipmentTypeDto } from '../dtos/equipment/create-equipment-type.dto';
@@ -28,7 +28,7 @@ export class EquipmentService extends AbstractBetService {
   }
 
   // Equipment Types Methods
-  async createEquipmentType(createDto: CreateEquipmentTypeDto): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
+  async createEquipmentType(createDto: CreateEquipmentTypeDto): Promise<EquipmentTypeResponse> {
     return this.makeBetRequest<EquipmentTypeResponse>({
       method: 'POST',
       endpoint: 'equipment/types',
@@ -36,9 +36,7 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async findAllEquipmentTypes(
-    query: EquipmentTypeQueryFilterDto,
-  ): Promise<PaginatedList<EquipmentTypeResponse> | BetApiErrorResponse> {
+  async findAllEquipmentTypes(query: EquipmentTypeQueryFilterDto): Promise<PaginatedList<EquipmentTypeResponse>> {
     return this.makeBetRequest<PaginatedList<EquipmentTypeResponse>, EquipmentTypeQueryFilterDto>({
       method: 'GET',
       endpoint: 'equipment/types',
@@ -46,24 +44,21 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async findOneEquipmentTypeById(id: number): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
+  async findOneEquipmentTypeById(id: number): Promise<EquipmentTypeResponse> {
     return this.makeBetRequest<EquipmentTypeResponse>({
       method: 'GET',
       endpoint: `equipment/types/${id}`,
     });
   }
 
-  async findOneEquipmentTypeBySerialNumber(serialNumber: string): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
+  async findOneEquipmentTypeBySerialNumber(serialNumber: string): Promise<EquipmentTypeResponse> {
     return this.makeBetRequest<EquipmentTypeResponse>({
       method: 'GET',
       endpoint: `equipment/types/serial/${serialNumber}`,
     });
   }
 
-  async updateEquipmentType(
-    id: number,
-    updateDto: UpdateEquipmentTypeDto,
-  ): Promise<EquipmentTypeResponse | BetApiErrorResponse> {
+  async updateEquipmentType(id: number, updateDto: UpdateEquipmentTypeDto): Promise<EquipmentTypeResponse> {
     return this.makeBetRequest<EquipmentTypeResponse>({
       method: 'PATCH',
       endpoint: `equipment/types/${id}`,
@@ -71,14 +66,14 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async softDeleteEquipmentType(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async softDeleteEquipmentType(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
       endpoint: `equipment/types/${id}`,
     });
   }
 
-  async restoreEquipmentType(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async restoreEquipmentType(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
       endpoint: `equipment/types/${id}/restore`,
@@ -86,9 +81,7 @@ export class EquipmentService extends AbstractBetService {
   }
 
   // Equipment Domains Methods
-  async createEquipmentDomain(
-    createDto: CreateEquipmentDomainDto,
-  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
+  async createEquipmentDomain(createDto: CreateEquipmentDomainDto): Promise<EquipmentDomainResponse> {
     return this.makeBetRequest<EquipmentDomainResponse>({
       method: 'POST',
       endpoint: 'equipment/domains',
@@ -96,9 +89,7 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async findAllEquipmentDomains(
-    query: EquipmentDomainQueryFilterDto,
-  ): Promise<PaginatedList<EquipmentDomainResponse> | BetApiErrorResponse> {
+  async findAllEquipmentDomains(query: EquipmentDomainQueryFilterDto): Promise<PaginatedList<EquipmentDomainResponse>> {
     return this.makeBetRequest<PaginatedList<EquipmentDomainResponse>, EquipmentDomainQueryFilterDto>({
       method: 'GET',
       endpoint: 'equipment/domains',
@@ -106,26 +97,21 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async findOneEquipmentDomainById(id: number): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
+  async findOneEquipmentDomainById(id: number): Promise<EquipmentDomainResponse> {
     return this.makeBetRequest<EquipmentDomainResponse>({
       method: 'GET',
       endpoint: `equipment/domains/${id}`,
     });
   }
 
-  async findOneEquipmentDomainBySerialNumber(
-    serialNumber: string,
-  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
+  async findOneEquipmentDomainBySerialNumber(serialNumber: string): Promise<EquipmentDomainResponse> {
     return this.makeBetRequest<EquipmentDomainResponse>({
       method: 'GET',
       endpoint: `equipment/domains/serial/${serialNumber}`,
     });
   }
 
-  async updateEquipmentDomain(
-    id: number,
-    updateDto: UpdateEquipmentDomainDto,
-  ): Promise<EquipmentDomainResponse | BetApiErrorResponse> {
+  async updateEquipmentDomain(id: number, updateDto: UpdateEquipmentDomainDto): Promise<EquipmentDomainResponse> {
     return this.makeBetRequest<EquipmentDomainResponse>({
       method: 'PATCH',
       endpoint: `equipment/domains/${id}`,
@@ -133,14 +119,14 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async softDeleteEquipmentDomain(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async softDeleteEquipmentDomain(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
       endpoint: `equipment/domains/${id}`,
     });
   }
 
-  async restoreEquipmentDomain(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async restoreEquipmentDomain(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
       endpoint: `equipment/domains/${id}/restore`,
@@ -148,9 +134,7 @@ export class EquipmentService extends AbstractBetService {
   }
 
   // Equipment Families Methods
-  async createEquipmentFamily(
-    createDto: CreateEquipmentFamilyDto,
-  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
+  async createEquipmentFamily(createDto: CreateEquipmentFamilyDto): Promise<EquipmentFamilyResponse> {
     return this.makeBetRequest<EquipmentFamilyResponse>({
       method: 'POST',
       endpoint: 'equipment/families',
@@ -160,7 +144,7 @@ export class EquipmentService extends AbstractBetService {
 
   async findAllEquipmentFamilies(
     query: EquipmentFamilyQueryFilterDto,
-  ): Promise<PaginatedList<EquipmentFamilyResponse> | BetApiErrorResponse> {
+  ): Promise<PaginatedList<EquipmentFamilyResponse>> {
     return this.makeBetRequest<PaginatedList<EquipmentFamilyResponse>, EquipmentFamilyQueryFilterDto>({
       method: 'GET',
       endpoint: 'equipment/families',
@@ -168,26 +152,21 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async findOneEquipmentFamilyById(id: number): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
+  async findOneEquipmentFamilyById(id: number): Promise<EquipmentFamilyResponse> {
     return this.makeBetRequest<EquipmentFamilyResponse>({
       method: 'GET',
       endpoint: `equipment/families/${id}`,
     });
   }
 
-  async findOneEquipmentFamilyBySerialNumber(
-    serialNumber: string,
-  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
+  async findOneEquipmentFamilyBySerialNumber(serialNumber: string): Promise<EquipmentFamilyResponse> {
     return this.makeBetRequest<EquipmentFamilyResponse>({
       method: 'GET',
       endpoint: `equipment/families/serial/${serialNumber}`,
     });
   }
 
-  async updateEquipmentFamily(
-    id: number,
-    updateDto: UpdateEquipmentFamilyDto,
-  ): Promise<EquipmentFamilyResponse | BetApiErrorResponse> {
+  async updateEquipmentFamily(id: number, updateDto: UpdateEquipmentFamilyDto): Promise<EquipmentFamilyResponse> {
     return this.makeBetRequest<EquipmentFamilyResponse>({
       method: 'PATCH',
       endpoint: `equipment/families/${id}`,
@@ -195,14 +174,14 @@ export class EquipmentService extends AbstractBetService {
     });
   }
 
-  async softDeleteEquipmentFamily(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async softDeleteEquipmentFamily(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
       endpoint: `equipment/families/${id}`,
     });
   }
 
-  async restoreEquipmentFamily(id: number): Promise<{ message: string; id: number } | BetApiErrorResponse> {
+  async restoreEquipmentFamily(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
       endpoint: `equipment/families/${id}/restore`,
