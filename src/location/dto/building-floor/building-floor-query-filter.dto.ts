@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum BuildingFloorEntityFields {
   ID = 'id',
@@ -21,4 +21,9 @@ export class BuildingFloorQueryFilterDto extends PaginationParamsDto {
   @IsEnum(BuildingFloorEntityFields)
   @IsOptional()
   sortField: string = BuildingFloorEntityFields.CREATED_AT;
+
+  @ApiPropertyOptional({ description: 'Boolean to get archived data', default: false })
+  @IsBoolean()
+  @IsOptional()
+  includeDeleted?: boolean;
 }

@@ -70,7 +70,7 @@ export class BuildingService {
     const [buildings, totalResults] = await getEntityFilteredList({
       repository: this.buildingRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [
         { relation: 'site', alias: 's', joins: [{ relation: 'company', alias: 'c' }] },
         { relation: 'typologies', alias: 't' },
@@ -182,7 +182,7 @@ export class BuildingService {
     const [buildingFloors, totalResults] = await getEntityFilteredList({
       repository: this.buildingFloorRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [
         {
           relation: 'building',

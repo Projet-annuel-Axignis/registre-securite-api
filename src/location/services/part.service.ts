@@ -55,7 +55,7 @@ export class PartService {
     const [parts, totalResults] = await getEntityFilteredList({
       repository: this.partRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [
         {
           relation: 'building',

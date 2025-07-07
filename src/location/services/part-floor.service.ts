@@ -64,7 +64,7 @@ export class PartFloorService {
     const [partFloors, totalResults] = await getEntityFilteredList({
       repository: this.partFloorRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [
         {
           relation: 'buildingFloor',

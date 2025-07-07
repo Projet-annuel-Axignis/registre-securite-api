@@ -45,7 +45,7 @@ export class LotService {
     const [lots, totalResults] = await getEntityFilteredList({
       repository: this.lotRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [
         {
           relation: 'building',
