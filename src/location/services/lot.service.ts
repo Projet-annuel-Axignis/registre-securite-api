@@ -58,7 +58,10 @@ export class LotService {
         { relation: 'buildingFloor', alias: 'bf' },
         { relation: 'partFloor', alias: 'pf' },
       ],
-      filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
+      filterOptions: [
+        { field: 'companyId', tableAlias: 'c', fieldAlias: 'id' },
+        { field: 'siteId', tableAlias: 's', fieldAlias: 'id' },
+      ],
     });
     return [lots, lots.length, totalResults];
   }
