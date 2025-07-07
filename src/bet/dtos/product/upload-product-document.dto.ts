@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DocumentStatus } from '@src/bet/types/document-status.types';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { DocumentStatus } from '../types/document-status.types';
 
 export class UploadProductDocumentDto {
   @ApiProperty({ description: 'Serial number of the document (for searching)', example: 'DOC-2024-001' })
