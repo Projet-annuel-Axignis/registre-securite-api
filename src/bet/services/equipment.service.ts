@@ -1,22 +1,22 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
-import { AbstractBetService } from './abstract-bet.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { EquipmentFamilyQueryFilterDto } from '../dtos/equipment/equipment-family-query-filter.dto';
-import { CreateEquipmentTypeDto } from '../dtos/equipment/create-equipment-type.dto';
-import { EquipmentTypeQueryFilterDto } from '../dtos/equipment/equipment-type-query-filter.dto';
-import { UpdateEquipmentTypeDto } from '../dtos/equipment/update-equipment-type.dto';
 import { CreateEquipmentDomainDto } from '../dtos/equipment/create-equipment-domain.dto';
-import { EquipmentDomainQueryFilterDto } from '../dtos/equipment/equipment-domain-query-filter.dto';
-import { UpdateEquipmentDomainDto } from '../dtos/equipment/update-equipment-domain.dto';
 import { CreateEquipmentFamilyDto } from '../dtos/equipment/create-equipment-family.dto';
+import { CreateEquipmentTypeDto } from '../dtos/equipment/create-equipment-type.dto';
+import { EquipmentDomainQueryFilterDto } from '../dtos/equipment/equipment-domain-query-filter.dto';
+import { EquipmentFamilyQueryFilterDto } from '../dtos/equipment/equipment-family-query-filter.dto';
+import { EquipmentTypeQueryFilterDto } from '../dtos/equipment/equipment-type-query-filter.dto';
+import { UpdateEquipmentDomainDto } from '../dtos/equipment/update-equipment-domain.dto';
 import { UpdateEquipmentFamilyDto } from '../dtos/equipment/update-equipment-family.dto';
+import { UpdateEquipmentTypeDto } from '../dtos/equipment/update-equipment-type.dto';
 import {
-  EquipmentTypeResponse,
   EquipmentDomainResponse,
   EquipmentFamilyResponse,
-} from '../types/equipment-response.types';
+  EquipmentTypeResponse,
+} from '../types/equipment/equipment-response.types';
+import { AbstractBetService } from './abstract-bet.service';
 
 @Injectable()
 export class EquipmentService extends AbstractBetService {

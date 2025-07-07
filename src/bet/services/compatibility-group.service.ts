@@ -2,11 +2,11 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { AbstractBetService } from './abstract-bet.service';
-import { CompatibilityGroupResponse } from '../types/compatibility-group-response.types';
+import { CompatibilityGroupQueryFilterDto } from '../dtos/product/compatibility-group-query-filter.dto';
 import { CreateCompatibilityGroupDto } from '../dtos/product/create-compatibility-group.dto';
 import { UpdateCompatibilityGroupDto } from '../dtos/product/update-compatibility-group.dto';
-import { CompatibilityGroupQueryFilterDto } from '../dtos/product/compatibility-group-query-filter.dto';
+import { CompatibilityGroupResponse } from '../types/product/compatibility-group-response.types';
+import { AbstractBetService } from './abstract-bet.service';
 
 @Injectable()
 export class CompatibilityGroupService extends AbstractBetService {

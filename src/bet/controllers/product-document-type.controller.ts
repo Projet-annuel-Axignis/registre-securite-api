@@ -7,20 +7,20 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { ProductDocumentTypeService } from '../services/product-document-type.service';
 import { CreateProductDocumentTypeDto } from '../dtos/product/create-product-document-type.dto';
-import { UpdateProductDocumentTypeDto } from '../dtos/product/update-product-document-type.dto';
 import { ProductDocumentTypeQueryFilterDto } from '../dtos/product/product-document-type-query-filter.dto';
-import { ProductDocumentTypeResponse } from '../types/product-document-type-response.types';
+import { UpdateProductDocumentTypeDto } from '../dtos/product/update-product-document-type.dto';
 import {
   SwaggerProductDocumentTypeCreate,
   SwaggerProductDocumentTypeFindAll,
   SwaggerProductDocumentTypeFindOne,
   SwaggerProductDocumentTypeFindOneBySerialNumber,
-  SwaggerProductDocumentTypeUpdate,
-  SwaggerProductDocumentTypeSoftDelete,
   SwaggerProductDocumentTypeRestore,
+  SwaggerProductDocumentTypeSoftDelete,
+  SwaggerProductDocumentTypeUpdate,
 } from '../helpers/product-document-type-set-decorators.helper';
+import { ProductDocumentTypeService } from '../services/product-document-type.service';
+import { ProductDocumentTypeResponse } from '../types/product/product-document-type-response.types';
 
 @ApiTags(Resources.PRODUCT)
 @SwaggerFailureResponse()

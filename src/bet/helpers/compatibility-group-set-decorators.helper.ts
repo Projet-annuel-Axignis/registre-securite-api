@@ -8,7 +8,7 @@ import {
   CompatibilityGroupRestoreSwaggerResponse,
   CompatibilityGroupSoftDeleteSwaggerResponse,
   CompatibilityGroupUpdateSwaggerResponse,
-} from '../types/compatibility-group-swagger-response.types';
+} from '../types/product/compatibility-group-swagger-response.types';
 
 // Compatibility Group Swagger Decorators
 export const SwaggerCompatibilityGroupCreate = () =>

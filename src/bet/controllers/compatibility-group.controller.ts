@@ -7,19 +7,19 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { CompatibilityGroupService } from '../services/compatibility-group.service';
+import { CompatibilityGroupQueryFilterDto } from '../dtos/product/compatibility-group-query-filter.dto';
 import { CreateCompatibilityGroupDto } from '../dtos/product/create-compatibility-group.dto';
 import { UpdateCompatibilityGroupDto } from '../dtos/product/update-compatibility-group.dto';
-import { CompatibilityGroupQueryFilterDto } from '../dtos/product/compatibility-group-query-filter.dto';
-import { CompatibilityGroupResponse } from '../types/compatibility-group-response.types';
 import {
   SwaggerCompatibilityGroupCreate,
   SwaggerCompatibilityGroupFindAll,
   SwaggerCompatibilityGroupFindOne,
-  SwaggerCompatibilityGroupUpdate,
-  SwaggerCompatibilityGroupSoftDelete,
   SwaggerCompatibilityGroupRestore,
+  SwaggerCompatibilityGroupSoftDelete,
+  SwaggerCompatibilityGroupUpdate,
 } from '../helpers/compatibility-group-set-decorators.helper';
+import { CompatibilityGroupService } from '../services/compatibility-group.service';
+import { CompatibilityGroupResponse } from '../types/product/compatibility-group-response.types';
 
 @ApiTags(Resources.PRODUCT)
 @SwaggerFailureResponse()

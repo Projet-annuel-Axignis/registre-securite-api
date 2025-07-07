@@ -8,7 +8,7 @@ import {
   ProductDocumentTypeRestoreSwaggerResponse,
   ProductDocumentTypeSoftDeleteSwaggerResponse,
   ProductDocumentTypeUpdateSwaggerResponse,
-} from '../types/product-document-type-swagger-response.types';
+} from '../types/product/product-document-type-swagger-response.types';
 
 // Product Document Type Swagger Decorators
 export const SwaggerProductDocumentTypeCreate = () =>

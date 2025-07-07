@@ -7,20 +7,20 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { BrandService } from '../services/brand.service';
+import { BrandQueryFilterDto } from '../dtos/product/brand-query-filter.dto';
 import { CreateBrandDto } from '../dtos/product/create-brand.dto';
 import { UpdateBrandDto } from '../dtos/product/update-brand.dto';
-import { BrandQueryFilterDto } from '../dtos/product/brand-query-filter.dto';
-import { BrandResponse } from '../types/brand-response.types';
 import {
   SwaggerBrandCreate,
   SwaggerBrandFindAll,
   SwaggerBrandFindOne,
   SwaggerBrandFindOneBySerialNumber,
-  SwaggerBrandUpdate,
-  SwaggerBrandSoftDelete,
   SwaggerBrandRestore,
+  SwaggerBrandSoftDelete,
+  SwaggerBrandUpdate,
 } from '../helpers/brand-set-decorators.helper';
+import { BrandService } from '../services/brand.service';
+import { BrandResponse } from '../types/product/brand-response.types';
 
 @ApiTags(Resources.PRODUCT)
 @SwaggerFailureResponse()

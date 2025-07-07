@@ -8,7 +8,7 @@ import {
   InventoryItemRestoreSwaggerResponse,
   InventoryItemSoftDeleteSwaggerResponse,
   InventoryItemUpdateSwaggerResponse,
-} from '../types/inventory-swagger-response.types';
+} from '../types/inventory/inventory-swagger-response.types';
 
 export const SwaggerInventoryItemCreate = () =>
   applyDecorators(

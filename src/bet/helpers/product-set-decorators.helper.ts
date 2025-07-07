@@ -8,7 +8,7 @@ import {
   ProductRestoreSwaggerResponse,
   ProductSoftDeleteSwaggerResponse,
   ProductUpdateSwaggerResponse,
-} from '../types/product-swagger-response.types';
+} from '../types/product/product-swagger-response.types';
 
 export const SwaggerProductCreate = () =>
   applyDecorators(

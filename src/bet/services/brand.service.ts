@@ -2,11 +2,11 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
 import { PaginatedList } from '@src/paginator/paginator.type';
-import { AbstractBetService } from './abstract-bet.service';
-import { BrandResponse } from '../types/brand-response.types';
+import { BrandQueryFilterDto } from '../dtos/product/brand-query-filter.dto';
 import { CreateBrandDto } from '../dtos/product/create-brand.dto';
 import { UpdateBrandDto } from '../dtos/product/update-brand.dto';
-import { BrandQueryFilterDto } from '../dtos/product/brand-query-filter.dto';
+import { BrandResponse } from '../types/product/brand-response.types';
+import { AbstractBetService } from './abstract-bet.service';
 
 @Injectable()
 export class BrandService extends AbstractBetService {

@@ -7,45 +7,45 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { EquipmentService } from '../services/equipment.service';
-import { CreateEquipmentTypeDto } from '../dtos/equipment/create-equipment-type.dto';
-import { UpdateEquipmentTypeDto } from '../dtos/equipment/update-equipment-type.dto';
-import { EquipmentTypeQueryFilterDto } from '../dtos/equipment/equipment-type-query-filter.dto';
 import { CreateEquipmentDomainDto } from '../dtos/equipment/create-equipment-domain.dto';
-import { UpdateEquipmentDomainDto } from '../dtos/equipment/update-equipment-domain.dto';
-import { EquipmentDomainQueryFilterDto } from '../dtos/equipment/equipment-domain-query-filter.dto';
 import { CreateEquipmentFamilyDto } from '../dtos/equipment/create-equipment-family.dto';
-import { UpdateEquipmentFamilyDto } from '../dtos/equipment/update-equipment-family.dto';
+import { CreateEquipmentTypeDto } from '../dtos/equipment/create-equipment-type.dto';
+import { EquipmentDomainQueryFilterDto } from '../dtos/equipment/equipment-domain-query-filter.dto';
 import { EquipmentFamilyQueryFilterDto } from '../dtos/equipment/equipment-family-query-filter.dto';
+import { EquipmentTypeQueryFilterDto } from '../dtos/equipment/equipment-type-query-filter.dto';
+import { UpdateEquipmentDomainDto } from '../dtos/equipment/update-equipment-domain.dto';
+import { UpdateEquipmentFamilyDto } from '../dtos/equipment/update-equipment-family.dto';
+import { UpdateEquipmentTypeDto } from '../dtos/equipment/update-equipment-type.dto';
 import {
-  EquipmentTypeResponse,
-  EquipmentDomainResponse,
-  EquipmentFamilyResponse,
-} from '../types/equipment-response.types';
-import {
-  SwaggerEquipmentTypeCreate,
-  SwaggerEquipmentTypeFindAll,
-  SwaggerEquipmentTypeFindOne,
-  SwaggerEquipmentTypeFindOneBySerialNumber,
-  SwaggerEquipmentTypeUpdate,
-  SwaggerEquipmentTypeSoftDelete,
-  SwaggerEquipmentTypeRestore,
   SwaggerEquipmentDomainCreate,
   SwaggerEquipmentDomainFindAll,
   SwaggerEquipmentDomainFindOne,
   SwaggerEquipmentDomainFindOneBySerialNumber,
-  SwaggerEquipmentDomainUpdate,
-  SwaggerEquipmentDomainSoftDelete,
   SwaggerEquipmentDomainRestore,
+  SwaggerEquipmentDomainSoftDelete,
+  SwaggerEquipmentDomainUpdate,
   SwaggerEquipmentFamilyCreate,
   SwaggerEquipmentFamilyFindAll,
   SwaggerEquipmentFamilyFindOne,
   SwaggerEquipmentFamilyFindOneBySerialNumber,
-  SwaggerEquipmentFamilyUpdate,
-  SwaggerEquipmentFamilySoftDelete,
   SwaggerEquipmentFamilyRestore,
+  SwaggerEquipmentFamilySoftDelete,
+  SwaggerEquipmentFamilyUpdate,
+  SwaggerEquipmentTypeCreate,
+  SwaggerEquipmentTypeFindAll,
+  SwaggerEquipmentTypeFindOne,
+  SwaggerEquipmentTypeFindOneBySerialNumber,
+  SwaggerEquipmentTypeRestore,
+  SwaggerEquipmentTypeSoftDelete,
+  SwaggerEquipmentTypeUpdate,
 } from '../helpers/equipment-set-decorators.helper';
 import { BetApiErrorResponse } from '../services/abstract-bet.service';
+import { EquipmentService } from '../services/equipment.service';
+import {
+  EquipmentDomainResponse,
+  EquipmentFamilyResponse,
+  EquipmentTypeResponse,
+} from '../types/equipment/equipment-response.types';
 
 @ApiTags(Resources.EQUIPMENT)
 @SwaggerFailureResponse()

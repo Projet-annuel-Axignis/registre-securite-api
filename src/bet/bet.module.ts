@@ -12,6 +12,8 @@ import { BrandService } from './services/brand.service';
 import { CompatibilityGroupService } from './services/compatibility-group.service';
 import { ProductDocumentTypeService } from './services/product-document-type.service';
 import { ProductDocumentTypeController } from './controllers/product-document-type.controller';
+import { ProductDocumentController } from './controllers/product-document.controller';
+import { ProductDocumentService } from './services/product-document.service';
 
 @Module({
   imports: [HttpModule],
@@ -22,6 +24,7 @@ import { ProductDocumentTypeController } from './controllers/product-document-ty
     BrandController,
     CompatibilityGroupController,
     ProductDocumentTypeController,
+    ProductDocumentController,
   ],
   providers: [
     EquipmentService,
@@ -30,6 +33,7 @@ import { ProductDocumentTypeController } from './controllers/product-document-ty
     BrandService,
     CompatibilityGroupService,
     ProductDocumentTypeService,
+    ProductDocumentService,
   ],
 })
 export class BetModule {}

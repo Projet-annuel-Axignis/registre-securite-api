@@ -8,7 +8,7 @@ import {
   BrandRestoreSwaggerResponse,
   BrandSoftDeleteSwaggerResponse,
   BrandUpdateSwaggerResponse,
-} from '../types/brand-swagger-response.types';
+} from '../types/product/brand-swagger-response.types';
 
 // Brand Swagger Decorators
 export const SwaggerBrandCreate = () =>

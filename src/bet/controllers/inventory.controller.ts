@@ -7,20 +7,20 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { InventoryService } from '../services/inventory.service';
 import { CreateInventoryItemDto } from '../dtos/inventory/create-inventory-item.dto';
-import { UpdateInventoryItemDto } from '../dtos/inventory/update-inventory-item.dto';
 import { InventoryItemQueryFilterDto } from '../dtos/inventory/inventory-item-query-filter.dto';
-import { InventoryItemResponse } from '../types/inventory-response.types';
+import { UpdateInventoryItemDto } from '../dtos/inventory/update-inventory-item.dto';
 import {
   SwaggerInventoryItemCreate,
   SwaggerInventoryItemFindAll,
   SwaggerInventoryItemFindOne,
-  SwaggerInventoryItemUpdate,
-  SwaggerInventoryItemSoftDelete,
   SwaggerInventoryItemRestore,
+  SwaggerInventoryItemSoftDelete,
+  SwaggerInventoryItemUpdate,
 } from '../helpers/inventory-set-decorators.helper';
 import { BetApiErrorResponse } from '../services/abstract-bet.service';
+import { InventoryService } from '../services/inventory.service';
+import { InventoryItemResponse } from '../types/inventory/inventory-response.types';
 
 @ApiTags(Resources.INVENTORY)
 @SwaggerFailureResponse()

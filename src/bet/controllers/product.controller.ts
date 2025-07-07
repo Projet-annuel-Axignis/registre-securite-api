@@ -7,20 +7,20 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
-import { ProductService } from '../services/product.service';
 import { CreateProductDto } from '../dtos/product/create-product.dto';
-import { UpdateProductDto } from '../dtos/product/update-product.dto';
 import { ProductQueryFilterDto } from '../dtos/product/product-query-filter.dto';
-import { ProductResponse } from '../types/product-response.types';
+import { UpdateProductDto } from '../dtos/product/update-product.dto';
 import {
   SwaggerProductCreate,
   SwaggerProductFindAll,
   SwaggerProductFindOne,
-  SwaggerProductUpdate,
-  SwaggerProductSoftDelete,
   SwaggerProductRestore,
+  SwaggerProductSoftDelete,
+  SwaggerProductUpdate,
 } from '../helpers/product-set-decorators.helper';
 import { BetApiErrorResponse } from '../services/abstract-bet.service';
+import { ProductService } from '../services/product.service';
+import { ProductResponse } from '../types/product/product-response.types';
 
 @ApiTags(Resources.PRODUCT)
 @SwaggerFailureResponse()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductResponse } from './product-response.types';
+import { ProductResponse } from '../product/product-response.types';
 
 export class ProductSwaggerResponse extends ProductResponse {}
 

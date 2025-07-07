@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InventoryItemResponse } from './inventory-response.types';
+import { InventoryItemResponse } from '../inventory/inventory-response.types';
 
 export class InventoryItemSwaggerResponse extends InventoryItemResponse {}
 
