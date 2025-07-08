@@ -295,3 +295,42 @@ export const SwaggerBuildingDelete = () => {
     }),
   );
 };
+
+export const SwaggerBuildingUpdateState = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Archive or restore building by id' }),
+    ApiOkResponse({
+      description: 'Building state updated',
+      schema: {
+        type: 'object',
+        properties: {
+          message: { type: 'string', example: 'Building archived' },
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'Bâtiment A' },
+        },
+      },
+      examples: {
+        archived: {
+          summary: 'Building archived',
+          value: {
+            message: 'Building archived',
+            id: 1,
+            name: 'Bâtiment A',
+          },
+        },
+        restored: {
+          summary: 'Building restored',
+          value: {
+            message: 'Building restored',
+            id: 1,
+            name: 'Bâtiment A',
+          },
+        },
+      },
+    }),
+    ApiNotFoundResponse({
+      description: 'Building not found',
+      type: SwaggerBuildingNotFound,
+    }),
+  );
+};

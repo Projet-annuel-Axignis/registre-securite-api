@@ -24,6 +24,7 @@ import {
   SwaggerBuildingFloorFindAll,
   SwaggerBuildingFloorFindOne,
   SwaggerBuildingFloorUpdate,
+  SwaggerBuildingFloorUpdateState,
 } from '../helpers/building-floor-set-decorators.helper';
 import {
   SwaggerBuildingCreate,
@@ -31,8 +32,10 @@ import {
   SwaggerBuildingFindAll,
   SwaggerBuildingFindOne,
   SwaggerBuildingUpdate,
+  SwaggerBuildingUpdateState,
 } from '../helpers/building-set-decorators.helper';
 import { BuildingService } from '../services/building.service';
+import { BuildingFloorUpdatedResponse, BuildingUpdatedResponse } from '../types/building.types';
 
 @ApiTags(Resources.BUILDING)
 @SwaggerFailureResponse()
@@ -100,6 +103,23 @@ export class BuildingController {
     await this.buildingService.softDeleteFloor(id, user);
   }
 
+  @Patch('floors/:id/update-state')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingFloorUpdateState()
+  @ActivityLogger({ description: "Modifier l'état d'un étage" })
+  async updateFloorState(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: LoggedUser,
+  ): Promise<BuildingFloorUpdatedResponse> {
+    const buildingFloor = await this.buildingService.findOneFloor(id, user);
+
+    if (buildingFloor.deletedAt) {
+      return await this.buildingService.restoreBuildingFloor(buildingFloor);
+    } else {
+      return await this.buildingService.archiveBuildingFloor(buildingFloor);
+    }
+  }
+
   @Post()
   @Roles(RoleType.COMPANY_MANAGER)
   @SwaggerBuildingCreate()
@@ -153,5 +173,22 @@ export class BuildingController {
   @ActivityLogger({ description: 'Supprimer un bâtiment' })
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.buildingService.softDelete(id, user);
+  }
+
+  @Patch(':id/update-state')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingUpdateState()
+  @ActivityLogger({ description: "Modifier l'état d'un bâtiment" })
+  async updateState(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: LoggedUser,
+  ): Promise<BuildingUpdatedResponse> {
+    const building = await this.buildingService.findOne(id, user);
+
+    if (building.deletedAt) {
+      return await this.buildingService.restoreBuilding(building);
+    } else {
+      return await this.buildingService.archiveBuilding(building);
+    }
   }
 }

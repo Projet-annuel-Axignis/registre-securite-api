@@ -49,3 +49,39 @@ export const SwaggerBuildingFloorDelete = () => {
     ApiNotFoundResponse(BuildingFloorConfigSwagger.BUILDING_FLOOR_NOT_FOUND),
   );
 };
+
+export const SwaggerBuildingFloorUpdateState = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Archive or restore building floor by id' }),
+    ApiOkResponse({
+      description: 'Building floor state updated',
+      schema: {
+        type: 'object',
+        properties: {
+          message: { type: 'string', example: 'Building floor archived' },
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'Rez-de-chaussée' },
+        },
+      },
+      examples: {
+        archived: {
+          summary: 'Building floor archived',
+          value: {
+            message: 'Building floor archived',
+            id: 1,
+            name: 'Rez-de-chaussée',
+          },
+        },
+        restored: {
+          summary: 'Building floor restored',
+          value: {
+            message: 'Building floor restored',
+            id: 1,
+            name: 'Rez-de-chaussée',
+          },
+        },
+      },
+    }),
+    ApiNotFoundResponse(BuildingFloorConfigSwagger.BUILDING_FLOOR_NOT_FOUND),
+  );
+};

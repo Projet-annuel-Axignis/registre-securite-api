@@ -21,6 +21,7 @@ import {
 } from '../helpers/exceptions/building-floor.exception';
 import { BuildingNotFoundException, BuildingNotOwnedException } from '../helpers/exceptions/building.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
+import { BuildingFloorUpdatedResponse, BuildingUpdatedResponse } from '../types/building.types';
 import { TypologyCode } from '../types/typology-code.types';
 import { BuildingEnumService } from './building-enum.service';
 import { SiteService } from './site.service';
@@ -233,5 +234,49 @@ export class BuildingService {
   async softDeleteFloor(id: number, user: LoggedUser): Promise<void> {
     await this.findOneFloor(id, user);
     await this.buildingFloorRepository.softDelete(id);
+  }
+
+  /**
+   * Archives a building by performing a soft delete.
+   *
+   * @param {Building} building - The building entity to archive.
+   * @returns {Promise<BuildingUpdatedResponse>} A response object containing the archived building's details.
+   */
+  async archiveBuilding(building: Building): Promise<BuildingUpdatedResponse> {
+    await this.buildingRepository.softDelete(building.id);
+    return { message: 'Building archived', id: building.id, name: building.name };
+  }
+
+  /**
+   * Restores a previously archived building.
+   *
+   * @param {Building} building - The building entity to restore.
+   * @returns {Promise<BuildingUpdatedResponse>} A response object containing the restored building's details.
+   */
+  async restoreBuilding(building: Building): Promise<BuildingUpdatedResponse> {
+    await this.buildingRepository.restore(building.id);
+    return { message: 'Building restored', id: building.id, name: building.name };
+  }
+
+  /**
+   * Archives a building floor by performing a soft delete.
+   *
+   * @param {BuildingFloor} buildingFloor - The building floor entity to archive.
+   * @returns {Promise<BuildingFloorUpdatedResponse>} A response object containing the archived building floor's details.
+   */
+  async archiveBuildingFloor(buildingFloor: BuildingFloor): Promise<BuildingFloorUpdatedResponse> {
+    await this.buildingFloorRepository.softDelete(buildingFloor.id);
+    return { message: 'Building floor archived', id: buildingFloor.id, name: buildingFloor.name };
+  }
+
+  /**
+   * Restores a previously archived building floor.
+   *
+   * @param {BuildingFloor} buildingFloor - The building floor entity to restore.
+   * @returns {Promise<BuildingFloorUpdatedResponse>} A response object containing the restored building floor's details.
+   */
+  async restoreBuildingFloor(buildingFloor: BuildingFloor): Promise<BuildingFloorUpdatedResponse> {
+    await this.buildingFloorRepository.restore(buildingFloor.id);
+    return { message: 'Building floor restored', id: buildingFloor.id, name: buildingFloor.name };
   }
 }
