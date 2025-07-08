@@ -15,3 +15,15 @@ export interface LotUpdatedResponse {
   id: number;
   name: string;
 }
+
+export interface PartUpdatedResponse {
+  message: string;
+  id: number;
+  name: string;
+}
+
+export interface PartFloorUpdatedResponse {
+  message: string;
+  id: number;
+  name: string;
+}

@@ -12,6 +12,7 @@ import { UpdatePartFloorDto } from '../dto/part-floor/update-part-floor.dto';
 import { BuildingNotOwnedException } from '../helpers/exceptions/building.exception';
 import { PartFloorNotFoundException, PartFloorNotOwnedException } from '../helpers/exceptions/part-floor.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
+import { PartFloorUpdatedResponse } from '../types/building.types';
 import { BuildingService } from './building.service';
 import { PartService } from './part.service';
 
@@ -172,5 +173,27 @@ export class PartFloorService {
   async softDelete(id: number, user: LoggedUser): Promise<void> {
     await this.findOne(id, user);
     await this.partFloorRepository.softDelete(id);
+  }
+
+  /**
+   * Archives a part floor by performing a soft delete.
+   *
+   * @param {PartFloor} partFloor - The part floor entity to archive.
+   * @returns {Promise<PartFloorUpdatedResponse>} A response object containing the archived part floor's details.
+   */
+  async archivePartFloor(partFloor: PartFloor): Promise<PartFloorUpdatedResponse> {
+    await this.partFloorRepository.softDelete(partFloor.id);
+    return { message: 'Part floor archived', id: partFloor.id, name: partFloor.name };
+  }
+
+  /**
+   * Restores a previously archived part floor.
+   *
+   * @param {PartFloor} partFloor - The part floor entity to restore.
+   * @returns {Promise<PartFloorUpdatedResponse>} A response object containing the restored part floor's details.
+   */
+  async restorePartFloor(partFloor: PartFloor): Promise<PartFloorUpdatedResponse> {
+    await this.partFloorRepository.restore(partFloor.id);
+    return { message: 'Part floor restored', id: partFloor.id, name: partFloor.name };
   }
 }

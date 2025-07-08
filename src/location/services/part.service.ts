@@ -11,6 +11,7 @@ import { PartQueryFilterDto } from '../dto/part/part-query-filter.dto';
 import { UpdatePartDto } from '../dto/part/update-part.dto';
 import { PartNotFoundException, PartNotOwnedException } from '../helpers/exceptions/part.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
+import { PartUpdatedResponse } from '../types/building.types';
 import { TypologyCode } from './../types/typology-code.types';
 import { BuildingService } from './building.service';
 import { ErpTypeService } from './erp-type.service';
@@ -130,5 +131,27 @@ export class PartService {
   async softDelete(id: number, user: LoggedUser): Promise<void> {
     await this.findOne(id, user);
     await this.partRepository.softDelete(id);
+  }
+
+  /**
+   * Archives a part by performing a soft delete.
+   *
+   * @param {Part} part - The part entity to archive.
+   * @returns {Promise<PartUpdatedResponse>} A response object containing the archived part's details.
+   */
+  async archivePart(part: Part): Promise<PartUpdatedResponse> {
+    await this.partRepository.softDelete(part.id);
+    return { message: 'Part archived', id: part.id, name: part.name };
+  }
+
+  /**
+   * Restores a previously archived part.
+   *
+   * @param {Part} part - The part entity to restore.
+   * @returns {Promise<PartUpdatedResponse>} A response object containing the restored part's details.
+   */
+  async restorePart(part: Part): Promise<PartUpdatedResponse> {
+    await this.partRepository.restore(part.id);
+    return { message: 'Part restored', id: part.id, name: part.name };
   }
 }

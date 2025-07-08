@@ -18,8 +18,11 @@ import { PartQueryFilterDto } from '../dto/part/part-query-filter.dto';
 import { UpdatePartDto } from '../dto/part/update-part.dto';
 import { PartFloor } from '../entities/part-floor.entity';
 import { Part } from '../entities/part.entity';
+import { SwaggerPartFloorUpdateState } from '../helpers/part-floor-set-decorators.helper';
+import { SwaggerPartUpdateState } from '../helpers/part-set-decorators.helper';
 import { PartFloorService } from '../services/part-floor.service';
 import { PartService } from '../services/part.service';
+import { PartFloorUpdatedResponse, PartUpdatedResponse } from '../types/building.types';
 
 @ApiTags(Resources.PART)
 @SwaggerFailureResponse()
@@ -167,5 +170,58 @@ export class PartController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.partService.softDelete(id, user);
+  }
+
+  /**
+   * Modifie l'état d'une partie (par exemple, active/inactive).
+   *
+   * @param {number} id - L'identifiant unique de la partie.
+   * @returns {Promise<PartUpdatedResponse>} La réponse après mise à jour de l'état.
+   *
+   * @throws {PartNotFoundException} - Si la partie est introuvable.
+   *
+   * @example
+   * PATCH /parts/1/update-state
+   */
+  @Patch(':id/update-state')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerPartUpdateState()
+  @ActivityLogger({ description: "Modifier l'état d'une partie" })
+  async updateState(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<PartUpdatedResponse> {
+    const part = await this.partService.findOne(id, user);
+
+    if (part.deletedAt) {
+      return await this.partService.restorePart(part);
+    } else {
+      return await this.partService.archivePart(part);
+    }
+  }
+
+  /**
+   * Modifie l'état d'un étage de partie (par exemple, active/inactive).
+   *
+   * @param {number} id - L'identifiant unique de l'étage de partie.
+   * @returns {Promise<PartFloorUpdatedResponse>} La réponse après mise à jour de l'état.
+   *
+   * @throws {PartFloorNotFoundException} - Si l'étage de partie est introuvable.
+   *
+   * @example
+   * PATCH /parts/floors/1/update-state
+   */
+  @Patch('floors/:id/update-state')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerPartFloorUpdateState()
+  @ActivityLogger({ description: "Modifier l'état d'un étage de partie" })
+  async updateFloorState(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: LoggedUser,
+  ): Promise<PartFloorUpdatedResponse> {
+    const partFloor = await this.partFloorService.findOne(id, user);
+
+    if (partFloor.deletedAt) {
+      return await this.partFloorService.restorePartFloor(partFloor);
+    } else {
+      return await this.partFloorService.archivePartFloor(partFloor);
+    }
   }
 }
