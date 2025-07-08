@@ -9,3 +9,9 @@ export interface BuildingFloorUpdatedResponse {
   id: number;
   name: string;
 }
+
+export interface LotUpdatedResponse {
+  message: string;
+  id: number;
+  name: string;
+}

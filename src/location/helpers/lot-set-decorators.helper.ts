@@ -49,3 +49,39 @@ export const SwaggerLotDelete = () => {
     ApiNotFoundResponse(LotConfigSwagger.LOT_NOT_FOUND),
   );
 };
+
+export const SwaggerLotUpdateState = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Archive or restore lot by id' }),
+    ApiOkResponse({
+      description: 'Lot state updated',
+      schema: {
+        type: 'object',
+        properties: {
+          message: { type: 'string', example: 'Lot archived' },
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'Lot A' },
+        },
+      },
+      examples: {
+        archived: {
+          summary: 'Lot archived',
+          value: {
+            message: 'Lot archived',
+            id: 1,
+            name: 'Lot A',
+          },
+        },
+        restored: {
+          summary: 'Lot restored',
+          value: {
+            message: 'Lot restored',
+            id: 1,
+            name: 'Lot A',
+          },
+        },
+      },
+    }),
+    ApiNotFoundResponse(LotConfigSwagger.LOT_NOT_FOUND),
+  );
+};

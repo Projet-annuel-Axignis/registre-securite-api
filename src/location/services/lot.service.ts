@@ -12,6 +12,7 @@ import { UpdateLotDto } from '../dto/lot/update-lot.dto';
 import { BuildingFloorNotOwnedException } from '../helpers/exceptions/building-floor.exception';
 import { LotNotFoundException, LotNotOwnedException } from '../helpers/exceptions/lot.exception';
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
+import { LotUpdatedResponse } from '../types/building.types';
 import { BuildingService } from './building.service';
 
 @Injectable()
@@ -109,5 +110,27 @@ export class LotService {
   async softDelete(id: number, user: LoggedUser): Promise<void> {
     await this.findOne(id, user);
     await this.lotRepository.softDelete(id);
+  }
+
+  /**
+   * Archives a lot by performing a soft delete.
+   *
+   * @param {Lot} lot - The lot entity to archive.
+   * @returns {Promise<LotUpdatedResponse>} A response object containing the archived lot's details.
+   */
+  async archiveLot(lot: Lot): Promise<LotUpdatedResponse> {
+    await this.lotRepository.softDelete(lot.id);
+    return { message: 'Lot archived', id: lot.id, name: lot.name };
+  }
+
+  /**
+   * Restores a previously archived lot.
+   *
+   * @param {Lot} lot - The lot entity to restore.
+   * @returns {Promise<LotUpdatedResponse>} A response object containing the restored lot's details.
+   */
+  async restoreLot(lot: Lot): Promise<LotUpdatedResponse> {
+    await this.lotRepository.restore(lot.id);
+    return { message: 'Lot restored', id: lot.id, name: lot.name };
   }
 }

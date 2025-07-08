@@ -20,8 +20,10 @@ import {
   SwaggerLotFindAll,
   SwaggerLotFindOne,
   SwaggerLotUpdate,
+  SwaggerLotUpdateState,
 } from '../helpers/lot-set-decorators.helper';
 import { LotService } from '../services/lot.service';
+import { LotUpdatedResponse } from '../types/building.types';
 
 @ApiTags(Resources.LOT)
 @SwaggerFailureResponse()
@@ -84,5 +86,19 @@ export class LotController {
   @ActivityLogger({ description: 'Supprimer un lot' })
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.lotService.softDelete(id, user);
+  }
+
+  @Patch(':id/update-state')
+  @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerLotUpdateState()
+  @ActivityLogger({ description: "Modifier l'état d'un lot" })
+  async updateState(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<LotUpdatedResponse> {
+    const lot = await this.lotService.findOne(id, user);
+
+    if (lot.deletedAt) {
+      return await this.lotService.restoreLot(lot);
+    } else {
+      return await this.lotService.archiveLot(lot);
+    }
   }
 }
