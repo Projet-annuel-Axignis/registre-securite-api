@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { BetModule } from './bet/bet.module';
 import { ApiConfigModule } from './config/api-config.module';
 import configuration from './config/helpers/api-config.config';
+import { InterventionModule } from './intervention/intervention.module';
 import { LocationModule } from './location/location.module';
 import { dataSourceOptions } from './orm/data-source';
 import { UserModule } from './users/user.module';
@@ -25,6 +26,7 @@ import { UserModule } from './users/user.module';
     AuthModule,
     LocationModule,
     BetModule,
+    InterventionModule,
   ],
   providers: [
     {
