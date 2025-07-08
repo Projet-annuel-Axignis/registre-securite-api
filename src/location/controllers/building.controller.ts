@@ -18,7 +18,20 @@ import { CreateBuildingDto } from '../dto/building/create-building.dto';
 import { UpdateBuildingDto } from '../dto/building/update-building.dto';
 import { BuildingFloor } from '../entities/building-floor.entity';
 import { Building } from '../entities/building.entity';
-import { SwaggerBuildingFindAll, SwaggerBuildingFindOne } from '../helpers/building-set-decorators.helper';
+import {
+  SwaggerBuildingFloorCreate,
+  SwaggerBuildingFloorDelete,
+  SwaggerBuildingFloorFindAll,
+  SwaggerBuildingFloorFindOne,
+  SwaggerBuildingFloorUpdate,
+} from '../helpers/building-floor-set-decorators.helper';
+import {
+  SwaggerBuildingCreate,
+  SwaggerBuildingDelete,
+  SwaggerBuildingFindAll,
+  SwaggerBuildingFindOne,
+  SwaggerBuildingUpdate,
+} from '../helpers/building-set-decorators.helper';
 import { BuildingService } from '../services/building.service';
 
 @ApiTags(Resources.BUILDING)
@@ -32,6 +45,7 @@ export class BuildingController {
 
   @Post('floors')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingFloorCreate()
   @ActivityLogger({ description: 'Créer un nouvel étage' })
   async createFloor(
     @Body() createBuildingFloorDto: CreateBuildingFloorDto,
@@ -42,6 +56,7 @@ export class BuildingController {
 
   @Get('floors')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerBuildingFloorFindAll()
   async findAllFloors(@Query() query: BuildingFloorQueryFilterDto, @GetUser() user: LoggedUser) {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
       if (query.filterField) {
@@ -60,12 +75,14 @@ export class BuildingController {
 
   @Get('floors/:id')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerBuildingFloorFindOne()
   async findOneFloor(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser) {
     return await this.buildingService.findOneFloor(id, user);
   }
 
   @Patch('floors/:id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingFloorUpdate()
   @ActivityLogger({ description: 'Modifier un étage' })
   async updateFloor(
     @Param('id', ParseIntPipe) id: number,
@@ -77,6 +94,7 @@ export class BuildingController {
 
   @Delete('floors/:id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingFloorDelete()
   @ActivityLogger({ description: 'Supprimer un étage' })
   async removeFloor(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.buildingService.softDeleteFloor(id, user);
@@ -84,6 +102,7 @@ export class BuildingController {
 
   @Post()
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingCreate()
   @ActivityLogger({ description: 'Créer un nouveau bâtiment' })
   async create(@Body() createBuildingDto: CreateBuildingDto, @GetUser() user: LoggedUser): Promise<Building> {
     return await this.buildingService.create(createBuildingDto, user);
@@ -118,6 +137,7 @@ export class BuildingController {
 
   @Patch(':id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingUpdate()
   @ActivityLogger({ description: 'Modifier un bâtiment' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -129,6 +149,7 @@ export class BuildingController {
 
   @Delete(':id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerBuildingDelete()
   @ActivityLogger({ description: 'Supprimer un bâtiment' })
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.buildingService.softDelete(id, user);

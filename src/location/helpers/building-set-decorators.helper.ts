@@ -1,5 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiNotFoundResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { SwaggerBuildingExample, SwaggerBuildingNotFound } from '../types/building-swagger-response.types';
 
 export const SwaggerBuildingFindAll = () => {
@@ -246,6 +252,43 @@ export const SwaggerBuildingFindOne = () => {
         },
       },
     }),
+    ApiNotFoundResponse({
+      description: 'Building not found',
+      type: SwaggerBuildingNotFound,
+    }),
+  );
+};
+
+export const SwaggerBuildingCreate = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Create a building' }),
+    ApiCreatedResponse({
+      description: 'The building has been successfully created',
+      type: SwaggerBuildingExample,
+    }),
+    ApiBadRequestResponse({ description: 'Bad request - invalid data provided' }),
+  );
+};
+
+export const SwaggerBuildingUpdate = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Update a building by id' }),
+    ApiOkResponse({
+      description: 'The building has been successfully updated',
+      type: SwaggerBuildingExample,
+    }),
+    ApiNotFoundResponse({
+      description: 'Building not found',
+      type: SwaggerBuildingNotFound,
+    }),
+    ApiBadRequestResponse({ description: 'Bad request - invalid data provided' }),
+  );
+};
+
+export const SwaggerBuildingDelete = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Delete a building by id' }),
+    ApiOkResponse({ description: 'Building successfully deleted' }),
     ApiNotFoundResponse({
       description: 'Building not found',
       type: SwaggerBuildingNotFound,
