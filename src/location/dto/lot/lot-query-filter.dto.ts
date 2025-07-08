@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum LotEntityFields {
@@ -21,7 +22,12 @@ export class LotQueryFilterDto extends PaginationParamsDto {
   @IsOptional()
   sortField: string = LotEntityFields.CREATED_AT;
 
-  @ApiPropertyOptional({ description: 'Boolean to get archived data', default: false })
+  @ApiPropertyOptional({ type: 'boolean', description: 'Boolean to get archived data', default: false })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsBoolean()
   @IsOptional()
   includeDeleted?: boolean;

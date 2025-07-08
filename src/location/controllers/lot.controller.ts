@@ -14,6 +14,13 @@ import { CreateLotDto } from '../dto/lot/create-lot.dto';
 import { LotQueryFilterDto } from '../dto/lot/lot-query-filter.dto';
 import { UpdateLotDto } from '../dto/lot/update-lot.dto';
 import { Lot } from '../entities/lot.entity';
+import {
+  SwaggerLotCreate,
+  SwaggerLotDelete,
+  SwaggerLotFindAll,
+  SwaggerLotFindOne,
+  SwaggerLotUpdate,
+} from '../helpers/lot-set-decorators.helper';
 import { LotService } from '../services/lot.service';
 
 @ApiTags(Resources.LOT)
@@ -27,6 +34,7 @@ export class LotController {
 
   @Post()
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerLotCreate()
   @ActivityLogger({ description: 'Créer un nouveau lot' })
   async create(@Body() createLotDto: CreateLotDto, @GetUser() user: LoggedUser): Promise<Lot> {
     return await this.lotService.create(createLotDto, user);
@@ -34,6 +42,7 @@ export class LotController {
 
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerLotFindAll()
   async findAll(@Query() query: LotQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Lot>> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
       if (query.filterField) {
@@ -52,12 +61,14 @@ export class LotController {
 
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerLotFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser) {
     return await this.lotService.findOne(id, user);
   }
 
   @Patch(':id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerLotUpdate()
   @ActivityLogger({ description: 'Modifier un lot' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -69,6 +80,7 @@ export class LotController {
 
   @Delete(':id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerLotDelete()
   @ActivityLogger({ description: 'Supprimer un lot' })
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<void> {
     await this.lotService.softDelete(id, user);
