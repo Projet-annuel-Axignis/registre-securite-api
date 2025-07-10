@@ -11,4 +11,5 @@ export enum Resources {
   INVENTORY = 'inventory',
   PRODUCT = 'product',
   INTERVENTION_TYPE = 'intervention-type',
+  INTERVENTION = 'intervention',
 }
