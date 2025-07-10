@@ -12,6 +12,13 @@ import { CreateInterventionTypeDto } from '../dto/create-intervention-type.dto';
 import { InterventionTypeQueryFilterDto } from '../dto/intervention-type-query-filter.dto';
 import { UpdateInterventionTypeDto } from '../dto/update-intervention-type.dto';
 import { InterventionType } from '../entities/intervention-type.entity';
+import {
+  SwaggerInterventionTypeCreate,
+  SwaggerInterventionTypeDelete,
+  SwaggerInterventionTypeFindAll,
+  SwaggerInterventionTypeFindOne,
+  SwaggerInterventionTypeUpdate,
+} from '../helpers/intervention-type-set-decorators.helper';
 import { InterventionTypeService } from '../services/intervention-type.service';
 
 @ApiTags(Resources.INTERVENTION_TYPE)
@@ -25,6 +32,7 @@ export class InterventionTypeController {
 
   @Post()
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerInterventionTypeCreate()
   @ActivityLogger({ description: "Créer un nouveau type d'intervention" })
   async create(@Body() createInterventionTypeDto: CreateInterventionTypeDto): Promise<InterventionType> {
     return await this.interventionTypeService.create(createInterventionTypeDto);
@@ -32,6 +40,7 @@ export class InterventionTypeController {
 
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerInterventionTypeFindAll()
   async findAll(@Query() query: InterventionTypeQueryFilterDto): Promise<PaginatedList<InterventionType>> {
     const [interventionTypes, currentResults, totalResults] = await this.interventionTypeService.findAll(query);
     return { ...query, totalResults, currentResults, results: interventionTypes };
@@ -39,12 +48,14 @@ export class InterventionTypeController {
 
   @Get(':code')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerInterventionTypeFindOne()
   async findOne(@Param('code') code: string): Promise<InterventionType> {
     return await this.interventionTypeService.findOne(code);
   }
 
   @Patch(':code')
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerInterventionTypeUpdate()
   @ActivityLogger({ description: "Modifier un type d'intervention" })
   async update(
     @Param('code') code: string,
@@ -55,6 +66,7 @@ export class InterventionTypeController {
 
   @Delete(':code')
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerInterventionTypeDelete()
   @ActivityLogger({ description: "Supprimer un type d'intervention" })
   async remove(@Param('code') code: string): Promise<void> {
     await this.interventionTypeService.delete(code);
