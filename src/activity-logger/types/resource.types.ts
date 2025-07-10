@@ -13,4 +13,5 @@ export enum Resources {
   INTERVENTION_TYPE = 'intervention-type',
   INTERVENTION = 'intervention',
   REPORT_TYPE = 'report-type',
+  ORGANIZATION = 'organization',
 }
