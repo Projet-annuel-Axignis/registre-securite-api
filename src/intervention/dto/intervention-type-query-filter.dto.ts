@@ -1,22 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationParamsDto } from '@src/paginator/paginator.dto';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
-export class InterventionTypeQueryFilterDto {
+enum InterventionTypeEntityFields {
+  ID = 'id',
+  CODE = 'code',
+  NAME = 'name',
+  CREATED_AT = 'createdAt',
+  UPDATED_AT = 'updatedAt',
+  DELETED_AT = 'deletedAt',
+}
+
+export class InterventionTypeQueryFilterDto extends PaginationParamsDto {
+  @ApiPropertyOptional({
+    example: InterventionTypeEntityFields.NAME,
+    description: 'Name of the column to sort',
+    default: InterventionTypeEntityFields.CREATED_AT,
+    enum: InterventionTypeEntityFields,
+  })
+  @IsEnum(InterventionTypeEntityFields)
+  @IsOptional()
+  sortField: string = InterventionTypeEntityFields.CREATED_AT;
+
   @ApiProperty({
-    description: 'Filter by intervention type code',
-    example: 'regulatory',
+    description: 'Include soft deleted intervention types',
+    example: false,
     required: false,
   })
-  @IsString()
+  @IsBoolean()
   @IsOptional()
-  code?: string;
-
-  @ApiProperty({
-    description: 'Filter by intervention type name',
-    example: 'Vérification',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  name?: string;
+  includeDeleted?: boolean;
 }
