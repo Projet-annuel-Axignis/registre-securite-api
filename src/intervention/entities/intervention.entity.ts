@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
+import { Report } from '@src/report/entities/report.entity';
 import { User } from '@src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, Relation } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { InterventionStatus } from '../types/intervention-status.types';
-import { Periodicity } from '../types/periodicity.types';
 import { InterventionType } from './intervention-type.entity';
 
 @Entity()
@@ -36,14 +36,6 @@ export class Intervention extends SoftDeleteEntity {
   })
   @Column({ type: 'enum', enum: InterventionStatus, enumName: 'intervention_status_enum' })
   status: InterventionStatus;
-
-  @ApiProperty({
-    description: 'Frequency of the intervention',
-    enum: Periodicity,
-    example: Periodicity.ANNUAL,
-  })
-  @Column({ type: 'enum', enum: Periodicity, enumName: 'intervention_periodicity_enum' })
-  periodicity: Periodicity;
 
   @ApiProperty({
     description: 'Planned date and time for the intervention',
@@ -81,4 +73,7 @@ export class Intervention extends SoftDeleteEntity {
   })
   @ManyToOne(() => User, (user) => user.interventions)
   terminatedBy: Relation<User> | null;
+
+  @OneToMany(() => Report, (report) => report.intervention)
+  reports: Relation<Report>[];
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToMany, PrimaryColumn, Relation } from 'typeorm';
+import { Report } from '@src/report/entities/report.entity';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn, Relation } from 'typeorm';
 import { TypologyCode } from '../types/typology-code.types';
 import { Building } from './building.entity';
 
@@ -20,4 +21,7 @@ export class Typology {
 
   @ManyToMany(() => Building, (building) => building.typologies)
   buildings: Relation<Building>[];
+
+  @OneToMany(() => Report, (report) => report.typology)
+  reports: Relation<Report>[];
 }

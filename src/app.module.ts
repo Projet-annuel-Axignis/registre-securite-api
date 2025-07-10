@@ -11,6 +11,7 @@ import configuration from './config/helpers/api-config.config';
 import { InterventionModule } from './intervention/intervention.module';
 import { LocationModule } from './location/location.module';
 import { dataSourceOptions } from './orm/data-source';
+import { ReportModule } from './report/report.module';
 import { UserModule } from './users/user.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { UserModule } from './users/user.module';
     LocationModule,
     BetModule,
     InterventionModule,
+    ReportModule,
   ],
   providers: [
     {
