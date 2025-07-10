@@ -38,7 +38,7 @@ export class Observation extends SoftDeleteEntity {
   report: Relation<Report>;
 
   @ManyToMany(() => Part, (part) => part.observations)
-  parts: Relation<Part>;
+  parts: Relation<Part>[];
 
   @OneToMany(() => ObservationFile, (file) => file.observation)
   files: Relation<ObservationFile>[];
