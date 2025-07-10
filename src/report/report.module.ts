@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BetModule } from '@src/bet/bet.module';
+import { InterventionModule } from '@src/intervention/intervention.module';
+import { Part } from '@src/location/entities/part.entity';
+import { Typology } from '@src/location/entities/typology.entity';
+import { LocationModule } from '@src/location/location.module';
 import { OrganizationController } from './controllers/organization.controller';
 import { ReportTypeController } from './controllers/report-type.controller';
+import { ReportController } from './controllers/report.controller';
 import { ObservationFile } from './entities/observation-file.entity';
 import { Observation } from './entities/observation.entity';
 import { Organization } from './entities/organization.entity';
@@ -10,11 +16,26 @@ import { ReportType } from './entities/report-type.entity';
 import { Report } from './entities/report.entity';
 import { OrganizationService } from './services/organization.service';
 import { ReportTypeService } from './services/report-type.service';
+import { ReportService } from './services/report.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReportType, Report, Organization, Observation, ReportFile, ObservationFile])],
-  controllers: [ReportTypeController, OrganizationController],
-  providers: [ReportTypeService, OrganizationService],
-  exports: [ReportTypeService, OrganizationService],
+  imports: [
+    TypeOrmModule.forFeature([
+      ReportType,
+      Report,
+      Organization,
+      Observation,
+      ReportFile,
+      ObservationFile,
+      Part,
+      Typology,
+    ]),
+    BetModule,
+    InterventionModule,
+    LocationModule,
+  ],
+  controllers: [ReportTypeController, OrganizationController, ReportController],
+  providers: [ReportTypeService, OrganizationService, ReportService],
+  exports: [ReportTypeService, OrganizationService, ReportService],
 })
 export class ReportModule {}

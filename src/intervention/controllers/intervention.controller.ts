@@ -31,7 +31,7 @@ export class InterventionController {
   constructor(private readonly interventionService: InterventionService) {}
 
   @Post()
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionCreate()
   @ActivityLogger({ description: 'Créer une nouvelle intervention' })
   async create(@Body() createInterventionDto: CreateInterventionDto): Promise<Intervention> {
@@ -39,7 +39,7 @@ export class InterventionController {
   }
 
   @Get()
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionFindAll()
   async findAll(@Query() query: InterventionQueryFilterDto): Promise<PaginatedList<Intervention>> {
     const [interventions, currentResults, totalResults] = await this.interventionService.findAll(query);
@@ -47,14 +47,14 @@ export class InterventionController {
   }
 
   @Get(':id')
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionFindOne()
   async findOne(@Param('id') id: string): Promise<Intervention> {
     return await this.interventionService.findOne(+id);
   }
 
   @Patch(':id')
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionUpdate()
   @ActivityLogger({ description: 'Modifier une intervention' })
   async update(@Param('id') id: string, @Body() updateInterventionDto: UpdateInterventionDto): Promise<Intervention> {
@@ -78,7 +78,7 @@ export class InterventionController {
   }
 
   @Patch(':id/start')
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionUpdate()
   @ActivityLogger({ description: 'Démarrer une intervention' })
   async startIntervention(@Param('id') id: string): Promise<Intervention> {
@@ -86,7 +86,7 @@ export class InterventionController {
   }
 
   @Patch(':id/terminate')
-  @Roles(RoleType.ADMINISTRATOR, RoleType.COMPANY_MEMBER)
+  @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerInterventionTerminate()
   @ActivityLogger({ description: 'Terminer une intervention' })
   async terminateIntervention(

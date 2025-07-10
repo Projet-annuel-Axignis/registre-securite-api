@@ -102,6 +102,25 @@ export class PartService {
     return part;
   }
 
+  /**
+   * Find parts by IDs without user authorization for internal service use
+   * This method is intended for use by other services that need to validate part existence
+   */
+  async findByIds(ids: number[]): Promise<Part[]> {
+    const parts = await this.partRepository.findByIds(ids);
+
+    if (parts.length !== ids.length) {
+      const foundIds = parts.map((part) => part.id);
+      const missingIds = ids.filter((id) => !foundIds.includes(id));
+      throw new PartNotFoundException({
+        missingIds: missingIds.join(', '),
+        message: `Parts with IDs ${missingIds.join(', ')} not found`,
+      });
+    }
+
+    return parts;
+  }
+
   async update(id: number, dto: UpdatePartDto, user: LoggedUser): Promise<Part> {
     const part = await this.findOne(id, user);
 

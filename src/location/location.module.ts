@@ -53,5 +53,6 @@ import { SiteService } from './services/site.service';
     HabFamilyService,
     ErpTypeService,
   ],
+  exports: [PartService],
 })
 export class LocationModule {}
