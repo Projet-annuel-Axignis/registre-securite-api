@@ -67,4 +67,9 @@ export class UploadProductDocumentDto {
   @IsOptional()
   @IsEnum(DocumentStatus)
   status?: DocumentStatus;
+
+  @ApiProperty({ description: 'ID of the user who uploaded the document', example: 1 })
+  @IsNotEmpty()
+  @IsNumber()
+  uploadedBy: number;
 }

@@ -128,8 +128,23 @@ export class ProductDocumentController {
           description: 'Status of the document',
           example: DocumentStatus.PUBLISHED,
         },
+        uploadedBy: {
+          type: 'number',
+          description: 'ID of the user who uploaded the document',
+          example: 1,
+        },
       },
-      required: ['file', 'serialNumber', 'fileName', 'size', 'issueDate', 'version', 'typeId', 'productIds'],
+      required: [
+        'file',
+        'serialNumber',
+        'fileName',
+        'size',
+        'issueDate',
+        'version',
+        'typeId',
+        'productIds',
+        'uploadedBy',
+      ],
     },
   })
   @Roles(RoleType.ADMINISTRATOR)
@@ -139,6 +154,8 @@ export class ProductDocumentController {
     @Body() uploadDto: UploadProductDocumentDto,
     @GetUser() user: LoggedUser,
   ): Promise<ProductDocumentResponse> {
+    // Set the uploadedBy field to the connected user ID
+    uploadDto.uploadedBy = user.id;
     return await this.productDocumentService.uploadDocument(uploadDto, file, user.id);
   }
 

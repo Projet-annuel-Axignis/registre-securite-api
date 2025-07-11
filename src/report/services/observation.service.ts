@@ -229,7 +229,7 @@ export class ObservationService {
     return await this.observationRepository.save(observation);
   }
 
-  async attachFileToObservation(observationId: number, file: MulterFile): Promise<ObservationFile> {
+  async attachFileToObservation(observationId: number, file: MulterFile, userId: number): Promise<ObservationFile> {
     // Validate observation exists
     await this.findOne(observationId);
 
@@ -243,9 +243,10 @@ export class ObservationService {
       version: 1,
       typeId: 1, // Default document type for observations
       productIds: [], // Empty array since this is for observations, not products
+      uploadedBy: userId,
     };
 
-    const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file);
+    const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);
 
     // Create observation file association
     const observationFile = this.observationFileRepository.create({

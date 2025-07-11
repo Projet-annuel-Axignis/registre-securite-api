@@ -19,8 +19,10 @@ import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
 import { Roles } from '@src/auth/decorators/role.decorator';
+import { GetUser } from '@src/auth/decorators/user.decorator';
 import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
 import { RolesGuard } from '@src/auth/guards/role.guard';
+import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { MulterFile } from '@src/bet/types/product/multer-file.types';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
@@ -114,8 +116,9 @@ export class ReportController {
       }),
     )
     file: MulterFile,
+    @GetUser() user: LoggedUser,
   ): Promise<ReportFile> {
-    return await this.reportService.attachFileToReport(+id, file);
+    return await this.reportService.attachFileToReport(+id, file, user.id);
   }
 
   @Get(':id/files')

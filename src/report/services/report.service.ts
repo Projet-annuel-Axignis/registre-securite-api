@@ -231,7 +231,7 @@ export class ReportService {
     return await this.findOne(id);
   }
 
-  async attachFileToReport(reportId: number, file: MulterFile): Promise<ReportFile> {
+  async attachFileToReport(reportId: number, file: MulterFile, userId: number): Promise<ReportFile> {
     // Validate report exists
     await this.findOne(reportId);
 
@@ -245,9 +245,10 @@ export class ReportService {
       version: 1,
       typeId: 1, // Default document type for reports
       productIds: [], // Empty array since this is for reports, not products
+      uploadedBy: userId,
     };
 
-    const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file);
+    const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);
 
     // Create report file association
     const reportFile = this.reportFileRepository.create({
