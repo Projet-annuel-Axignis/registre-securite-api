@@ -14,6 +14,7 @@ import { LotNotFoundException, LotNotOwnedException } from '../helpers/exception
 import { SiteNotOwnedException } from '../helpers/exceptions/site.exception';
 import { LotUpdatedResponse } from '../types/building.types';
 import { BuildingService } from './building.service';
+import { PartFloorService } from './part-floor.service';
 
 @Injectable()
 export class LotService {
@@ -21,10 +22,12 @@ export class LotService {
     @InjectRepository(Lot)
     private readonly lotRepository: Repository<Lot>,
     private readonly buildingService: BuildingService,
-  ) {}
+    private readonly partFloorService: PartFloorService,
+    // eslint-disable-next-line prettier/prettier
+  ) { }
 
   async create(dto: CreateLotDto, user: LoggedUser): Promise<Lot> {
-    const { name, buildingId, buildingFloorId } = dto;
+    const { name, buildingId, buildingFloorId, partFloorId } = dto;
 
     const building = await this.buildingService.findOne(buildingId, user);
 
@@ -33,12 +36,20 @@ export class LotService {
       throw new BuildingFloorNotOwnedException({ id: buildingFloorId });
     }
 
-    // TODO : add part floor
+    let partFloor;
+    if (partFloorId) {
+      partFloor = await this.partFloorService.findOne(partFloorId, user);
+      // Vérifier que le partFloor appartient au même buildingFloor
+      if (partFloor.buildingFloor.id !== buildingFloorId) {
+        throw new BuildingFloorNotOwnedException({ id: partFloorId });
+      }
+    }
 
     return await this.lotRepository.save({
       name,
       building,
       buildingFloor,
+      ...(partFloor && { partFloor }),
     });
   }
 
@@ -96,13 +107,20 @@ export class LotService {
   async update(id: number, dto: UpdateLotDto, user: LoggedUser): Promise<Lot> {
     const lot = await this.findOne(id, user);
 
-    const { name } = dto;
+    const { name, partFloorId } = dto;
 
     if (name) {
       lot.name = name;
     }
 
-    // TODO : add part floor
+    if (partFloorId) {
+      const partFloor = await this.partFloorService.findOne(partFloorId, user);
+      // Vérifier que le partFloor appartient au même buildingFloor que le lot
+      if (partFloor.buildingFloor.id !== lot.buildingFloor.id) {
+        throw new BuildingFloorNotOwnedException({ id: partFloorId });
+      }
+      lot.partFloor = partFloor;
+    }
 
     return await this.lotRepository.save(lot);
   }
