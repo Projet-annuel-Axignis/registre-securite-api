@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum ReportTypeEntityFields {
@@ -27,6 +28,11 @@ export class ReportTypeQueryFilterDto extends PaginationParamsDto {
     description: 'Include soft deleted report types',
     example: false,
     required: false,
+  })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
   })
   @IsBoolean()
   @IsOptional()
