@@ -88,7 +88,7 @@ export class UserService {
     const [users, totalResults] = await getEntityFilteredList({
       repository: this.userRepository,
       queryFilter: query,
-      withDeleted: true,
+      withDeleted: query.includeDeleted,
       relations: [
         { relation: 'role', alias: 'r' },
         { relation: 'company', alias: 'c', joins: [{ relation: 'plans', alias: 'p' }] },

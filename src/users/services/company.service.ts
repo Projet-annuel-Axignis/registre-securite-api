@@ -55,7 +55,7 @@ export class CompanyService {
     const [companies, totalResults] = await getEntityFilteredList({
       repository: this.companyRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
       relations: [{ relation: 'plans', alias: 'p' }],
     });
     return [companies, companies.length, totalResults];
