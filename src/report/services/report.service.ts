@@ -43,7 +43,7 @@ export class ReportService {
     private readonly organizationService: OrganizationService,
     private readonly partService: PartService,
     private readonly productDocumentService: ProductDocumentService,
-  ) { }
+  ) {}
 
   async create(createReportDto: CreateReportDto): Promise<Report> {
     // Validate report type exists
@@ -64,7 +64,7 @@ export class ReportService {
     // Validate organization exists if provided
     let organization: Organization | null = null;
     if (createReportDto.organizationId) {
-      organization = await this.organizationService.findOne(createReportDto.organizationId.toString());
+      organization = await this.organizationService.findOne(createReportDto.organizationId);
     }
 
     // Validate intervention exists if provided
@@ -162,7 +162,7 @@ export class ReportService {
 
     // Update organization if provided
     if (updateReportDto.organizationId) {
-      const organization = await this.organizationService.findOne(updateReportDto.organizationId.toString());
+      const organization = await this.organizationService.findOne(updateReportDto.organizationId);
       report.organization = organization;
     }
 

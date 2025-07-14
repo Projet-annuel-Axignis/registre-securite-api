@@ -27,7 +27,7 @@ import { OrganizationService } from '../services/organization.service';
 @ApiBearerAuth()
 @Controller({ path: 'organizations', version: ['1'] })
 export class OrganizationController {
-  constructor(private readonly organizationService: OrganizationService) { }
+  constructor(private readonly organizationService: OrganizationService) {}
 
   @Post()
   @Roles(RoleType.ADMINISTRATOR)

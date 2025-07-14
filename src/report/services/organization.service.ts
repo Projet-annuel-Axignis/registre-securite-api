@@ -18,7 +18,7 @@ export class OrganizationService {
   constructor(
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
-  ) { }
+  ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
     // Check if organization with the same name already exists
