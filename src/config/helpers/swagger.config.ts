@@ -25,6 +25,7 @@ export const SwaggerConfig = (app: INestApplication, apiVersion: string) => {
       operationsSorter: 'method',
       persistAuthorization: true,
       displayRequestDuration: true,
+      docExpansion: 'none', // Affiche les catégories en mode fermé
     },
   });
 };
