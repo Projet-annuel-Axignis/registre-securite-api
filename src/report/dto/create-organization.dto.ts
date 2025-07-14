@@ -1,7 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { OrganizationType } from '../types/organization-type.types';
 
+@ApiTags('Report', 'Organization')
 export class CreateOrganizationDto {
   @ApiProperty({
     description: 'Unique name identifier for the organization',

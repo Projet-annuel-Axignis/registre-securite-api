@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags, OmitType } from '@nestjs/swagger';
 import { transformPhoneNumber } from '@src/auth/dtos/create-user-request.dto';
 import { Match } from '@src/common/decorators/match-fields.decorator';
 import { Transform } from 'class-transformer';
@@ -6,6 +6,7 @@ import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsStrongPassw
 import { Role } from '../../entities/role.entity';
 import { RoleType } from '../../types/role.types';
 
+@ApiTags('Users', 'User')
 export class CreateUserDto {
   @ApiProperty({ example: 'John' })
   @IsString()

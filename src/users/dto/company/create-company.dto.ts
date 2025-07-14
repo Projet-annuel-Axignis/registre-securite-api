@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { PlanType } from '../../types/plan.type';
 
+@ApiTags('Users', 'Company')
 export class CreateCompanyDto {
   @ApiProperty({ description: 'Name of the company', example: 'Axignis' })
   @IsString()

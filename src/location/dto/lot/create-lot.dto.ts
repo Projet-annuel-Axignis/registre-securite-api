@@ -1,6 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+@ApiTags('Location', 'Lot')
 export class CreateLotDto {
   @ApiProperty({ description: 'Name of the lot' })
   @IsString()

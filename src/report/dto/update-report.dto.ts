@@ -1,6 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
+@ApiTags('Report', 'Report')
 export class UpdateReportDto {
   @ApiPropertyOptional({ description: 'Label of the report', example: 'Rapport de sécurité incendie mis à jour' })
   @IsOptional()

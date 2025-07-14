@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
@@ -12,6 +12,7 @@ enum PartFloorEntityFields {
   LEVEL_NUMBER = 'levelNumber',
 }
 
+@ApiTags('Location', 'PartFloor')
 export class PartFloorQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: PartFloorEntityFields.NAME,

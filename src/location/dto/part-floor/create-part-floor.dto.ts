@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
+@ApiTags('Location', 'PartFloor')
 export class CreatePartFloorDto {
   @ApiProperty({ description: 'Name of the part floor' })
   @IsString()

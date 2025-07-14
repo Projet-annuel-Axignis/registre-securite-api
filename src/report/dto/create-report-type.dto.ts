@@ -1,7 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { Periodicity } from '@src/intervention/types/periodicity.types';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
+@ApiTags('Report', 'ReportType')
 export class CreateReportTypeDto {
   @ApiProperty({
     description: 'Unique code identifier for the report type',

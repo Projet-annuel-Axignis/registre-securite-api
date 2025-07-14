@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
@@ -17,6 +17,7 @@ enum ObservationEntityFields {
   ENDED_AT = 'endedAt',
 }
 
+@ApiTags('Report', 'Observation')
 export class ObservationQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: ObservationEntityFields.CREATED_AT,

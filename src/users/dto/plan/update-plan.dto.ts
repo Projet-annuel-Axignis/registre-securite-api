@@ -1,7 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PlanType } from '../../types/plan.type';
 
+@ApiTags('Users', 'Plan')
 export class UpdatePlanDto {
   @ApiPropertyOptional({
     enum: PlanType,

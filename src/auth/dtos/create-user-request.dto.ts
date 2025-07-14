@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { Match } from '@src/common/decorators/match-fields.decorator';
 import { PlanType } from '@src/users/types/plan.type';
 import { Transform } from 'class-transformer';
@@ -39,6 +39,7 @@ export const transformPhoneNumber = ({ value }: { value: string }) => {
   return `+33${digits}`;
 };
 
+@ApiTags('Auth')
 export class CreateUserRequestDto {
   @ApiProperty({ description: 'First name of the user', example: 'John' })
   @IsString()

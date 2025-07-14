@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
@@ -11,6 +11,7 @@ enum LotEntityFields {
   NAME = 'name',
 }
 
+@ApiTags('Location', 'Lot')
 export class LotQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: LotEntityFields.NAME,

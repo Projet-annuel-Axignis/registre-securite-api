@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
@@ -11,6 +11,7 @@ enum OrganizationEntityFields {
   DELETED_AT = 'deletedAt',
 }
 
+@ApiTags('Report', 'Organization')
 export class OrganizationQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: OrganizationEntityFields.NAME,

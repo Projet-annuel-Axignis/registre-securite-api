@@ -1,7 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ObservationStatus } from '../types/observation-status.types';
 
+@ApiTags('Report', 'Observation')
 export class UpdateObservationDto {
   @ApiPropertyOptional({
     description: 'Title of the observation',

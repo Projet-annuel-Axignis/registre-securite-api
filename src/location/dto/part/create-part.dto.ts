@@ -1,9 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { ErpTypeCode } from '@src/location/types/erp-type.types';
 import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { HabFamilyName } from '../../types/hab-family-name.types';
 import { PartType } from '../../types/part-type.types';
 
+@ApiTags('Location', 'Part')
 export class CreatePartDto {
   @ApiProperty({ description: 'Name of the part', example: 'Apple Store' })
   @IsString()

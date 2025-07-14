@@ -1,8 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { IghClassCode } from '@src/location/types/igh-class.types';
 import { TypologyCode } from '@src/location/types/typology-code.types';
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
 
+@ApiTags('Location', 'Building')
 export class CreateBuildingDto {
   @ApiProperty()
   @IsString()

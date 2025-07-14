@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
+@ApiTags('Intervention')
 export class CreateInterventionTypeDto {
   @ApiProperty({
     description: 'Unique code identifier for the intervention type',

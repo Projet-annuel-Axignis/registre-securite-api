@@ -1,6 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
+@ApiTags('Location', 'Site')
 export class CreateSiteDto {
   @ApiProperty({ description: 'Name of the site', example: 'Centre commercial la Part Dieu' })
   @IsString()

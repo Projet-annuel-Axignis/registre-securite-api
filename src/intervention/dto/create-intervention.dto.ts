@@ -1,8 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { InterventionStatus } from '../types/intervention-status.types';
 import { Periodicity } from '../types/periodicity.types';
 
+@ApiTags('Intervention')
 export class CreateInterventionDto {
   @ApiProperty({
     description: 'Label or title of the intervention',
