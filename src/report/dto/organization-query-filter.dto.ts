@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { BooleanTransform } from '@src/common/decorators/boolean-transform.decorator';
 import { PaginationParamsDto } from '@src/paginator/paginator.dto';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
@@ -28,6 +29,7 @@ export class OrganizationQueryFilterDto extends PaginationParamsDto {
     example: false,
     required: false,
   })
+  @BooleanTransform()
   @IsBoolean()
   @IsOptional()
   includeDeleted?: boolean;

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActivityLogger } from '@src/activity-logger/helpers/activity-logger.decorator';
 import { Resources } from '@src/activity-logger/types/resource.types';
@@ -27,7 +27,7 @@ import { OrganizationService } from '../services/organization.service';
 @ApiBearerAuth()
 @Controller({ path: 'organizations', version: ['1'] })
 export class OrganizationController {
-  constructor(private readonly organizationService: OrganizationService) {}
+  constructor(private readonly organizationService: OrganizationService) { }
 
   @Post()
   @Roles(RoleType.ADMINISTRATOR)
@@ -45,29 +45,29 @@ export class OrganizationController {
     return { ...query, totalResults, currentResults, results: organizations };
   }
 
-  @Get(':name')
+  @Get(':id')
   @Roles(RoleType.COMPANY_MANAGER)
   @SwaggerOrganizationFindOne()
-  async findOne(@Param('name') name: string): Promise<Organization> {
-    return await this.organizationService.findOne(name);
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Organization> {
+    return await this.organizationService.findOne(id);
   }
 
-  @Patch(':name')
+  @Patch(':id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerOrganizationUpdate()
   @ActivityLogger({ description: 'Modifier une organisation' })
   async update(
-    @Param('name') name: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<Organization> {
-    return await this.organizationService.update(name, updateOrganizationDto);
+    return await this.organizationService.update(id, updateOrganizationDto);
   }
 
-  @Delete(':name')
+  @Delete(':id')
   @Roles(RoleType.ADMINISTRATOR)
   @SwaggerOrganizationDelete()
   @ActivityLogger({ description: 'Supprimer une organisation' })
-  async remove(@Param('name') name: string): Promise<void> {
-    await this.organizationService.delete(name);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.organizationService.delete(id);
   }
 }

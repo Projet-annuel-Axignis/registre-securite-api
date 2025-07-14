@@ -18,7 +18,7 @@ export class OrganizationService {
   constructor(
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
-  ) {}
+  ) { }
 
   async create(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
     // Check if organization with the same name already exists
@@ -46,25 +46,25 @@ export class OrganizationService {
     return [organizations, organizations.length, totalResults];
   }
 
-  async findOne(name: string): Promise<Organization> {
+  async findOne(id: number): Promise<Organization> {
     const organization = await this.organizationRepository.findOne({
-      where: { name },
+      where: { id },
     });
 
     if (!organization) {
-      throw new OrganizationNotFoundException({ name });
+      throw new OrganizationNotFoundException({ id });
     }
 
     return organization;
   }
 
-  async update(name: string, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization> {
-    const organization = await this.findOne(name);
+  async update(id: number, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization> {
+    const organization = await this.findOne(id);
 
     const { name: newName, type } = updateOrganizationDto;
 
     // Check if the new name already exists (if name is being updated)
-    if (newName && newName !== name) {
+    if (newName && newName !== organization.name) {
       const existingOrganization = await this.organizationRepository.findOne({
         where: { name: newName },
       });
@@ -85,22 +85,22 @@ export class OrganizationService {
     return await this.organizationRepository.save(organization);
   }
 
-  async delete(name: string): Promise<void> {
-    const organization = await this.findOne(name);
+  async delete(id: number): Promise<void> {
+    const organization = await this.findOne(id);
 
     // Check if the organization is being used by any reports
     const reportsCount = await this.organizationRepository
       .createQueryBuilder('organization')
       .leftJoin('organization.reports', 'report')
-      .where('organization.name = :name', { name })
+      .where('organization.id = :id', { id })
       .andWhere('report.id IS NOT NULL')
       .getCount();
 
     if (reportsCount > 0) {
       throw new OrganizationInUseException({
-        name,
+        id,
         reportsCount,
-        message: `Cannot delete organization '${name}' as it is being used by ${reportsCount} report(s)`,
+        message: `Cannot delete organization with id '${id}' as it is being used by ${reportsCount} report(s)`,
       });
     }
 
