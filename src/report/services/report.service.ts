@@ -43,7 +43,7 @@ export class ReportService {
     private readonly organizationService: OrganizationService,
     private readonly partService: PartService,
     private readonly productDocumentService: ProductDocumentService,
-  ) {}
+  ) { }
 
   async create(createReportDto: CreateReportDto): Promise<Report> {
     // Validate report type exists
