@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UploadProductDocumentDto } from '@src/bet/dtos/product/upload-product-document.dto';
+import { EquipmentService } from '@src/bet/services/equipment.service';
 import { ProductDocumentService } from '@src/bet/services/product-document.service';
 import { MulterFile } from '@src/bet/types/product/multer-file.types';
 import { Intervention } from '@src/intervention/entities/intervention.entity';
@@ -16,11 +17,14 @@ import { CreateReportDto } from '../dto/create-report.dto';
 import { ReportQueryFilterDto } from '../dto/report-query-filter.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { Organization } from '../entities/organization.entity';
+import { ReportEquipment } from '../entities/report-equipment.entity';
 import { ReportFile } from '../entities/report-file.entity';
 import { Report } from '../entities/report.entity';
 import {
+  EquipmentTypeNotFoundException,
   FileNotFoundException,
   PartsNotFoundException,
+  ReportEquipmentNotFoundException,
   ReportFileNotFoundException,
   ReportInUseException,
   ReportNotFoundException,
@@ -36,6 +40,8 @@ export class ReportService {
     private readonly reportRepository: Repository<Report>,
     @InjectRepository(ReportFile)
     private readonly reportFileRepository: Repository<ReportFile>,
+    @InjectRepository(ReportEquipment)
+    private readonly reportEquipmentRepository: Repository<ReportEquipment>,
     @InjectRepository(Typology)
     private readonly typologyRepository: Repository<Typology>,
     private readonly interventionService: InterventionService,
@@ -43,6 +49,7 @@ export class ReportService {
     private readonly organizationService: OrganizationService,
     private readonly partService: PartService,
     private readonly productDocumentService: ProductDocumentService,
+    private readonly equipmentService: EquipmentService,
   ) {}
 
   async create(createReportDto: CreateReportDto): Promise<Report> {
@@ -100,6 +107,11 @@ export class ReportService {
       await this.attachFilesToReport(savedReport.id, createReportDto.fileIds);
     }
 
+    // Handle equipment type attachments if provided
+    if (createReportDto.equipmentTypeIds && createReportDto.equipmentTypeIds.length > 0) {
+      await this.attachEquipmentTypesToReport(savedReport.id, createReportDto.equipmentTypeIds);
+    }
+
     return await this.findOne(savedReport.id);
   }
 
@@ -124,7 +136,7 @@ export class ReportService {
   async findOne(id: number): Promise<Report> {
     const report = await this.reportRepository.findOne({
       where: { id },
-      relations: ['type', 'typology', 'organization', 'intervention', 'parts', 'files', 'observations'],
+      relations: ['type', 'typology', 'organization', 'intervention', 'parts', 'files', 'equipments', 'observations'],
     });
 
     if (!report) {
@@ -190,6 +202,17 @@ export class ReportService {
       // Add new file associations
       if (updateReportDto.fileIds.length > 0) {
         await this.attachFilesToReport(id, updateReportDto.fileIds);
+      }
+    }
+
+    // Update equipment types if provided
+    if (updateReportDto.equipmentTypeIds) {
+      // Remove existing equipment associations
+      await this.reportEquipmentRepository.delete({ report: { id } });
+
+      // Add new equipment associations
+      if (updateReportDto.equipmentTypeIds.length > 0) {
+        await this.attachEquipmentTypesToReport(id, updateReportDto.equipmentTypeIds);
       }
     }
 
@@ -309,5 +332,54 @@ export class ReportService {
     );
 
     await this.reportFileRepository.save(reportFiles);
+  }
+
+  async getReportEquipment(reportId: number): Promise<ReportEquipment[]> {
+    // Validate report exists
+    await this.findOne(reportId);
+
+    const reportEquipment = await this.reportEquipmentRepository.find({
+      where: { report: { id: reportId } },
+      relations: ['report'],
+    });
+
+    return reportEquipment;
+  }
+
+  async removeEquipmentFromReport(reportId: number, equipmentTypeId: number): Promise<void> {
+    // Validate report exists
+    await this.findOne(reportId);
+
+    const reportEquipment = await this.reportEquipmentRepository.findOne({
+      where: { report: { id: reportId }, equipmentId: equipmentTypeId },
+    });
+
+    if (!reportEquipment) {
+      throw new ReportEquipmentNotFoundException({ reportId, equipmentTypeId });
+    }
+
+    // Remove association
+    await this.reportEquipmentRepository.remove(reportEquipment);
+  }
+
+  private async attachEquipmentTypesToReport(reportId: number, equipmentTypeIds: number[]): Promise<void> {
+    // Validate that all equipment types exist in BET API
+    for (const equipmentTypeId of equipmentTypeIds) {
+      try {
+        await this.equipmentService.findOneEquipmentTypeById(equipmentTypeId);
+      } catch (_error) {
+        throw new EquipmentTypeNotFoundException({ equipmentTypeId });
+      }
+    }
+
+    // Create report equipment associations
+    const reportEquipment = equipmentTypeIds.map((equipmentTypeId) =>
+      this.reportEquipmentRepository.create({
+        report: { id: reportId },
+        equipmentId: equipmentTypeId,
+      }),
+    );
+
+    await this.reportEquipmentRepository.save(reportEquipment);
   }
 }

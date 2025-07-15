@@ -9,6 +9,8 @@ export enum ReportErrorCode {
   REPORT_IN_USE = 'REPORT_IN_USE',
   FILE_NOT_FOUND = 'FILE_NOT_FOUND',
   REPORT_FILE_NOT_FOUND = 'REPORT_FILE_NOT_FOUND',
+  EQUIPMENT_TYPE_NOT_FOUND = 'EQUIPMENT_TYPE_NOT_FOUND',
+  REPORT_EQUIPMENT_NOT_FOUND = 'REPORT_EQUIPMENT_NOT_FOUND',
 }
 
 type ErrorCode = CommonErrorCode | ReportErrorCode;
@@ -29,6 +31,8 @@ export class ReportHttpException extends CustomHttpException {
       [ReportErrorCode.REPORT_IN_USE]: 'Report is being used and cannot be deleted',
       [ReportErrorCode.FILE_NOT_FOUND]: 'File not found in BET API',
       [ReportErrorCode.REPORT_FILE_NOT_FOUND]: 'File not found in report',
+      [ReportErrorCode.EQUIPMENT_TYPE_NOT_FOUND]: 'Equipment type not found in BET API',
+      [ReportErrorCode.REPORT_EQUIPMENT_NOT_FOUND]: 'Equipment not found in report',
     };
 
     return messages[this.code] || null;
@@ -74,5 +78,17 @@ export class FileNotFoundException extends ReportHttpException {
 export class ReportFileNotFoundException extends ReportHttpException {
   constructor(details?: Record<string, string | number>) {
     super(ReportErrorCode.REPORT_FILE_NOT_FOUND, HttpStatus.NOT_FOUND, details);
+  }
+}
+
+export class EquipmentTypeNotFoundException extends ReportHttpException {
+  constructor(details?: Record<string, string | number>) {
+    super(ReportErrorCode.EQUIPMENT_TYPE_NOT_FOUND, HttpStatus.NOT_FOUND, details);
+  }
+}
+
+export class ReportEquipmentNotFoundException extends ReportHttpException {
+  constructor(details?: Record<string, string | number>) {
+    super(ReportErrorCode.REPORT_EQUIPMENT_NOT_FOUND, HttpStatus.NOT_FOUND, details);
   }
 }

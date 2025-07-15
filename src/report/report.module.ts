@@ -12,6 +12,7 @@ import { ReportController } from './controllers/report.controller';
 import { ObservationFile } from './entities/observation-file.entity';
 import { Observation } from './entities/observation.entity';
 import { Organization } from './entities/organization.entity';
+import { ReportEquipment } from './entities/report-equipment.entity';
 import { ReportFile } from './entities/report-file.entity';
 import { ReportType } from './entities/report-type.entity';
 import { Report } from './entities/report.entity';
@@ -28,6 +29,7 @@ import { ReportService } from './services/report.service';
       Organization,
       Observation,
       ReportFile,
+      ReportEquipment,
       ObservationFile,
       Part,
       Typology,

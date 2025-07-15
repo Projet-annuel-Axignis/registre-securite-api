@@ -1,7 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-@ApiTags('Report', 'Report')
 export class CreateReportDto {
   @ApiProperty({ description: 'Label of the report', example: 'Rapport de sécurité incendie' })
   @IsString()
@@ -38,4 +37,10 @@ export class CreateReportDto {
   @IsArray()
   @IsNumber({}, { each: true })
   fileIds?: number[];
+
+  @ApiPropertyOptional({ description: 'Array of equipment type IDs from BET API', example: [1, 2, 3] })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  equipmentTypeIds?: number[];
 }

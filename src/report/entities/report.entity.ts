@@ -5,6 +5,7 @@ import { Typology } from '@src/location/entities/typology.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { Observation } from './observation.entity';
 import { Organization } from './organization.entity';
+import { ReportEquipment } from './report-equipment.entity';
 import { ReportFile } from './report-file.entity';
 import { ReportType } from './report-type.entity';
 
@@ -35,7 +36,6 @@ export class Report extends SoftDeleteEntity {
   @OneToMany(() => ReportFile, (file) => file.report)
   files: Relation<ReportFile>[];
 
-  // MANY TO MANY CREATE NEW TABLE
-  @Column()
-  equipmentTypeId: number;
+  @OneToMany(() => ReportEquipment, (equipment) => equipment.report)
+  equipments: Relation<ReportEquipment>[];
 }
