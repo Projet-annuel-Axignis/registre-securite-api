@@ -142,7 +142,7 @@ export class ObservationController {
   @Get(':id/files')
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerObservationGetFiles()
-  async getObservationFiles(@Param('id') id: string): Promise<ObservationFile[]> {
+  async getObservationFiles(@Param('id') id: string) {
     return await this.observationService.getObservationFiles(+id);
   }
 

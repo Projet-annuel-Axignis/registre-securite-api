@@ -21,6 +21,7 @@ import {
   PartsNotFoundException,
 } from '../helpers/exceptions/observation.exception';
 import { ObservationStatus } from '../types/observation-status.types';
+import { ObservationFileWithDetailsResponse } from '../types/observation-swagger-response.types';
 import { ReportService } from './report.service';
 
 @Injectable()
@@ -260,7 +261,7 @@ export class ObservationService {
     return await this.observationFileRepository.save(observationFile);
   }
 
-  async getObservationFiles(observationId: number): Promise<ObservationFile[]> {
+  async getObservationFiles(observationId: number): Promise<ObservationFileWithDetailsResponse[]> {
     // Validate observation exists
     await this.findOne(observationId);
 
@@ -269,7 +270,26 @@ export class ObservationService {
       relations: ['observation'],
     });
 
-    return observationFiles;
+    // Fetch file information from BET API for each observation file
+    const observationFilesWithDetails = await Promise.all(
+      observationFiles.map(async (observationFile) => {
+        try {
+          const fileDetails = await this.productDocumentService.findOneDocumentById(observationFile.fileId);
+          return {
+            ...observationFile,
+            file: fileDetails,
+          };
+        } catch (_error) {
+          // If file not found in BET API, return observation file without details
+          return {
+            ...observationFile,
+            file: null,
+          };
+        }
+      }),
+    );
+
+    return observationFilesWithDetails;
   }
 
   async removeFileFromObservation(observationId: number, fileId: number): Promise<void> {
