@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -88,6 +89,19 @@ export const SwaggerReportUpdateState = () => {
 export const SwaggerReportAttachFile = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Attach a file to a report' }),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          file: {
+            type: 'string',
+            format: 'binary',
+            description: 'File to upload (PDF, DOC, DOCX, JPG, JPEG, PNG) - Max 10MB',
+          },
+        },
+        required: ['file'],
+      },
+    }),
     ApiCreatedResponse(ReportConfigSwagger.SUCCESS_REPORT_FILE_ATTACH),
     ApiNotFoundResponse(ReportConfigSwagger.REPORT_NOT_FOUND),
     ApiBadRequestResponse({ description: 'Invalid file format or size' }),
