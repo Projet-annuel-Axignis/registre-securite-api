@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '@src/common/entities/base.entity';
-import { Column, Entity, OneToMany, PrimaryColumn, Relation } from 'typeorm';
+import { Column, Entity, OneToMany, Relation } from 'typeorm';
 import { Intervention } from './intervention.entity';
 
 @Entity()
@@ -9,7 +9,7 @@ export class InterventionType extends BaseEntity {
     description: 'Unique code identifier for the intervention type. Used as primary key',
     example: 'regulatory_audit',
   })
-  @PrimaryColumn({ unique: true })
+  @Column({ unique: true })
   code: string;
 
   @ApiProperty({
