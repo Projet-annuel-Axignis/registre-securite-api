@@ -127,6 +127,7 @@ export class ReportService {
         { relation: 'organization', alias: 'organization' },
         { relation: 'intervention', alias: 'intervention' },
         { relation: 'parts', alias: 'parts' },
+        { relation: 'equipments', alias: 'equipments' },
       ],
     });
 
@@ -136,7 +137,17 @@ export class ReportService {
   async findOne(id: number): Promise<Report> {
     const report = await this.reportRepository.findOne({
       where: { id },
-      relations: ['type', 'typology', 'organization', 'intervention', 'parts', 'files', 'equipments', 'observations'],
+      relations: [
+        'type',
+        'typology',
+        'organization',
+        'intervention',
+        'parts',
+        'files',
+        'equipments',
+        'observations',
+        'equipments',
+      ],
     });
 
     if (!report) {

@@ -35,6 +35,6 @@ import { ProductService } from './services/product.service';
     ProductDocumentTypeService,
     ProductDocumentService,
   ],
-  exports: [ProductDocumentService],
+  exports: [ProductDocumentService, EquipmentService],
 })
 export class BetModule {}
