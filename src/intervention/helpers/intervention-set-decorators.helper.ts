@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -87,6 +88,19 @@ export const SwaggerInterventionUpdateState = () => {
 export const SwaggerInterventionTerminate = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Terminate an intervention by id' }),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          terminatedById: {
+            type: 'number',
+            description: 'ID of the user who terminated the intervention',
+            example: 1,
+          },
+        },
+        required: ['terminatedById'],
+      },
+    }),
     ApiOkResponse({
       description: 'Intervention terminated successfully',
       schema: {
