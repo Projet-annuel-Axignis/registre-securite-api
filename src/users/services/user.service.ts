@@ -94,6 +94,7 @@ export class UserService {
         { relation: 'company', alias: 'c', joins: [{ relation: 'plans', alias: 'p' }] },
       ],
       searchFields: ['firstName', 'lastName', 'email'],
+      filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
     });
     return [users, users.length, totalResults];
   }

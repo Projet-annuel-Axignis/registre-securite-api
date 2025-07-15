@@ -8,12 +8,17 @@ import { JwtAuthGuard } from '@src/auth/guards/jwt.guard';
 import { RolesGuard } from '@src/auth/guards/role.guard';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
-import { PaginatedList } from '@src/paginator/paginator.type';
+import { FilterOp, PaginatedList } from '@src/paginator/paginator.type';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
 import { User } from '../entities/user.entity';
-import { UserErrorCode, UserHttpException, UserNotFoundException } from '../helpers/exceptions/user.exception';
+import {
+  UserErrorCode,
+  UserHttpException,
+  UserNotFoundException,
+  UserNotOwnedCompanyException,
+} from '../helpers/exceptions/user.exception';
 import {
   SwaggerUserCreate,
   SwaggerUserFindAll,
@@ -64,7 +69,18 @@ export class UserController {
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindAll()
-  async findAll(@Query() query: UserQueryFilterDto): Promise<PaginatedList<User>> {
+  async findAll(@Query() query: UserQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<User>> {
+    if (user.role.type !== RoleType.ADMINISTRATOR) {
+      if (query.filterField) {
+        query.filterField += ',companyId';
+        query.filterOp += `,${FilterOp.EQUALS}`;
+        query.filter += `,${user.company.id}`;
+      } else {
+        query.filterField = 'companyId';
+        query.filterOp = FilterOp.EQUALS;
+        query.filter = user.company.id.toString();
+      }
+    }
     const [users, currentResults, totalResults] = await this.userService.findAll(query);
     return { ...query, totalResults, currentResults, results: users };
   }
@@ -87,11 +103,13 @@ export class UserController {
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerUserFindOne()
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+  async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() loggedUser: LoggedUser): Promise<User> {
     const user = await this.userService.findOneById(id);
     if (!user) {
       throw new UserNotFoundException({ id });
     }
+
+    if (user.company.id !== loggedUser.company.id) throw new UserNotOwnedCompanyException();
 
     return user;
   }
@@ -150,6 +168,8 @@ export class UserController {
 
     if (loggedUser.id === user.id)
       throw new UserHttpException(UserErrorCode.CANNOT_UPDATE_OWN_ACCOUNT_STATE, HttpStatus.BAD_REQUEST);
+
+    if (user.company.id !== loggedUser.company.id) throw new UserNotOwnedCompanyException();
 
     if (user.deletedAt) {
       await this.userService.restoreUser(id);
