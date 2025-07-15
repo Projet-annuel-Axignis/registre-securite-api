@@ -34,4 +34,8 @@ export class Report extends SoftDeleteEntity {
 
   @OneToMany(() => ReportFile, (file) => file.report)
   files: Relation<ReportFile>[];
+
+  // MANY TO MANY CREATE NEW TABLE
+  @Column()
+  equipmentTypeId: number;
 }

@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum EquipmentFamilyEntityFields {
   NAME = 'name',
@@ -20,4 +21,18 @@ export class EquipmentFamilyQueryFilterDto extends PaginationParamsDto {
   @IsEnum(EquipmentFamilyEntityFields)
   @IsOptional()
   sortField: string = EquipmentFamilyEntityFields.CREATED_AT;
+
+  @ApiPropertyOptional({
+    type: 'boolean',
+    description: 'Boolean to get archived data',
+    default: false,
+  })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  includeDeleted?: boolean;
 }
