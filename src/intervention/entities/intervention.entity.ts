@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
+import { Part } from '@src/location/entities/part.entity';
 import { Report } from '@src/report/entities/report.entity';
 import { User } from '@src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { InterventionStatus } from '../types/intervention-status.types';
 import { InterventionType } from './intervention-type.entity';
 
@@ -76,4 +77,7 @@ export class Intervention extends SoftDeleteEntity {
 
   @OneToMany(() => Report, (report) => report.intervention)
   reports: Relation<Report>[];
+
+  @ManyToMany(() => Part, (part) => part.interventions)
+  parts: Relation<Part>[];
 }

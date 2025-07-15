@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
+import { Intervention } from '@src/intervention/entities/intervention.entity';
 import { Observation } from '@src/report/entities/observation.entity';
 import { Report } from '@src/report/entities/report.entity';
 import { User } from '@src/users/entities/user.entity';
@@ -53,6 +54,10 @@ export class Part extends SoftDeleteEntity {
 
   @ManyToMany(() => Report, (report) => report.parts)
   reports: Relation<Report>[];
+
+  @ManyToMany(() => Intervention, (intervention) => intervention.parts)
+  @JoinTable()
+  interventions: Relation<Intervention>[];
 
   @ManyToMany(() => Observation, (observation) => observation.parts)
   @JoinTable()
