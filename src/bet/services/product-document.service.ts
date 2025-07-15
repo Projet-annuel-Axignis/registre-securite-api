@@ -116,6 +116,9 @@ export class ProductDocumentService extends AbstractBetService {
   }
 
   async downloadDocumentFile(id: number): Promise<FileDownloadResponse> {
+    // First, get the document metadata to extract filename and mime type
+    const documentMetadata = await this.findOneDocumentById(id);
+
     // Use base provider service directly for file download with arraybuffer response type
     try {
       const response: AxiosResponse<Buffer> = await this.httpService.axiosRef.get(
@@ -128,12 +131,15 @@ export class ProductDocumentService extends AbstractBetService {
         },
       );
 
-      // Note: The actual response structure from BET API might be different
-      // This is a placeholder - you may need to adjust based on actual BET API response
+      // Extract filename and mime type from document metadata
+      const fileName = documentMetadata.fileName || 'document';
+      const mimeType =
+        documentMetadata.mimeType || this.getMimeTypeFromFileName(fileName) || 'application/octet-stream';
+
       return {
         buffer: response.data,
-        fileName: 'document', // This should come from response headers or metadata
-        mimeType: 'application/octet-stream', // This should come from response headers
+        fileName,
+        mimeType,
       };
     } catch (error: unknown) {
       // Handle error using the same logic as makeBetRequest
@@ -146,6 +152,28 @@ export class ProductDocumentService extends AbstractBetService {
       }
       throw error;
     }
+  }
+
+  /**
+   * Helper method to determine MIME type from file extension
+   */
+  private getMimeTypeFromFileName(fileName: string): string {
+    const extension = fileName.toLowerCase().split('.').pop();
+
+    const mimeTypes: Record<string, string> = {
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      txt: 'text/plain',
+      csv: 'text/csv',
+      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      xls: 'application/vnd.ms-excel',
+    };
+
+    return mimeTypes[extension || ''] || 'application/octet-stream';
   }
 
   async updateDocumentStatus(id: number, status: DocumentStatus): Promise<ProductDocumentResponse> {
