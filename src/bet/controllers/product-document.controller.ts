@@ -36,13 +36,8 @@ import {
 } from '../helpers/product-document-set-decorators.helper';
 import { ProductDocumentService } from '../services/product-document.service';
 import { DocumentStatus } from '../types/product/document-status.types';
+import { MulterFile } from '../types/product/multer-file.types';
 import { ProductDocumentResponse } from '../types/product/product-document-response.types';
-
-interface MulterFile {
-  originalName: string;
-  buffer: Buffer;
-  mimetype: string;
-}
 
 @ApiTags(Resources.PRODUCT)
 @SwaggerFailureResponse()
@@ -153,7 +148,7 @@ export class ProductDocumentController {
     @UploadedFile() file: MulterFile,
     @Body() uploadDto: UploadProductDocumentDto,
     @GetUser() user: LoggedUser,
-  ): Promise<ProductDocumentResponse> {
+  ) {
     // Set the uploadedBy field to the connected user ID
     uploadDto.uploadedBy = user.id;
     return await this.productDocumentService.uploadDocument(uploadDto, file, user.id);
