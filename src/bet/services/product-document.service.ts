@@ -97,21 +97,21 @@ export class ProductDocumentService extends AbstractBetService {
   async findOneDocumentById(id: number): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'GET',
-      endpoint: `product-document/${id}`,
+      endpoint: `product-documents/${id}`,
     });
   }
 
   async findOneDocumentBySerialNumber(serialNumber: string): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'GET',
-      endpoint: `product-document/serial/${serialNumber}`,
+      endpoint: `product-documents/serial/${serialNumber}`,
     });
   }
 
   async findDocumentsByProductId(productId: number): Promise<ProductDocumentResponse[]> {
     return this.makeBetRequest<ProductDocumentResponse[]>({
       method: 'GET',
-      endpoint: `product-document/product/${productId}`,
+      endpoint: `product-documents/product/${productId}`,
     });
   }
 
@@ -119,7 +119,7 @@ export class ProductDocumentService extends AbstractBetService {
     // Use base provider service directly for file download with arraybuffer response type
     try {
       const response: AxiosResponse<Buffer> = await this.httpService.axiosRef.get(
-        `${this.configService.get('apis.bet.base_url')}/product-document/${id}/file`,
+        `${this.configService.get('apis.bet.base_url')}/product-documents/${id}/file`,
         {
           headers: {
             'X-API-Key': this.configService.get('apis.bet.api_key'),
@@ -151,7 +151,7 @@ export class ProductDocumentService extends AbstractBetService {
   async updateDocumentStatus(id: number, status: DocumentStatus): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'PATCH',
-      endpoint: `product-document/${id}/status`,
+      endpoint: `product-documents/${id}/status`,
       payload: { status },
     });
   }
@@ -159,14 +159,14 @@ export class ProductDocumentService extends AbstractBetService {
   async deleteDocument(id: number): Promise<void> {
     return this.makeBetRequest<void>({
       method: 'DELETE',
-      endpoint: `product-document/${id}`,
+      endpoint: `product-documents/${id}`,
     });
   }
 
   async validateDocumentChecksum(id: number): Promise<ChecksumValidationResponse> {
     return this.makeBetRequest<ChecksumValidationResponse>({
       method: 'GET',
-      endpoint: `product-document/${id}/validate-checksum`,
+      endpoint: `product-documents/${id}/validate-checksum`,
     });
   }
 }
