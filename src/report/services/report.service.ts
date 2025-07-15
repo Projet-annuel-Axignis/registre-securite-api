@@ -30,6 +30,7 @@ import {
   ReportNotFoundException,
   TypologyNotFoundException,
 } from '../helpers/exceptions/report.exception';
+import { ReportFileWithDetailsResponse } from '../types/report-swagger-response.types';
 import { OrganizationService } from './organization.service';
 import { ReportTypeService } from './report-type.service';
 
@@ -265,7 +266,7 @@ export class ReportService {
     return await this.findOne(id);
   }
 
-  async attachFileToReport(reportId: number, file: MulterFile, userId: number): Promise<ReportFile> {
+  async attachFileToReport(reportId: number, file: MulterFile, userId: number): Promise<ReportFileWithDetailsResponse> {
     // Validate report exists
     await this.findOne(reportId);
 
@@ -293,10 +294,16 @@ export class ReportService {
       fileId: uploadedFile.id,
     });
 
-    return await this.reportFileRepository.save(reportFile);
+    const savedReportFile = await this.reportFileRepository.save(reportFile);
+
+    // Return with file details
+    return {
+      ...savedReportFile,
+      file: uploadedFile,
+    };
   }
 
-  async getReportFiles(reportId: number): Promise<ReportFile[]> {
+  async getReportFiles(reportId: number): Promise<ReportFileWithDetailsResponse[]> {
     // Validate report exists
     await this.findOne(reportId);
 
@@ -305,7 +312,26 @@ export class ReportService {
       relations: ['report'],
     });
 
-    return reportFiles;
+    // Fetch file information from BET API for each report file
+    const reportFilesWithDetails = await Promise.all(
+      reportFiles.map(async (reportFile) => {
+        try {
+          const fileDetails = await this.productDocumentService.findOneDocumentById(reportFile.fileId);
+          return {
+            ...reportFile,
+            file: fileDetails,
+          };
+        } catch (_error) {
+          // If file not found in BET API, return report file without details
+          return {
+            ...reportFile,
+            file: null,
+          };
+        }
+      }),
+    );
+
+    return reportFilesWithDetails;
   }
 
   async removeFileFromReport(reportId: number, fileId: number): Promise<void> {

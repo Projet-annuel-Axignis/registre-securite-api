@@ -30,7 +30,6 @@ import { RoleType } from '@src/users/types/role.types';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { ReportQueryFilterDto } from '../dto/report-query-filter.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
-import { ReportFile } from '../entities/report-file.entity';
 import { Report } from '../entities/report.entity';
 import {
   SwaggerReportAttachFile,
@@ -43,6 +42,7 @@ import {
   SwaggerReportUpdateState,
 } from '../helpers/report-set-decorators.helper';
 import { ReportService } from '../services/report.service';
+import { ReportFileWithDetailsResponse } from '../types/report-swagger-response.types';
 
 @ApiTags(Resources.REPORT)
 @SwaggerFailureResponse()
@@ -117,14 +117,14 @@ export class ReportController {
     )
     file: MulterFile,
     @GetUser() user: LoggedUser,
-  ): Promise<ReportFile> {
+  ): Promise<ReportFileWithDetailsResponse> {
     return await this.reportService.attachFileToReport(+id, file, user.id);
   }
 
   @Get(':id/files')
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerReportGetFiles()
-  async getReportFiles(@Param('id') id: string): Promise<ReportFile[]> {
+  async getReportFiles(@Param('id') id: string): Promise<ReportFileWithDetailsResponse[]> {
     return await this.reportService.getReportFiles(+id);
   }
 

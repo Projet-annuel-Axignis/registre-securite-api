@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductDocumentResponse } from '@src/bet/types/product/product-document-response.types';
 
 export class ReportFileResponse {
   @ApiProperty({ description: 'ID of the report file association', example: 1 })
@@ -6,12 +7,11 @@ export class ReportFileResponse {
 
   @ApiProperty({ description: 'ID of the file in BET API', example: 123 })
   fileId: number;
+}
 
-  @ApiProperty({ description: 'Creation date', example: '2024-01-15T10:30:00.000Z' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'Last update date', example: '2024-01-15T10:30:00.000Z' })
-  updatedAt: Date;
+export class ReportFileWithDetailsResponse extends ReportFileResponse {
+  @ApiProperty({ description: 'File information from BET API', required: false })
+  file?: ProductDocumentResponse | null;
 }
 
 export class ReportResponse {

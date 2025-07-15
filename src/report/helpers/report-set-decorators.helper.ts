@@ -9,8 +9,8 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { ApiOkResponsePaginated } from '@paginator/paginator.decorator';
-import { ReportFile } from '../entities/report-file.entity';
 import { Report } from '../entities/report.entity';
+import { ReportFileWithDetailsResponse } from '../types/report-swagger-response.types';
 import { ReportConfigSwagger } from './report-config-swagger.helper';
 
 // Report decorators
@@ -111,7 +111,10 @@ export const SwaggerReportAttachFile = () => {
 export const SwaggerReportGetFiles = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Get all files attached to a report' }),
-    ApiOkResponse({ description: 'Report files', type: [ReportFile] }),
+    ApiOkResponse({
+      description: 'Report files with file details from BET API',
+      type: [ReportFileWithDetailsResponse],
+    }),
     ApiNotFoundResponse(ReportConfigSwagger.REPORT_NOT_FOUND),
   );
 };
