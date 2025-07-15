@@ -71,6 +71,7 @@ export class InterventionService {
       relations: [
         { relation: 'type', alias: 'type' },
         { relation: 'terminatedBy', alias: 'terminatedBy' },
+        { relation: 'parts', alias: 'parts' },
       ],
     });
     return [interventions, interventions.length, totalResults];

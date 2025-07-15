@@ -69,6 +69,7 @@ export class PartService {
         { relation: 'partFloors', alias: 'pf' },
         { relation: 'habFamily', alias: 'hf' },
         { relation: 'erpTypes', alias: 'et' },
+        { relation: 'interventions', alias: 'interventions' },
       ],
       filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
     });
