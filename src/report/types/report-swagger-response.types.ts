@@ -7,6 +7,13 @@ export class ReportFileResponse {
 
   @ApiProperty({ description: 'ID of the file in BET API', example: 123 })
   fileId: number;
+
+  @ApiProperty({
+    description: 'Description of the file',
+    example: 'Photo montrant la non-conformité détectée dans la zone A',
+    required: false,
+  })
+  description?: string;
 }
 
 export class ReportFileWithDetailsResponse extends ReportFileResponse {

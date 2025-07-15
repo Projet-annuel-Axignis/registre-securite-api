@@ -13,6 +13,7 @@ import { TypologyCode } from '@src/location/types/typology-code.types';
 import { getEntityFilteredList } from '@src/paginator/paginator.service';
 import { EntityFilteredListResults } from '@src/paginator/paginator.type';
 import { Repository } from 'typeorm';
+import { AttachFileDto } from '../dto/attach-file.dto';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { ReportQueryFilterDto } from '../dto/report-query-filter.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
@@ -266,7 +267,12 @@ export class ReportService {
     return await this.findOne(id);
   }
 
-  async attachFileToReport(reportId: number, file: MulterFile, userId: number): Promise<ReportFileWithDetailsResponse> {
+  async attachFileToReport(
+    reportId: number,
+    file: MulterFile,
+    userId: number,
+    attachFileDto: AttachFileDto,
+  ): Promise<ReportFileWithDetailsResponse> {
     // Validate report exists
     await this.findOne(reportId);
 
@@ -274,10 +280,12 @@ export class ReportService {
     const uploadDto: UploadProductDocumentDto = {
       serialNumber: `REPORT-${reportId}-${Date.now()}`,
       issueDate: new Date().toISOString(),
-      version: 1,
+      version: attachFileDto.version,
       typeId: 1, // Default document type for reports
       productIds: [], // Empty array since this is for reports, not products
       uploadedBy: userId,
+      title: attachFileDto.title,
+      description: attachFileDto.description,
     };
 
     const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);

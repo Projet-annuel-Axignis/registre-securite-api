@@ -27,6 +27,7 @@ import { MulterFile } from '@src/bet/types/product/multer-file.types';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
+import { AttachFileDto } from '../dto/attach-file.dto';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { ReportQueryFilterDto } from '../dto/report-query-filter.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
@@ -107,6 +108,7 @@ export class ReportController {
   @UseInterceptors(FileInterceptor('file'))
   async attachFile(
     @Param('id') id: string,
+    @Body() attachFileDto: AttachFileDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -118,7 +120,7 @@ export class ReportController {
     file: MulterFile,
     @GetUser() user: LoggedUser,
   ): Promise<ReportFileWithDetailsResponse> {
-    return await this.reportService.attachFileToReport(+id, file, user.id);
+    return await this.reportService.attachFileToReport(+id, file, user.id, attachFileDto);
   }
 
   @Get(':id/files')
