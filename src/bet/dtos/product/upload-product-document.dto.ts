@@ -9,6 +9,16 @@ export class UploadProductDocumentDto {
   @IsString()
   serialNumber: string;
 
+  @ApiProperty({ description: 'Title of the document', example: 'Product Manual v1.0' })
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiPropertyOptional({ description: 'Description of the document', example: 'User manual for Product XYZ' })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @ApiProperty({ description: 'File checksum for integrity verification', example: 'sha256:abc123...' })
   @IsOptional()
   @IsString()

@@ -27,6 +27,7 @@ import { MulterFile } from '@src/bet/types/product/multer-file.types';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
 import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
+import { AttachFileDto } from '../dto/attach-file.dto';
 import { CreateObservationDto } from '../dto/create-observation.dto';
 import { ObservationQueryFilterDto } from '../dto/observation-query-filter.dto';
 import { UpdateObservationDto } from '../dto/update-observation.dto';
@@ -125,10 +126,11 @@ export class ObservationController {
   @UseInterceptors(FileInterceptor('file'))
   async attachFile(
     @Param('id') id: string,
+    @Body() attachFileDto: AttachFileDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+          new MaxFileSizeValidator({ maxSize: 500 * 1024 * 1024 }), // 10MB
           new FileTypeValidator({ fileType: '.(pdf|doc|docx|jpg|jpeg|png)' }),
         ],
       }),
@@ -136,7 +138,7 @@ export class ObservationController {
     file: MulterFile,
     @GetUser() user: LoggedUser,
   ): Promise<ObservationFile> {
-    return await this.observationService.attachFileToObservation(+id, file, user.id);
+    return await this.observationService.attachFileToObservation(+id, file, user.id, attachFileDto);
   }
 
   @Get(':id/files')

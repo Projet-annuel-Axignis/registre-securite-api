@@ -8,6 +8,7 @@ import { PartService } from '@src/location/services/part.service';
 import { getEntityFilteredList } from '@src/paginator/paginator.service';
 import { EntityFilteredListResults } from '@src/paginator/paginator.type';
 import { Repository } from 'typeorm';
+import { AttachFileDto } from '../dto/attach-file.dto';
 import { CreateObservationDto } from '../dto/create-observation.dto';
 import { ObservationQueryFilterDto } from '../dto/observation-query-filter.dto';
 import { UpdateObservationDto } from '../dto/update-observation.dto';
@@ -230,7 +231,12 @@ export class ObservationService {
     return await this.observationRepository.save(observation);
   }
 
-  async attachFileToObservation(observationId: number, file: MulterFile, userId: number): Promise<ObservationFile> {
+  async attachFileToObservation(
+    observationId: number,
+    file: MulterFile,
+    userId: number,
+    attachFileDto: AttachFileDto,
+  ): Promise<ObservationFile> {
     // Validate observation exists
     await this.findOne(observationId);
 
@@ -238,10 +244,12 @@ export class ObservationService {
     const uploadDto: UploadProductDocumentDto = {
       serialNumber: `OBSERVATION-${observationId}-${Date.now()}`,
       issueDate: new Date().toISOString(),
-      version: 1,
+      version: attachFileDto.version,
       typeId: 1, // Default document type for observations
       productIds: [], // Empty array since this is for observations, not products
       uploadedBy: userId,
+      title: attachFileDto.title,
+      description: attachFileDto.description,
     };
 
     const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);

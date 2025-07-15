@@ -9,4 +9,7 @@ export class ObservationFile extends BaseEntity {
 
   @Column()
   fileId: number;
+
+  @Column({ nullable: true })
+  description?: string;
 }
