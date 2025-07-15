@@ -1,5 +1,5 @@
 export interface MulterFile {
-  originalName: string;
+  originalname: string;
   buffer: Buffer;
   mimetype: string;
 }

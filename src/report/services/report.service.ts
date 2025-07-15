@@ -272,7 +272,7 @@ export class ReportService {
     // Create upload DTO for BET API
     const uploadDto: UploadProductDocumentDto = {
       serialNumber: `REPORT-${reportId}-${Date.now()}`,
-      fileName: file.originalName,
+      fileName: file.originalname,
       size: file.buffer.length,
       mimeType: file.mimetype,
       issueDate: new Date().toISOString(),
@@ -283,6 +283,12 @@ export class ReportService {
     };
 
     const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);
+
+    // Check if the upload was successful by checking for error response structure
+    if ('statusCode' in uploadedFile) {
+      // This is an error response
+      throw new Error(`File upload failed: ${uploadedFile.message}`);
+    }
 
     // Create report file association
     const reportFile = this.reportFileRepository.create({

@@ -236,7 +236,7 @@ export class ObservationService {
     // Create upload DTO for BET API
     const uploadDto: UploadProductDocumentDto = {
       serialNumber: `OBSERVATION-${observationId}-${Date.now()}`,
-      fileName: file.originalName,
+      fileName: file.originalname,
       size: file.buffer.length,
       mimeType: file.mimetype,
       issueDate: new Date().toISOString(),
@@ -247,6 +247,12 @@ export class ObservationService {
     };
 
     const uploadedFile = await this.productDocumentService.uploadDocument(uploadDto, file, userId);
+
+    // Check if the upload was successful by checking for error response structure
+    if ('statusCode' in uploadedFile) {
+      // This is an error response
+      throw new Error(`File upload failed: ${uploadedFile.message}`);
+    }
 
     // Create observation file association
     const observationFile = this.observationFileRepository.create({

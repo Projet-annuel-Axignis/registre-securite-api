@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BetApiErrorResponse } from '../../services/abstract-bet.service';
 import { DocumentStatus } from './document-status.types';
 
 export class ProductDocumentResponse {
@@ -74,3 +75,8 @@ export class ProductDocumentResponse {
     serialNumber: string;
   };
 }
+
+/**
+ * Union type for upload document response that can handle both success and error cases
+ */
+export type UploadDocumentResponse = ProductDocumentResponse | BetApiErrorResponse;

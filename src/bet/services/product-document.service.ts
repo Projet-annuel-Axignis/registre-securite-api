@@ -1,12 +1,12 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@src/config/services/api-config.service';
 import { AxiosError, AxiosResponse } from 'axios';
 import { UploadProductDocumentDto } from '../dtos/product/upload-product-document.dto';
 import { DocumentStatus } from '../types/product/document-status.types';
 import { ChecksumValidationResponse, FileDownloadResponse } from '../types/product/file.types';
 import { MulterFile } from '../types/product/multer-file.types';
-import { ProductDocumentResponse } from '../types/product/product-document-response.types';
+import { ProductDocumentResponse, UploadDocumentResponse } from '../types/product/product-document-response.types';
 import { AbstractBetService, BetApiErrorResponse } from './abstract-bet.service';
 
 /**
@@ -37,18 +37,23 @@ export class ProductDocumentService extends AbstractBetService {
     uploadDto: UploadProductDocumentDto,
     file: MulterFile,
     uploadedByUserId?: number,
-  ): Promise<ProductDocumentResponse> {
+  ): Promise<UploadDocumentResponse> {
     // Create form data for file upload
     const formData = new FormData();
-    formData.append('file', new Blob([file.buffer], { type: file.mimetype }), file.originalName);
+    formData.append('file', new Blob([file.buffer], { type: file.mimetype }), file.originalname);
 
-    // Add all other fields to form data
+    // Add all other fields to form data with proper type handling
     Object.entries(uploadDto).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        // Handle arrays (like productIds)
+        // Handle arrays (like productIds) - keep as numbers
         value.forEach((item) => formData.append(key, item.toString()));
       } else if (value !== undefined) {
-        formData.append(key, value.toString());
+        // Convert numbers to strings for FormData, but keep the original type for validation
+        if (typeof value === 'number') {
+          formData.append(key, value.toString());
+        } else {
+          formData.append(key, value);
+        }
       }
     });
 
@@ -60,7 +65,7 @@ export class ProductDocumentService extends AbstractBetService {
     // Use base provider service directly for file upload with custom headers
     try {
       const response: AxiosResponse<ProductDocumentResponse> = await this.httpService.axiosRef.post(
-        `${this.configService.get('apis.bet.base_url')}/products/documents/upload`,
+        `${this.configService.get('apis.bet.base_url')}/product-documents/upload`,
         formData,
         {
           headers: {
@@ -71,14 +76,20 @@ export class ProductDocumentService extends AbstractBetService {
       );
       return response.data;
     } catch (error: unknown) {
-      // Handle error using the same logic as makeBetRequest
-      if (isAxiosErrorWithResponse(error)) {
-        const betError = error.response!.data;
+      // If it's an Axios error with response data, handle BET API errors
+      if (error instanceof AxiosError && error.response?.data) {
+        const betError = error.response.data as BetApiErrorResponse;
+
+        // If it's a BET API error response with statusCode, throw HTTP exception
         if (isBetApiErrorResponse(betError)) {
-          throw new Error(JSON.stringify(betError));
+          throw new HttpException(betError, error.response.status);
         }
-        throw new Error(JSON.stringify(betError));
+
+        // For other BET API errors, throw with the original status code
+        throw new HttpException(betError, error.response.status);
       }
+
+      // For other errors, re-throw them
       throw error;
     }
   }
@@ -86,21 +97,21 @@ export class ProductDocumentService extends AbstractBetService {
   async findOneDocumentById(id: number): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'GET',
-      endpoint: `products/documents/${id}`,
+      endpoint: `product-document/${id}`,
     });
   }
 
   async findOneDocumentBySerialNumber(serialNumber: string): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'GET',
-      endpoint: `products/documents/serial/${serialNumber}`,
+      endpoint: `product-document/serial/${serialNumber}`,
     });
   }
 
   async findDocumentsByProductId(productId: number): Promise<ProductDocumentResponse[]> {
     return this.makeBetRequest<ProductDocumentResponse[]>({
       method: 'GET',
-      endpoint: `products/documents/product/${productId}`,
+      endpoint: `product-document/product/${productId}`,
     });
   }
 
@@ -108,7 +119,7 @@ export class ProductDocumentService extends AbstractBetService {
     // Use base provider service directly for file download with arraybuffer response type
     try {
       const response: AxiosResponse<Buffer> = await this.httpService.axiosRef.get(
-        `${this.configService.get('apis.bet.base_url')}/products/documents/${id}/file`,
+        `${this.configService.get('apis.bet.base_url')}/product-document/${id}/file`,
         {
           headers: {
             'X-API-Key': this.configService.get('apis.bet.api_key'),
@@ -140,7 +151,7 @@ export class ProductDocumentService extends AbstractBetService {
   async updateDocumentStatus(id: number, status: DocumentStatus): Promise<ProductDocumentResponse> {
     return this.makeBetRequest<ProductDocumentResponse>({
       method: 'PATCH',
-      endpoint: `products/documents/${id}/status`,
+      endpoint: `product-document/${id}/status`,
       payload: { status },
     });
   }
@@ -148,14 +159,14 @@ export class ProductDocumentService extends AbstractBetService {
   async deleteDocument(id: number): Promise<void> {
     return this.makeBetRequest<void>({
       method: 'DELETE',
-      endpoint: `products/documents/${id}`,
+      endpoint: `product-document/${id}`,
     });
   }
 
   async validateDocumentChecksum(id: number): Promise<ChecksumValidationResponse> {
     return this.makeBetRequest<ChecksumValidationResponse>({
       method: 'GET',
-      endpoint: `products/documents/${id}/validate-checksum`,
+      endpoint: `product-document/${id}/validate-checksum`,
     });
   }
 }
