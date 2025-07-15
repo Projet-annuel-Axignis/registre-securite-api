@@ -80,7 +80,7 @@ export class InterventionService {
   async findOne(id: number): Promise<Intervention> {
     const intervention = await this.interventionRepository.findOne({
       where: { id },
-      relations: ['type', 'terminatedBy'],
+      relations: ['type', 'terminatedBy', 'parts'],
     });
 
     if (!intervention) {

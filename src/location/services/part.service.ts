@@ -84,6 +84,7 @@ export class PartService {
         partFloors: true,
         habFamily: true,
         erpTypes: true,
+        interventions: true,
       },
     });
 
