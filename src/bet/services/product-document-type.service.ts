@@ -21,7 +21,7 @@ export class ProductDocumentTypeService extends AbstractBetService {
   async createProductDocumentType(createDto: CreateProductDocumentTypeDto): Promise<ProductDocumentTypeResponse> {
     return this.makeBetRequest<ProductDocumentTypeResponse>({
       method: 'POST',
-      endpoint: 'products/document-types',
+      endpoint: 'product-document-types',
       payload: createDto,
     });
   }
@@ -31,7 +31,7 @@ export class ProductDocumentTypeService extends AbstractBetService {
   ): Promise<PaginatedList<ProductDocumentTypeResponse>> {
     return this.makeBetRequest<PaginatedList<ProductDocumentTypeResponse>, ProductDocumentTypeQueryFilterDto>({
       method: 'GET',
-      endpoint: 'products/document-types',
+      endpoint: 'product-document-types',
       params: query,
     });
   }
@@ -39,14 +39,14 @@ export class ProductDocumentTypeService extends AbstractBetService {
   async findOneProductDocumentTypeById(id: number): Promise<ProductDocumentTypeResponse> {
     return this.makeBetRequest<ProductDocumentTypeResponse>({
       method: 'GET',
-      endpoint: `products/document-types/${id}`,
+      endpoint: `product-document-types/${id}`,
     });
   }
 
   async findOneProductDocumentTypeBySerialNumber(serialNumber: string): Promise<ProductDocumentTypeResponse> {
     return this.makeBetRequest<ProductDocumentTypeResponse>({
       method: 'GET',
-      endpoint: `products/document-types/serial/${serialNumber}`,
+      endpoint: `product-document-types/serial/${serialNumber}`,
     });
   }
 
@@ -56,7 +56,7 @@ export class ProductDocumentTypeService extends AbstractBetService {
   ): Promise<ProductDocumentTypeResponse> {
     return this.makeBetRequest<ProductDocumentTypeResponse>({
       method: 'PATCH',
-      endpoint: `products/document-types/${id}`,
+      endpoint: `product-document-types/${id}`,
       payload: updateDto,
     });
   }
@@ -64,14 +64,14 @@ export class ProductDocumentTypeService extends AbstractBetService {
   async softDeleteProductDocumentType(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
-      endpoint: `products/document-types/${id}`,
+      endpoint: `product-document-types/${id}`,
     });
   }
 
   async restoreProductDocumentType(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
-      endpoint: `products/document-types/${id}/restore`,
+      endpoint: `product-document-types/${id}/restore`,
     });
   }
 }

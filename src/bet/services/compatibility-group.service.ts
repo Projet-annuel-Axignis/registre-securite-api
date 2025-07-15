@@ -21,7 +21,7 @@ export class CompatibilityGroupService extends AbstractBetService {
   async createCompatibilityGroup(createDto: CreateCompatibilityGroupDto): Promise<CompatibilityGroupResponse> {
     return this.makeBetRequest<CompatibilityGroupResponse>({
       method: 'POST',
-      endpoint: 'products/compatibility-groups',
+      endpoint: 'compatibility-groups',
       payload: createDto,
     });
   }
@@ -31,7 +31,7 @@ export class CompatibilityGroupService extends AbstractBetService {
   ): Promise<PaginatedList<CompatibilityGroupResponse>> {
     return this.makeBetRequest<PaginatedList<CompatibilityGroupResponse>, CompatibilityGroupQueryFilterDto>({
       method: 'GET',
-      endpoint: 'products/compatibility-groups',
+      endpoint: 'compatibility-groups',
       params: query,
     });
   }
@@ -39,7 +39,7 @@ export class CompatibilityGroupService extends AbstractBetService {
   async findOneCompatibilityGroupById(id: number): Promise<CompatibilityGroupResponse> {
     return this.makeBetRequest<CompatibilityGroupResponse>({
       method: 'GET',
-      endpoint: `products/compatibility-groups/${id}`,
+      endpoint: `compatibility-groups/${id}`,
     });
   }
 
@@ -49,7 +49,7 @@ export class CompatibilityGroupService extends AbstractBetService {
   ): Promise<CompatibilityGroupResponse> {
     return this.makeBetRequest<CompatibilityGroupResponse>({
       method: 'PATCH',
-      endpoint: `products/compatibility-groups/${id}`,
+      endpoint: `compatibility-groups/${id}`,
       payload: updateDto,
     });
   }
@@ -57,14 +57,14 @@ export class CompatibilityGroupService extends AbstractBetService {
   async softDeleteCompatibilityGroup(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'DELETE',
-      endpoint: `products/compatibility-groups/${id}`,
+      endpoint: `compatibility-groups/${id}`,
     });
   }
 
   async restoreCompatibilityGroup(id: number): Promise<{ message: string; id: number }> {
     return this.makeBetRequest<{ message: string; id: number }>({
       method: 'PATCH',
-      endpoint: `products/compatibility-groups/${id}/restore`,
+      endpoint: `compatibility-groups/${id}/restore`,
     });
   }
 }
