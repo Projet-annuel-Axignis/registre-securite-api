@@ -236,9 +236,6 @@ export class ObservationService {
     // Create upload DTO for BET API
     const uploadDto: UploadProductDocumentDto = {
       serialNumber: `OBSERVATION-${observationId}-${Date.now()}`,
-      fileName: file.originalname,
-      size: file.buffer.length,
-      mimeType: file.mimetype,
       issueDate: new Date().toISOString(),
       version: 1,
       typeId: 1, // Default document type for observations
