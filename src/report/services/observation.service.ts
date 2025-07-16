@@ -54,6 +54,7 @@ export class ObservationService {
     // Create the observation
     const observation = this.observationRepository.create({
       title: createObservationDto.title,
+      comment: createObservationDto.comment,
       reference: createObservationDto.reference,
       location: createObservationDto.location,
       priority: createObservationDto.priority,
@@ -115,6 +116,9 @@ export class ObservationService {
     // Update basic fields
     if (updateObservationDto.title) {
       observation.title = updateObservationDto.title;
+    }
+    if (updateObservationDto.comment !== undefined) {
+      observation.comment = updateObservationDto.comment;
     }
     if (updateObservationDto.reference) {
       observation.reference = updateObservationDto.reference;

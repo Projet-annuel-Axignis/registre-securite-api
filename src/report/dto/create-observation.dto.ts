@@ -12,6 +12,14 @@ export class CreateObservationDto {
   @IsNotEmpty()
   title: string;
 
+  @ApiPropertyOptional({
+    description: 'Comment or description for the observation',
+    example: 'This is a detailed comment about the observation findings',
+  })
+  @IsString()
+  @IsOptional()
+  comment?: string;
+
   @ApiProperty({
     description: 'Reference number for the observation',
     example: 'OBS-2024-001',

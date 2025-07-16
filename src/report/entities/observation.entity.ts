@@ -11,6 +11,9 @@ export class Observation extends SoftDeleteEntity {
   @Column()
   title: string;
 
+  @Column({ type: 'text', nullable: true })
+  comment: string | null;
+
   @Column()
   reference: string;
 
