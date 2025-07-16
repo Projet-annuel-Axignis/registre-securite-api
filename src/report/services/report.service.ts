@@ -133,7 +133,45 @@ export class ReportService {
       ],
     });
 
-    return [reports, reports.length, totalResults];
+    // Fetch equipment types from BET API for each report
+    const reportsWithEquipmentTypes = await this.enrichReportsWithEquipmentTypes(reports);
+
+    return [reportsWithEquipmentTypes, reportsWithEquipmentTypes.length, totalResults];
+  }
+
+  private async enrichReportsWithEquipmentTypes(reports: Report[]): Promise<Report[]> {
+    // Collect all unique equipment IDs from all reports
+    const allEquipmentIds = new Set<number>();
+    reports.forEach((report) => {
+      if (report.equipments) {
+        report.equipments.forEach((equipment) => {
+          allEquipmentIds.add(equipment.equipmentId);
+        });
+      }
+    });
+
+    // Fetch all equipment types from BET API in batch
+    const equipmentTypesMap = new Map<number, any>();
+    for (const equipmentId of allEquipmentIds) {
+      try {
+        const equipmentType = await this.equipmentService.findOneEquipmentTypeById(equipmentId);
+        equipmentTypesMap.set(equipmentId, equipmentType);
+      } catch (_error) {
+        // If equipment type not found, set as null
+        equipmentTypesMap.set(equipmentId, null);
+      }
+    }
+
+    // Enrich each report's equipment with equipment type data
+    return reports.map((report) => {
+      if (report.equipments) {
+        report.equipments = report.equipments.map((equipment) => ({
+          ...equipment,
+          equipmentType: equipmentTypesMap.get(equipment.equipmentId) || null,
+        }));
+      }
+      return report;
+    });
   }
 
   async findOne(id: number): Promise<Report> {
@@ -156,7 +194,9 @@ export class ReportService {
       throw new ReportNotFoundException({ id });
     }
 
-    return report;
+    // Enrich report with equipment types from BET API
+    const enrichedReports = await this.enrichReportsWithEquipmentTypes([report]);
+    return enrichedReports[0];
   }
 
   async update(id: number, updateReportDto: UpdateReportDto): Promise<Report> {

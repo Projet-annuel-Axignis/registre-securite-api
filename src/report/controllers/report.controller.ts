@@ -25,7 +25,6 @@ import { RolesGuard } from '@src/auth/guards/role.guard';
 import { LoggedUser } from '@src/auth/types/logged-user.type';
 import { MulterFile } from '@src/bet/types/product/multer-file.types';
 import { SwaggerFailureResponse } from '@src/common/helpers/common-set-decorators.helper';
-import { PaginatedList } from '@src/paginator/paginator.type';
 import { RoleType } from '@src/users/types/role.types';
 import { AttachFileDto } from '../dto/attach-file.dto';
 import { CreateReportDto } from '../dto/create-report.dto';
@@ -43,7 +42,11 @@ import {
   SwaggerReportUpdateState,
 } from '../helpers/report-set-decorators.helper';
 import { ReportService } from '../services/report.service';
-import { ReportFileWithDetailsResponse } from '../types/report-swagger-response.types';
+import {
+  ReportFileWithDetailsResponse,
+  ReportListWithEquipmentTypesResponse,
+  ReportWithEquipmentTypesResponse,
+} from '../types/report-swagger-response.types';
 
 @ApiTags(Resources.REPORT)
 @SwaggerFailureResponse()
@@ -64,7 +67,7 @@ export class ReportController {
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerReportFindAll()
-  async findAll(@Query() query: ReportQueryFilterDto): Promise<PaginatedList<Report>> {
+  async findAll(@Query() query: ReportQueryFilterDto): Promise<ReportListWithEquipmentTypesResponse> {
     const [reports, currentResults, totalResults] = await this.reportService.findAll(query);
     return { ...query, totalResults, currentResults, results: reports };
   }
@@ -72,7 +75,7 @@ export class ReportController {
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
   @SwaggerReportFindOne()
-  async findOne(@Param('id') id: string): Promise<Report> {
+  async findOne(@Param('id') id: string): Promise<ReportWithEquipmentTypesResponse> {
     return await this.reportService.findOne(+id);
   }
 

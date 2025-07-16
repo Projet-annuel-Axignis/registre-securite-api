@@ -8,9 +8,11 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { ApiOkResponsePaginated } from '@paginator/paginator.decorator';
-import { Report } from '../entities/report.entity';
-import { ReportFileWithDetailsResponse } from '../types/report-swagger-response.types';
+import {
+  ReportFileWithDetailsResponse,
+  ReportListWithEquipmentTypesResponse,
+  ReportWithEquipmentTypesResponse,
+} from '../types/report-swagger-response.types';
 import { ReportConfigSwagger } from './report-config-swagger.helper';
 
 // Report decorators
@@ -26,14 +28,20 @@ export const SwaggerReportCreate = () => {
 export const SwaggerReportFindAll = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Get all reports' }),
-    ApiOkResponsePaginated(Report, { description: 'Reports list' }),
+    ApiOkResponse({
+      description: 'Reports list with equipment types from BET API',
+      type: ReportListWithEquipmentTypesResponse,
+    }),
   );
 };
 
 export const SwaggerReportFindOne = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Get a report by id' }),
-    ApiOkResponse({ description: 'Report', type: Report }),
+    ApiOkResponse({
+      description: 'Report with equipment types from BET API',
+      type: ReportWithEquipmentTypesResponse,
+    }),
     ApiNotFoundResponse(ReportConfigSwagger.REPORT_NOT_FOUND),
     ApiForbiddenResponse(ReportConfigSwagger.REPORT_FORBIDDEN),
   );
