@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { InterventionStatus } from '../types/intervention-status.types';
-import { Periodicity } from '../types/periodicity.types';
 
 @ApiTags('Intervention')
 export class UpdateInterventionDto {
@@ -41,16 +40,6 @@ export class UpdateInterventionDto {
   @IsEnum(InterventionStatus)
   @IsOptional()
   status?: InterventionStatus;
-
-  @ApiProperty({
-    description: 'Frequency of the intervention',
-    enum: Periodicity,
-    example: Periodicity.ANNUAL,
-    required: false,
-  })
-  @IsEnum(Periodicity)
-  @IsOptional()
-  periodicity?: Periodicity;
 
   @ApiProperty({
     description: 'Planned date and time for the intervention',
