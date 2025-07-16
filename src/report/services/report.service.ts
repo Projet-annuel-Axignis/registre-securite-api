@@ -177,17 +177,7 @@ export class ReportService {
   async findOne(id: number): Promise<Report> {
     const report = await this.reportRepository.findOne({
       where: { id },
-      relations: [
-        'type',
-        'typology',
-        'organization',
-        'intervention',
-        'parts',
-        'files',
-        'equipments',
-        'observations',
-        'equipments',
-      ],
+      relations: ['type', 'typology', 'organization', 'intervention', 'parts', 'files', 'equipments', 'observations'],
     });
 
     if (!report) {
@@ -260,10 +250,6 @@ export class ReportService {
 
     // Update equipment types if provided
     if (updateReportDto.equipmentTypeIds) {
-      // Remove existing equipment associations
-      await this.reportEquipmentRepository.delete({ report: { id } });
-
-      // Add new equipment associations
       if (updateReportDto.equipmentTypeIds.length > 0) {
         await this.attachEquipmentTypesToReport(id, updateReportDto.equipmentTypeIds);
       }
