@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Part } from '@src/location/entities/part.entity';
+import { PartService } from '@src/location/services/part.service';
 import { getEntityFilteredList } from '@src/paginator/paginator.service';
 import { EntityFilteredListResults } from '@src/paginator/paginator.type';
 import { User } from '@src/users/entities/user.entity';
@@ -15,6 +17,7 @@ import {
   InterventionNotFoundException,
   InterventionTypeNotFoundException,
   InvalidStatusTransitionException,
+  PartsNotFoundException,
   UserNotFoundException,
 } from '../helpers/exceptions/intervention.exception';
 import { InterventionStatus } from '../types/intervention-status.types';
@@ -27,6 +30,7 @@ export class InterventionService {
     @InjectRepository(InterventionType)
     private readonly interventionTypeRepository: Repository<InterventionType>,
     private readonly userService: UserService,
+    private readonly partService: PartService,
   ) {}
 
   async create(createInterventionDto: CreateInterventionDto): Promise<Intervention> {
@@ -49,11 +53,22 @@ export class InterventionService {
       }
     }
 
+    // Validate parts exist if provided
+    let parts: Part[] = [];
+    if (createInterventionDto.partIds && createInterventionDto.partIds.length > 0) {
+      try {
+        parts = await this.partService.findByIds(createInterventionDto.partIds);
+      } catch (_error) {
+        throw new PartsNotFoundException({ partIds: createInterventionDto.partIds.join(', ') });
+      }
+    }
+
     // Create new intervention
     const intervention = this.interventionRepository.create({
       ...createInterventionDto,
       type: interventionType,
       terminatedBy: terminatedByUser,
+      parts,
       plannedAt: createInterventionDto.plannedAt ? new Date(createInterventionDto.plannedAt) : null,
       startedAt: createInterventionDto.startedAt ? new Date(createInterventionDto.startedAt) : null,
       endedAt: createInterventionDto.endedAt ? new Date(createInterventionDto.endedAt) : null,
@@ -118,6 +133,16 @@ export class InterventionService {
     // Validate status transitions
     if (updateInterventionDto.status && updateInterventionDto.status !== intervention.status) {
       this.validateStatusTransition(intervention.status, updateInterventionDto.status);
+    }
+
+    // Update parts if provided
+    if (updateInterventionDto.partIds) {
+      try {
+        const parts = await this.partService.findByIds(updateInterventionDto.partIds);
+        intervention.parts = parts;
+      } catch (_error) {
+        throw new PartsNotFoundException({ partIds: updateInterventionDto.partIds.join(', ') });
+      }
     }
 
     // Update fields if provided

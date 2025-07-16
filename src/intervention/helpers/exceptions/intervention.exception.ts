@@ -8,6 +8,7 @@ export enum InterventionErrorCode {
   INTERVENTION_TYPE_NOT_FOUND = 'INTERVENTION_TYPE_NOT_FOUND',
   USER_NOT_FOUND = 'USER_NOT_FOUND',
   INVALID_STATUS_TRANSITION = 'INVALID_STATUS_TRANSITION',
+  PARTS_NOT_FOUND = 'PARTS_NOT_FOUND',
 }
 
 type ErrorCode = CommonErrorCode | InterventionErrorCode;
@@ -27,6 +28,7 @@ export class InterventionHttpException extends CustomHttpException {
       [InterventionErrorCode.INTERVENTION_TYPE_NOT_FOUND]: 'Intervention type not found',
       [InterventionErrorCode.USER_NOT_FOUND]: 'User not found',
       [InterventionErrorCode.INVALID_STATUS_TRANSITION]: 'Invalid status transition for intervention',
+      [InterventionErrorCode.PARTS_NOT_FOUND]: 'Some parts were not found',
     };
 
     return messages[this.code] || null;
@@ -66,5 +68,11 @@ export class UserNotFoundException extends InterventionHttpException {
 export class InvalidStatusTransitionException extends InterventionHttpException {
   constructor(details?: Record<string, string | number>) {
     super(InterventionErrorCode.INVALID_STATUS_TRANSITION, HttpStatus.BAD_REQUEST, details);
+  }
+}
+
+export class PartsNotFoundException extends InterventionHttpException {
+  constructor(details?: Record<string, string | number>) {
+    super(InterventionErrorCode.PARTS_NOT_FOUND, HttpStatus.NOT_FOUND, details);
   }
 }

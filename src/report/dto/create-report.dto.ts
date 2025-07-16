@@ -27,10 +27,9 @@ export class CreateReportDto {
   interventionId?: number;
 
   @ApiPropertyOptional({ description: 'Array of part IDs', example: [1, 2, 3] })
-  @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  partIds?: number[];
+  partIds: number[];
 
   @ApiPropertyOptional({ description: 'Array of file IDs from BET API', example: [1, 2, 3] })
   @IsOptional()

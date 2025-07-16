@@ -1,5 +1,5 @@
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { InterventionStatus } from '../types/intervention-status.types';
 import { Periodicity } from '../types/periodicity.types';
 
@@ -96,4 +96,14 @@ export class UpdateInterventionDto {
   @IsNumber()
   @IsOptional()
   terminatedById?: number;
+
+  @ApiPropertyOptional({
+    description: 'Array of part IDs to attach to the intervention',
+    example: [1, 2, 3],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  partIds?: number[];
 }
