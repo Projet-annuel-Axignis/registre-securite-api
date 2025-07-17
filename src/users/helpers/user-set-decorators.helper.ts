@@ -25,6 +25,13 @@ export const SwaggerUserFindAll = () => {
   );
 };
 
+export const SwaggerUserFindAllVisitors = () => {
+  return applyDecorators(
+    ApiOperation({ summary: 'Get all visitor users' }),
+    ApiOkResponsePaginated(User, { description: 'Visitors list' }),
+  );
+};
+
 export const SwaggerUserFindOne = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Get a user by id' }),

@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
   And,
@@ -73,7 +73,7 @@ const sanitizer = (value: string): string => {
 /**
  * Convert semi-colon separated value into an array if not already and apply the sanitizer on each values
  */
-const sanitizeQueryFilterValues = (filterValues: string | string[], separator = ';'): (string | Dayjs)[] => {
+const sanitizeQueryFilterValues = (filterValues: string | string[], separator = ';'): string[] => {
   if (!Array.isArray(filterValues)) {
     // Remove parenthesis and split by semi-colon
     filterValues = filterValues.slice(1, -1).split(separator);
@@ -92,19 +92,24 @@ const generateRandomSuffix = (): number => {
 export const sqlBuildQueryFilter = (
   paginationParams: PaginationParamsDto,
   isAndCondition = false,
-  options: SqlMultiFilterOptions = { filterSeparator: ',' },
-) => {
+  options?: SqlMultiFilterOptions,
+): {
+  whereString: string;
+  values: object;
+} => {
   const { filterField, filterOp, filter } = paginationParams;
-  const { filterSeparator } = options;
+  const filterSeparator = options?.filterSeparator ?? ',';
   const valueSeparator = filterSeparator === ',' ? ';' : ',';
 
   // Early return if one parameter is missing
   if (!filterField || !filterOp || !filter) {
-    return [];
+    return { whereString: '', values: {} };
   }
 
   const orFilter: Record<string, string>[] = [];
   const andFilter = {};
+  const whereArray: string[] = [];
+  const values = {};
   const processedParams: ProcessedParams = {
     filterField: filterField.split(filterSeparator),
     filterOp: filterOp.split(filterSeparator).map((filter) => filter.trim() as FilterOp),
@@ -126,7 +131,11 @@ export const sqlBuildQueryFilter = (
     };
 
     for (let i = 0; i < processedParams.filterField.length; i++) {
-      const field = processedParams.filterField[i];
+      const rawField = processedParams.filterField[i];
+      const filterOnJoinTable = options?.filterOnJoinTable?.find((f) => f.field === rawField);
+      const field = options?.filterOnJoinTable
+        ? `${filterOnJoinTable?.tableAlias ?? options.mainTableAlias}.${filterOnJoinTable?.fieldAlias ?? rawField}`
+        : rawField;
       const operator = processedParams.filterOp[i];
       const value = processedParams.filter[i];
 
@@ -158,48 +167,64 @@ export const sqlBuildQueryFilter = (
       const placeholder = `value_${i}`;
       const filterPlaceholder = `filter_${i}`;
 
+      // values[filterPlaceholder] = field;
+      values[placeholder] = sanitizedValue;
+
       switch (operator) {
         case FilterOp.NOT:
+          whereArray.push(`${field} != :${placeholder}`);
           response[field] = Not(sanitizedValue);
           break;
         case FilterOp.EQUALS:
         case FilterOp.IS:
+          whereArray.push(`${field} = :${placeholder}`);
           response[field] = Equal(sanitizedValue);
           break;
         case FilterOp.STARTS_WITH:
+          whereArray.push(`CAST(${field} as varchar) ILike :${placeholder}%`);
           response[field] = Raw((alias) => `CAST(${alias} as varchar) ILike :${placeholder}`, {
             [placeholder]: `${sanitizedValue}%`,
           });
           break;
         case FilterOp.ENDS_WITH:
+          whereArray.push(`CAST(${field} as varchar) ILike %:${placeholder}`);
           response[field] = Raw((alias) => `CAST(${alias} as varchar) ILike :${placeholder}`, {
             [placeholder]: `%${sanitizedValue}`,
           });
           break;
         case FilterOp.IS_EMPTY:
+          whereArray.push(`CAST(${field} as varchar) ILike ''`);
           response[field] = Raw((alias) => `CAST(${alias} as varchar) ILike ''`);
           break;
         case FilterOp.IS_NOT_EMPTY:
-          response[field] = Not(Raw((alias) => `CAST(${alias} as varchar) ILike ''`));
+          whereArray.push(`CAST(${field} as varchar) not ILike ''`);
+          response[field] = Not(Raw((alias) => `CAST(${alias} as varchar) not ILike ''`));
           break;
         case FilterOp.AFTER:
+          whereArray.push(`${field} > :${placeholder}`);
           response[field] = MoreThan(sanitizedValue);
           break;
         case FilterOp.BEFORE:
+          whereArray.push(`${field} < :${placeholder}`);
           response[field] = LessThan(sanitizedValue);
           break;
         case FilterOp.ON_OR_AFTER:
+          whereArray.push(`${field} >= :${placeholder}`);
           response[field] = MoreThanOrEqual(sanitizedValue);
           break;
         case FilterOp.ON_OR_BEFORE:
+          whereArray.push(`${field} <= :${placeholder}`);
           response[field] = LessThanOrEqual(sanitizedValue);
           break;
         case FilterOp.IS_ANY_OF:
           // Special treatment for split values
+          values[placeholder] = sanitizeQueryFilterValues(value, valueSeparator);
+          whereArray.push(`${field} in (:${placeholder})`);
           response[field] = In(sanitizeQueryFilterValues(value, valueSeparator));
           break;
         case FilterOp.BETWEEN: {
           const [rangeGte, rangeLte] = sanitizeQueryFilterValues(value, valueSeparator);
+          values[placeholder] = `${rangeGte} AND ${rangeLte}`;
           response[field] = Between(rangeGte, rangeLte);
           break;
         }
@@ -208,6 +233,7 @@ export const sqlBuildQueryFilter = (
           const splittedField = field.split('..');
           const isJSONBQuery = splittedField.length > 1;
           const key = splittedField.length > 1 ? splittedField[0] : field;
+          whereArray.push(`CAST(${field} as varchar) ILike %:${placeholder}%`);
           response[key] = isJSONBQuery
             ? Raw((alias) => `(${alias} ->> :${filterPlaceholder}) ILike :${placeholder}`, {
                 [filterPlaceholder]: splittedField[1],
@@ -223,16 +249,16 @@ export const sqlBuildQueryFilter = (
       if (isAndCondition) {
         const splittedField = field.split('..');
         const key = splittedField.length > 1 ? splittedField[0] : field;
-        andFilter[key] = andFilter[key] ? And(andFilter[key], response[key]) : response[key]; // TODO use array instead of object for andFilter
+        andFilter[key] = andFilter[key] ? And(andFilter[key], response[key]) : response[key];
       } else {
         orFilter.push(response);
       }
     }
   } else {
-    return [];
+    return { whereString: '', values: {} };
   }
 
-  return isAndCondition ? andFilter : orFilter;
+  return { whereString: `(${whereArray.join(isAndCondition ? ' AND ' : ' OR ')})`, values };
 };
 
 /**
@@ -274,56 +300,49 @@ const loadLeftJoinAndSelect = <Entity extends ObjectLiteral>(
 export const getEntityFilteredList = async <Entity extends ObjectLiteral>(
   options: EntityFilteredListOptions<Entity>,
 ): Promise<[Entity[], number]> => {
+  const alias = options.repository.metadata.tableName;
+
   const { search } = options.queryFilter;
   const searchFilter = search && options.searchFields ? sqlBuildSearchFilter(search, options.searchFields) : [];
-  const multipleFilter = sqlBuildQueryFilter(options.queryFilter, options.isAndCondition ?? true);
-
-  const alias = options.repository.metadata.tableName;
 
   // Default primary key name is `id`
   const pk = options.pkName ?? 'id';
   const orderField = `${alias}.${options.queryFilter.sortField ?? pk}`;
   const orderDirection = options.queryFilter.sortOrder === SortOrder.DESC ? 'DESC' : 'ASC';
 
-  const rootQuery = options.repository
-    .createQueryBuilder(alias)
-    .where(searchFilter)
-    .andWhere(multipleFilter)
-    .orderBy(orderField, orderDirection)
-    .limit(options.queryFilter.limit)
-    .offset(options.queryFilter.offset);
+  const rootQuery = options.repository.createQueryBuilder(alias).where(searchFilter);
 
   if (options.withDeleted) {
     rootQuery.withDeleted();
   }
 
   if (options.relations?.length) {
-    rootQuery.select(`${alias}.${pk}`);
-    const [resultsIds, totalResults] = await rootQuery.getManyAndCount();
-
-    // If no results, early return an empty array
-    if (!resultsIds.length) {
-      return [[], totalResults];
-    }
-
-    const finalQuery = options.repository
-      .createQueryBuilder(alias)
-      .where(`${alias}.${pk} in (:...ids)`, {
-        ids: resultsIds.map((obj) => obj[pk] as string | number),
-      })
-      .orderBy(orderField, orderDirection);
-
-    if (options.withDeleted) {
-      finalQuery.withDeleted();
-    }
-
     for (const relationParam of options.relations) {
-      loadLeftJoinAndSelect(finalQuery, alias, relationParam);
+      loadLeftJoinAndSelect(rootQuery, alias, relationParam);
     }
-    const results = await finalQuery.getMany();
-
-    return [results, totalResults];
-  } else {
-    return await rootQuery.getManyAndCount();
   }
+
+  // Then apply search filter if any
+  if (searchFilter.length > 0) {
+    rootQuery.where(searchFilter);
+  }
+
+  if (options.withDeleted) {
+    rootQuery.withDeleted();
+  }
+
+  const multipleFilter = sqlBuildQueryFilter(
+    options.queryFilter,
+    options.isAndCondition ?? true,
+    options.filterOptions ? { filterOnJoinTable: options.filterOptions, mainTableAlias: alias } : undefined,
+  );
+
+  rootQuery.orderBy(orderField, orderDirection).limit(options.queryFilter.limit).offset(options.queryFilter.offset);
+
+  // Apply filters after relations are loaded
+  if (multipleFilter.whereString !== '') {
+    rootQuery.andWhere(multipleFilter.whereString, multipleFilter.values);
+  }
+
+  return await rootQuery.getManyAndCount();
 };

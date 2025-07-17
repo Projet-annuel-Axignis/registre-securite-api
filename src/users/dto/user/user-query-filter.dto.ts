@@ -1,19 +1,21 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum UserEntityFields {
   ID = 'id',
-  NAME = 'name',
+  LAST_NAME = 'lastName',
   ROLE = 'role',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   DELETED_AT = 'deletedAt',
 }
 
+@ApiTags('Users', 'User')
 export class UserQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
-    example: UserEntityFields.NAME,
+    example: UserEntityFields.LAST_NAME,
     description: 'Name of the column to sort',
     default: UserEntityFields.CREATED_AT,
     enum: UserEntityFields,
@@ -21,4 +23,14 @@ export class UserQueryFilterDto extends PaginationParamsDto {
   @IsEnum(UserEntityFields)
   @IsOptional()
   sortField: string = UserEntityFields.CREATED_AT;
+
+  @ApiPropertyOptional({ description: 'Boolean to get archived data', default: false })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  includeDeleted?: boolean;
 }

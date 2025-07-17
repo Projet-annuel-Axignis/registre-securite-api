@@ -10,6 +10,7 @@ export enum AuthErrorCode {
   INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
   REQUEST_USER_NOT_FOUND = 'REQUEST_USER_NOT_FOUND',
   UNKNOWN_VALIDATE_ERROR = 'UNKNOWN_VALIDATE_ERROR',
+  SIRET_ALREADY_EXISTS = 'SIRET_ALREADY_EXISTS',
 }
 
 type ErrorCode = CommonErrorCode | AuthErrorCode;
@@ -31,6 +32,7 @@ export class AuthHttpException extends CustomHttpException {
       [AuthErrorCode.INVALID_CREDENTIALS]: 'User or password invalid',
       [AuthErrorCode.REQUEST_USER_NOT_FOUND]: 'User not found in request',
       [AuthErrorCode.UNKNOWN_VALIDATE_ERROR]: 'Unknown error occurred during validation',
+      [AuthErrorCode.SIRET_ALREADY_EXISTS]: 'Given siret already exist',
     };
 
     return messages[this.code] || null;
@@ -82,5 +84,11 @@ export class UserRequestNotFoundException extends AuthHttpException {
 export class AuthUnknownException extends AuthHttpException {
   constructor() {
     super(AuthErrorCode.UNKNOWN_VALIDATE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
+
+export class AuthSiretAlreadyExistsException extends AuthHttpException {
+  constructor(details?: Record<string, string | number>) {
+    super(AuthErrorCode.SIRET_ALREADY_EXISTS, HttpStatus.BAD_REQUEST, details);
   }
 }

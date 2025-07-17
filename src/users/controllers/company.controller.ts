@@ -11,6 +11,13 @@ import { CompanyQueryFilterDto } from '../dto/company/company-query-filter.dto';
 import { CreateCompanyDto } from '../dto/company/create-company.dto';
 import { UpdateCompanyDto } from '../dto/company/update-company.dto';
 import { Company } from '../entities/company.entity';
+import {
+  SwaggerCompanyCreate,
+  SwaggerCompanyFindAll,
+  SwaggerCompanyFindOne,
+  SwaggerCompanyUpdate,
+  SwaggerCompanyUpdateState,
+} from '../helpers/company-set-decorators.helper';
 import { CompanyUpdatedResponse } from '../types/company.types';
 import { RoleType } from '../types/role.types';
 import { CompanyService } from './../services/company.service';
@@ -36,6 +43,7 @@ export class CompanyController {
    */
   @Post()
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerCompanyCreate()
   @ActivityLogger({ description: 'Créer une nouvelle société' })
   async create(@Body() createCompanyDto: CreateCompanyDto): Promise<Company> {
     return await this.companyService.create(createCompanyDto);
@@ -52,6 +60,7 @@ export class CompanyController {
    */
   @Get()
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerCompanyFindAll()
   async findAll(@Query() query: CompanyQueryFilterDto): Promise<PaginatedList<Company>> {
     const [companies, currentResults, totalResults] = await this.companyService.findAll(query);
     return { ...query, totalResults, currentResults, results: companies };
@@ -70,6 +79,7 @@ export class CompanyController {
    */
   @Get(':id')
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerCompanyFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Company> {
     return await this.companyService.findOne(id);
   }
@@ -87,6 +97,7 @@ export class CompanyController {
    */
   @Patch(':id')
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerCompanyUpdate()
   @ActivityLogger({ description: "Mettre à jour les informations d'une société" })
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateCompanyDto: UpdateCompanyDto): Promise<Company> {
     return await this.companyService.update(id, updateCompanyDto);
@@ -105,6 +116,7 @@ export class CompanyController {
    */
   @Patch(':id/update-state')
   @Roles(RoleType.ADMINISTRATOR)
+  @SwaggerCompanyUpdateState()
   @ActivityLogger({ description: "Modifier l'état d'une société" })
   async updateState(@Param('id', ParseIntPipe) id: number): Promise<CompanyUpdatedResponse> {
     const company = await this.companyService.findOne(id);

@@ -1,5 +1,5 @@
 meta {
-  name: create company
+  name: Create Company
   type: http
   seq: 3
 }
@@ -16,6 +16,26 @@ auth:bearer {
 
 body:json {
   {
-    "name": "Test"
+    "name": "Test Company",
+    "siretNumber": "12345678901234"
   }
+}
+
+docs {
+  name: Create Company
+  description: Creates a new company with optional plan creation
+  body: {
+    name: Required - The name of the company
+    siretNumber: Required - The SIRET number (14 digits)
+    planType: Optional - The type of plan (SELF_MANAGE or ADMIN_MANAGE) - required if creating a plan
+    expiredAt: Optional - The expiration date of the plan (ISO string) - required if creating a plan
+    planComment: Optional - A comment for the plan
+  }
+  auth: {
+    description: Bearer token required. User must be ADMINISTRATOR.
+  }
+  notes: |
+    - If planType and expiredAt are provided, a plan will be created and associated with the company
+    - If planType or expiredAt is missing, no plan will be created
+    - planComment is optional even when creating a plan
 }

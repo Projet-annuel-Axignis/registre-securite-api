@@ -15,6 +15,13 @@ import { CreateSiteDto } from '../dto/site/create-site.dto';
 import { SiteQueryFilterDto } from '../dto/site/site-query-filter.dto';
 import { UpdateSiteDto } from '../dto/site/update-site.dto';
 import { Site } from '../entities/site.entity';
+import {
+  SwaggerSiteCreate,
+  SwaggerSiteFindAll,
+  SwaggerSiteFindOne,
+  SwaggerSiteUpdate,
+  SwaggerSiteUpdateState,
+} from '../helpers/site-set-decorators.helper';
 import { SiteService } from '../services/site.service';
 import { SiteUpdatedResponse } from '../types/site.types';
 
@@ -41,6 +48,7 @@ export class SiteController {
    */
   @Post()
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerSiteCreate()
   @ActivityLogger({ description: 'Créer un nouveau site' })
   async create(@Body() createSiteDto: CreateSiteDto, @GetUser() user: LoggedUser): Promise<Site> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
@@ -65,6 +73,7 @@ export class SiteController {
    */
   @Get()
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerSiteFindAll()
   async findAll(@Query() query: SiteQueryFilterDto, @GetUser() user: LoggedUser): Promise<PaginatedList<Site>> {
     if (user.role.type !== RoleType.ADMINISTRATOR) {
       if (query.filterField) {
@@ -99,6 +108,7 @@ export class SiteController {
    */
   @Get(':id')
   @Roles(RoleType.COMPANY_MEMBER)
+  @SwaggerSiteFindOne()
   async findOne(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<Site> {
     const site = await this.siteService.findOne(id);
 
@@ -127,6 +137,7 @@ export class SiteController {
    */
   @Patch(':id')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerSiteUpdate()
   @ActivityLogger({ description: "Mettre à jour les informations d'un site" })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -159,6 +170,7 @@ export class SiteController {
    */
   @Patch(':id/update-state')
   @Roles(RoleType.COMPANY_MANAGER)
+  @SwaggerSiteUpdateState()
   @ActivityLogger({ description: "Modifier l'état d'un site" })
   async updateState(@Param('id', ParseIntPipe) id: number, @GetUser() user: LoggedUser): Promise<SiteUpdatedResponse> {
     const site = await this.siteService.findOne(id);

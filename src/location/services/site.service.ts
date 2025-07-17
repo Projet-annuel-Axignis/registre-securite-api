@@ -48,7 +48,7 @@ export class SiteService {
     const [sites, totalResults] = await getEntityFilteredList({
       repository: this.siteRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
     });
     return [sites, sites.length, totalResults];
   }

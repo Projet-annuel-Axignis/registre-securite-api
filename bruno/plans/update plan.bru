@@ -1,0 +1,40 @@
+meta {
+  name: Update Plan
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/plans/{{planId}}
+  body: json {
+    {
+      "type": "ADMIN_MANAGE",
+      "expiredAt": "2025-12-31T23:59:59.000Z",
+      "comment": "Updated plan for testing"
+    }
+  }
+  auth: {
+    type: bearer
+    token: {{authToken}}
+  }
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  name: Update Plan
+  description: Updates a plan. User must be an administrator or own the company associated with the plan.
+  params: {
+    planId: The ID of the plan to update
+  }
+  body: {
+    type: Optional - The type of plan (SELF_MANAGE or ADMIN_MANAGE)
+    expiredAt: Optional - The expiration date of the plan (ISO string)
+    comment: Optional - A comment for the plan
+  }
+  auth: {
+    description: Bearer token required. User must be ADMINISTRATOR or COMPANY_MEMBER with rights to the plan's company.
+  }
+} 

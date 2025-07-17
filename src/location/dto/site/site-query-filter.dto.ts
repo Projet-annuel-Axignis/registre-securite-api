@@ -1,6 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum SiteEntityFields {
   ID = 'id',
@@ -11,6 +12,7 @@ enum SiteEntityFields {
   DELETED_AT = 'deletedAt',
 }
 
+@ApiTags('Location', 'Site')
 export class SiteQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: SiteEntityFields.NAME,
@@ -21,4 +23,14 @@ export class SiteQueryFilterDto extends PaginationParamsDto {
   @IsEnum(SiteEntityFields)
   @IsOptional()
   sortField: string = SiteEntityFields.CREATED_AT;
+
+  @ApiPropertyOptional({ description: 'Boolean to get archived data', default: false })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  includeDeleted?: boolean;
 }

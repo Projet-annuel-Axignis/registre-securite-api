@@ -27,9 +27,26 @@ const configuration = () => ({
     },
   },
 
+  apis: {
+    bet: {
+      base_url: process.env.BET_BASE_URL ?? 'http://localhost:3005/api/v1',
+      api_key: process.env.BET_API_KEY ?? '',
+    },
+  },
+
   jwt: {
     duration: parseInt(process.env.JWT_DURATION ?? '3600'),
     secret: process.env.JWT_SECRET ?? '',
+  },
+
+  mail: {
+    host: process.env.MAIL_HOST ?? '',
+    port: parseInt(process.env.MAIL_PORT ?? '587', 10),
+    user: process.env.MAIL_USER ?? '',
+    pass: process.env.MAIL_PASS ?? '',
+    from: process.env.MAIL_FROM ?? '',
+    secure: process.env.MAIL_SECURE === 'true',
+    admin: process.env.MAIL_ADMIN ?? '',
   },
 });
 

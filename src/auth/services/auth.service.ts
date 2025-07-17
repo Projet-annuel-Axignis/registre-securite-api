@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto, FormattedCreatedUserDto } from '@src/users/dto/user/create-user.dto';
+import { CompanyService } from '@src/users/services/company.service';
+import { PlanService } from '@src/users/services/plan.service';
 import { UserService } from '@src/users/services/user.service';
-import { InvalidCredentialsException } from '../helpers/auth.exception';
+import { RoleType } from '@src/users/types/role.types';
+import { CreateUserRequestDto } from '../dtos/create-user-request.dto';
+import { AuthSiretAlreadyExistsException, InvalidCredentialsException } from '../helpers/auth.exception';
 import { Password } from '../helpers/password.utils';
 import { LoggedUserWithToken } from '../types/logged-user.type';
 
@@ -9,6 +14,8 @@ import { LoggedUserWithToken } from '../types/logged-user.type';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly companyService: CompanyService,
+    private readonly planService: PlanService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -24,5 +31,43 @@ export class AuthService {
     }
 
     throw new InvalidCredentialsException();
+  }
+
+  /**
+   * Creates a new company, plan, and visitor user based on the registration request.
+   * @param createUserRequestDto The registration request data
+   * @returns The created user without sensitive information
+   */
+  async createUserRequest(createUserRequestDto: CreateUserRequestDto): Promise<FormattedCreatedUserDto> {
+    const { siretNumber } = createUserRequestDto;
+    const existingCompany = await this.companyService.findOneBySiret(siretNumber);
+    if (existingCompany) throw new AuthSiretAlreadyExistsException({ siretNumber });
+
+    // Create company
+    const company = await this.companyService.create({
+      name: createUserRequestDto.companyName,
+      siretNumber: createUserRequestDto.siretNumber,
+    });
+
+    // Create plan
+    await this.planService.create(
+      createUserRequestDto.planType,
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      company,
+    );
+
+    // Create user
+    const createUserDto: CreateUserDto = {
+      firstName: createUserRequestDto.firstName,
+      lastName: createUserRequestDto.lastName,
+      email: createUserRequestDto.email,
+      password: createUserRequestDto.password,
+      phoneNumber: createUserRequestDto.phoneNumber,
+      confirmPassword: createUserRequestDto.confirmPassword,
+      role: RoleType.VISITOR,
+      companyId: company.id,
+    };
+
+    return await this.userService.create(createUserDto);
   }
 }

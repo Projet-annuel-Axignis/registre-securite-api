@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityFilteredListResults, getEntityFilteredList } from '@paginator/paginator.service';
 import { Password } from '@src/auth/helpers/password.utils';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateUserDto, FormattedCreatedUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserQueryFilterDto } from '../dto/user/user-query-filter.dto';
@@ -11,6 +11,7 @@ import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
 import { CompanyNotFoundException } from '../helpers/exceptions/company.exception';
 import { RoleNotFoundException, UserEmailAlreadyExistsException } from '../helpers/exceptions/user.exception';
+import { RoleType } from '../types/role.types';
 
 @Injectable()
 export class UserService {
@@ -47,14 +48,15 @@ export class UserService {
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       email: createUserDto.email,
+      phoneNumber: createUserDto.phoneNumber,
       password: hashedPassword,
       role: role,
     });
 
     // Get company
-    if (createUserDto.customerId) {
-      const company = await this.customerRepository.findOneBy({ id: createUserDto.customerId });
-      if (!company) throw new CompanyNotFoundException({ id: createUserDto.customerId });
+    if (createUserDto.companyId) {
+      const company = await this.customerRepository.findOneBy({ id: createUserDto.companyId });
+      if (!company) throw new CompanyNotFoundException({ id: createUserDto.companyId });
       creatingUser.company = company;
     }
 
@@ -86,7 +88,13 @@ export class UserService {
     const [users, totalResults] = await getEntityFilteredList({
       repository: this.userRepository,
       queryFilter: query,
-      withDeleted: true,
+      withDeleted: query.includeDeleted,
+      relations: [
+        { relation: 'role', alias: 'r' },
+        { relation: 'company', alias: 'c', joins: [{ relation: 'plans', alias: 'p' }] },
+      ],
+      searchFields: ['firstName', 'lastName', 'email'],
+      filterOptions: [{ field: 'companyId', tableAlias: 'c', fieldAlias: 'id' }],
     });
     return [users, users.length, totalResults];
   }
@@ -128,6 +136,10 @@ export class UserService {
       .getOne();
   }
 
+  async findManyById(ids: number[]): Promise<User[]> {
+    return await this.userRepository.find({ where: { id: In(ids) } });
+  }
+
   /**
    * Updates an existing user.
    *
@@ -137,7 +149,7 @@ export class UserService {
    * @throws {Error} If the user does not exist.
    */
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    const { email, password, role, customerId } = updateUserDto;
+    const { email, password, role, companyId } = updateUserDto;
     if (email) {
       const existingUser = await this.userRepository.findOneBy({ email });
       if (existingUser && existingUser.id !== id) {
@@ -149,8 +161,8 @@ export class UserService {
     const dbRole = role ? ((await this.roleRepository.findOneBy({ type: role })) ?? undefined) : undefined;
 
     // Get company
-    const company = customerId
-      ? ((await this.customerRepository.findOneBy({ id: updateUserDto.customerId })) ?? undefined)
+    const company = companyId
+      ? ((await this.customerRepository.findOneBy({ id: updateUserDto.companyId })) ?? undefined)
       : undefined;
 
     await this.userRepository.update(id, { ...updateUserDto, password: hashedPassword, role: dbRole, company });
@@ -177,5 +189,12 @@ export class UserService {
    */
   async restoreUser(id: number): Promise<void> {
     await this.userRepository.restore(id);
+  }
+
+  async getVisitors(): Promise<User[]> {
+    return await this.userRepository.find({
+      relations: { role: true, company: { plans: true } },
+      where: { role: { type: RoleType.VISITOR } },
+    });
   }
 }

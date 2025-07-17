@@ -1,0 +1,15 @@
+meta {
+  name: get all buildings
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/buildings
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

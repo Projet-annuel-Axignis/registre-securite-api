@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SoftDeleteEntity } from '@src/common/entities/soft-delete.entity';
 import { Company } from '@src/users/entities/company.entity';
-import { Column, Entity, ManyToOne, Relation } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Building } from './building.entity';
 
 @Entity()
 export class Site extends SoftDeleteEntity {
@@ -34,4 +35,7 @@ export class Site extends SoftDeleteEntity {
 
   @Column()
   companyId: number;
+
+  @OneToMany(() => Building, (building) => building.site)
+  buildings: Relation<Building>[];
 }

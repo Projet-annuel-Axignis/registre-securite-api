@@ -1,6 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { PaginationParamsDto } from '@paginator/paginator.dto';
-import { IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 enum CompanyEntityFields {
   ID = 'id',
@@ -10,6 +11,7 @@ enum CompanyEntityFields {
   DELETED_AT = 'deletedAt',
 }
 
+@ApiTags('Users', 'Company')
 export class CompanyQueryFilterDto extends PaginationParamsDto {
   @ApiPropertyOptional({
     example: CompanyEntityFields.NAME,
@@ -20,4 +22,14 @@ export class CompanyQueryFilterDto extends PaginationParamsDto {
   @IsEnum(CompanyEntityFields)
   @IsOptional()
   sortField: string = CompanyEntityFields.CREATED_AT;
+
+  @ApiPropertyOptional({ description: 'Boolean to get archived data', default: false })
+  @Transform(({ value }: { value: string }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  includeDeleted?: boolean;
 }

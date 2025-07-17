@@ -63,12 +63,29 @@ export interface EntityFilteredListOptions<Entity extends ObjectLiteral> {
   relations?: RelationParam[];
   pkName?: string;
   withDeleted?: boolean;
+  filterOptions?: JoinTableFilterParams[];
 }
 
 export type EntityFilteredListResults<Entity> = Promise<[Entity[], number, number]>;
 
-export interface MultiFilterOptions {
-  filterSeparator: string;
+interface JoinTableFilterParams {
+  field: string;
+  fieldAlias?: string;
+  tableAlias: string;
 }
 
-export type SqlMultiFilterOptions = MultiFilterOptions;
+interface CommonMultiFilterOptions {
+  filterSeparator?: string;
+}
+
+type ConditionalMultiFilterOptions =
+  | {
+      filterOnJoinTable?: JoinTableFilterParams[];
+      mainTableAlias?: string;
+    }
+  | {
+      filterOnJoinTable?: never;
+      mainTableAlias?: never;
+    };
+
+export type SqlMultiFilterOptions = CommonMultiFilterOptions & ConditionalMultiFilterOptions;

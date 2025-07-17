@@ -9,22 +9,39 @@ import { UpdateCompanyDto } from '../dto/company/update-company.dto';
 import { Company } from '../entities/company.entity';
 import { CompanyNotFoundException } from '../helpers/exceptions/company.exception';
 import { CompanyUpdatedResponse } from '../types/company.types';
+import { PlanService } from './plan.service';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    private readonly planService: PlanService,
   ) {}
 
   /**
    * Creates a new company in the database.
+   * Optionally creates a plan if planType and expiredAt are provided.
    *
    * @param {CreateCompanyDto} dto - Data transfer object containing the details of the company to create.
-   * @returns {Promise<Company>} The created company entity.
+   * @returns {Promise<Company>} The created company entity with plans relation.
    */
   async create(dto: CreateCompanyDto): Promise<Company> {
-    return await this.companyRepository.save(dto);
+    // Extract plan-related fields
+    const { planType, expiredAt, planComment, ...companyData } = dto;
+
+    // Create the company first
+    const company = await this.companyRepository.save(companyData);
+
+    // Create plan if planType and expiredAt are provided
+    if (planType && expiredAt) {
+      const plan = await this.planService.create(planType, new Date(expiredAt), company, planComment);
+
+      // Add the plan to the company's plans array
+      company.plans = [plan];
+    }
+
+    return company;
   }
 
   /**
@@ -38,7 +55,8 @@ export class CompanyService {
     const [companies, totalResults] = await getEntityFilteredList({
       repository: this.companyRepository,
       queryFilter,
-      withDeleted: true,
+      withDeleted: queryFilter.includeDeleted,
+      relations: [{ relation: 'plans', alias: 'p' }],
     });
     return [companies, companies.length, totalResults];
   }
@@ -51,11 +69,19 @@ export class CompanyService {
    * @throws {CompanyNotFoundException} If no company is found with the given ID.
    */
   async findOne(id: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({ where: { id }, withDeleted: true });
+    const company = await this.companyRepository.findOne({
+      where: { id },
+      withDeleted: true,
+      relations: { plans: true },
+    });
 
     if (!company) throw new CompanyNotFoundException({ id });
 
     return company;
+  }
+
+  async findOneBySiret(siretNumber: string): Promise<Company | null> {
+    return await this.companyRepository.findOneBy({ siretNumber });
   }
 
   /**
