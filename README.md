@@ -1,5 +1,6 @@
-<div align="center">
-  ![Logo Axignis](./public/images/logo-axignis.png)
+  <div align="center">
+
+![Logo Axignis](./public/images/logo-axignis.png)
 
   <h1>Registre Sécurité API</h1>
   <p><strong>Un système complet de gestion de registre de sécurité construit avec NestJS</strong></p>
